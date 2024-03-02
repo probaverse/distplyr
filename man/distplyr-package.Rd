@@ -8,6 +8,13 @@
 \description{
 Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://probaverse.github.io/distplyr/}
+}
+
+}
 \author{
 \strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@stat.ubc.ca}
 
