@@ -32,7 +32,11 @@ of \code{values} (of length one more than that of \code{breakpoints}) applied to
 bins from smallest to largest. If specified,
 \code{values} will override \code{midpoint}.}
 
-\item{returns}{A finite distribution with the specified bins.}
+\item{closed}{Should the intervals be closed on the left or on the
+right? One of \code{"right"} (default) or \code{"left"}.}
+}
+\value{
+A finite distribution with the specified bins.
 }
 \description{
 Bins a distribution by specified breakpoints. Left and right endpoints of

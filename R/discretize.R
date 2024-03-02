@@ -10,7 +10,9 @@
 #' of `values` (of length one more than that of `breakpoints`) applied to the
 #' bins from smallest to largest. If specified,
 #' `values` will override `midpoint`.
-#' @param returns A finite distribution with the specified bins.
+#' @param closed Should the intervals be closed on the left or on the
+#' right? One of `"right"` (default) or `"left"`.
+#' @returns A finite distribution with the specified bins.
 #' @note `NA` breakpoints and `values` (if specified) are silently removed.
 #' Will throw an error if the lengths of `values` does not end up being
 #' one more than that of `breakpoints`.
