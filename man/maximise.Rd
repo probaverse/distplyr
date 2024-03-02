@@ -10,7 +10,7 @@ maximise(..., draws = 1)
 maximize(..., draws = 1)
 }
 \arguments{
-\item{...}{Distribution objects, possibly also lists of distributions.}
+\item{...}{Distribution objects, or lists of distributions.}
 
 \item{draws}{Number of draws from each distribution considered in the
 maximum. Either a single numeric applying to all distributions in \code{...},

@@ -7,7 +7,7 @@
 dots_to_dsts(..., na.rm = FALSE)
 }
 \arguments{
-\item{...}{Distribution objects, possibly also lists of distributions.}
+\item{...}{Distribution objects, or lists of distributions.}
 
 \item{na.rm}{Logical; remove NA entries? Note that NULL entries are
 always removed.}

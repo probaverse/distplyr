@@ -1,4 +1,8 @@
+# distplyr (development version)
+
 # distplyr 0.1.4
+
+- Fix graft distributions so that they can evaluate on `NA`. 
 
 # distplyr 0.1.3
 

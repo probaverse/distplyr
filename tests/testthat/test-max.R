@@ -1,5 +1,3 @@
-
-
 test_that("cdf of max distribution makes sense.", {
   d_norm <- dst_norm(0, 1)
   d_pois <- dst_pois(1)
@@ -117,4 +115,16 @@ test_that("simplification of max of finite distributions works.", {
   x <- 1:13 / 2
   expect_equal(eval_cdf(d_max1, at = x), eval_cdf(d_max2, at = x))
   expect_equal(eval_pmf(d_max1, at = x), eval_pmf(d_max2, at = x))
+})
+
+test_that("Can maximise list of distributions.", {
+  d1 <- dst_norm(0, 1)
+  d2 <- dst_norm(0, 2)
+  d3 <- dst_norm(0, 3)
+  a1 <- list(d1, d2)
+  a2 <- list(d1, list(d2))
+  expect_equal(maximise(a1), maximise(d1, d2))
+  expect_error(maximise(a2))
+  expect_equal(maximise(list(d1), list(d2)), maximise(d1, d2))
+  expect_equal(maximise(a1, d3), maximise(d1, d2, d3))
 })

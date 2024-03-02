@@ -4,7 +4,7 @@
 #' so that the ellipsis can include distributions themselves and lists
 #' of distributions.
 #'
-#' @param ... Distribution objects, possibly also lists of distributions.
+#' @param ... Distribution objects, or lists of distributions.
 #' @param na.rm Logical; remove NA entries? Note that NULL entries are
 #' always removed.
 #' @return A list of distributions contained in the `...`, with NULL
@@ -17,7 +17,7 @@
 #' distplyr:::dots_to_dsts(d, list(d, d), NULL)
 dots_to_dsts <- function(..., na.rm = FALSE) {
   dsts <- rlang::list2(...)
-  dsts <- rlang::flatten_if(dsts, vctrs::vec_is_list)
+  dsts <- purrr::list_flatten(dsts)
   nulls <- vapply(dsts, is.null, FUN.VALUE = logical(1L))
   is_na <- function(x) length(x) == 1L && is.na(x)
   if (na.rm) {
