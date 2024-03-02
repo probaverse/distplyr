@@ -1,0 +1,10 @@
+pandoc: 3.1.11
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  manipulating: manipulating.html
+last_built: 2024-03-02T07:07Z
+urls:
+  reference: https://probaverse.github.io/distplyr/reference
+  article: https://probaverse.github.io/distplyr/articles
+
