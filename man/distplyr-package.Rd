@@ -11,7 +11,7 @@ Provides an interface for manipulating univariate probability distributions, usi
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://probaverse.github.io/distplyr/}
+  \item \url{https://distplyr.netlify.app/}
 }
 
 }
