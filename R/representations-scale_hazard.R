@@ -11,7 +11,7 @@ eval_chf.sc_haz <- function(distribution, at) {
 }
 
 #' @export
-eval_density.sc_haz <- function(distribution, at) {
+eval_density.sc_haz <- function(distribution, at, strict) {
   a <- distribution$scale
   d <- distribution$distribution
   f <- eval_density(d, at)
