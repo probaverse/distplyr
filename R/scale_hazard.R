@@ -20,10 +20,13 @@ scale_hazard <- function(distribution, by) {
     stop("Can only scale a hazard function by a positive number.")
   }
   v <- distionary::variable(distribution)
-  if (v != "continuous") {
+  if (is.na(v) || v != "continuous") {
     warning("Hazard can only be scaled for continuous distributions. ",
             "Returning NULL distribution.")
     return(distionary::dst_null())
+  }
+  if (by == 1) {
+    return(distribution)
   }
   dist <- list(distribution = distribution, scale = by)
   distionary::new_distribution(
