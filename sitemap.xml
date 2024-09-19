@@ -1,123 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://probaverse.github.io/distplyr/404.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/SUPPORT.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/articles/manipulating.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/index.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/discretise.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/distplyr-package.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/dots_to_dsts.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/flip.finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/flip.norm.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/flip.unif.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/graft.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/invert.finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/invert.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/linear_transform.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/maximise.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/minimise.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/mix.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/multiply.finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/multiply.gpd.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/multiply.norm.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/multiply.unif.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/mutate_finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/mutate_parameters.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/new_graft.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/new_mix.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/ops_finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/shift.finite.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/shift.gpd.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/shift.norm.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/shift.unif.html</loc>
-  </url>
-  <url>
-    <loc>https://probaverse.github.io/distplyr/reference/slice.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://probaverse.github.io/distplyr/404.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/CONTRIBUTING.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/LICENSE-text.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/LICENSE.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/SUPPORT.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/articles/index.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/articles/manipulating.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/authors.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/index.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/news/index.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/discretise.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/distplyr-package.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/dots_to_dsts.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/flip.finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/flip.norm.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/flip.unif.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/graft.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/index.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/invert.finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/invert.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/linear_transform.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/maximise.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/minimise.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/mix.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/multiply.finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/multiply.gpd.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/multiply.norm.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/multiply.unif.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/mutate_finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/mutate_parameters.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/new_graft.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/new_mix.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/ops_finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/pipe.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/shift.finite.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/shift.gpd.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/shift.norm.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/shift.unif.html</loc></url>
+<url><loc>https://probaverse.github.io/distplyr/reference/slice.html</loc></url>
 </urlset>
+
