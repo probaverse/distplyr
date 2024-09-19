@@ -13,6 +13,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Manipulation of Univariate Distributions">
 <meta name="description" content="Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.">
 <meta property="og:description" content="Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.">
+<meta property="og:image" content="https://probaverse.github.io/distplyr/logo.png">
 <!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-VRP7BMY266"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -59,8 +60,11 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="distplyr-">distplyr <img src="reference/figures/distplyr-240x278.png" align="right" height="150"><a class="anchor" aria-label="anchor" href="#distplyr-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="distplyr-">distplyr 
+<a class="anchor" aria-label="anchor" href="#distplyr-"></a>
+</h1>
+</div>
 <!-- badges: start -->
 
 <p>distplyr provides a grammar for manipulating (univariate) probability distributions, so that you can make probability distributions that realistically represent your data. Distributions add colour to your analysis: they show a complete picture of uncertainty.</p>
@@ -88,11 +92,11 @@
 <p>Want to model a count variable that starts at 1, not 0? Consider shifting a Poisson distribution.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.netlify.app/reference/dst_pois.html" class="external-link">dst_pois</a></span><span class="op">(</span><span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "shift" "dst"  </span></span>
+<span><span class="co">#&gt; shift dst</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  components :</span></span>
 <span><span class="co">#&gt; $distribution</span></span>
-<span><span class="co">#&gt; [1] "pois"       "parametric" "dst"       </span></span>
+<span><span class="co">#&gt; pois parametric dst</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  name :</span></span>
 <span><span class="co">#&gt; [1] "pois"</span></span>
