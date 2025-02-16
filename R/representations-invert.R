@@ -23,9 +23,9 @@ eval_pmf.inverse <- function(distribution, at, strict) {
 
 #' @export
 eval_quantile.inverse <- function(distribution, at) {
-	quantile_0 <- distionary::eval_quantile(distribution$distribution, at = 0)
+  tau0 <- distionary::eval_cdf(distribution$distribution, at = 0)
 	1 / distionary::eval_quantile(
-		distribution, at = quantile_0 + (at > quantile_0) - at
+		distribution$distribution, at = tau0 + (at > tau0) - at
 	)
 }
 

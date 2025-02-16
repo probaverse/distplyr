@@ -67,7 +67,7 @@ kurtosis_exc.mix <- function(distribution) {
 			distributions, distionary::skewness, FUN.VALUE = numeric(1L)
 		)
 		kurts <- vapply(
-			distributions, distionary::kurtosis_raw, FUN.VALUE = numeric(1L)
+			distributions, distionary::kurtosis, FUN.VALUE = numeric(1L)
 		)
 		cmoms <- list(
 			zero = 1,
