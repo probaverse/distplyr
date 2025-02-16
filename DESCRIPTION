@@ -36,4 +36,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 URL: https://distplyr.probaverse.com/
 Remotes:  
-    probaverse/distionary@development
+    probaverse/distionary@v0.0.2
