@@ -13,11 +13,10 @@ Description: Provides an interface for manipulating univariate probability
     distributions, using verbs such as `graft`, `slice`, `mix`, `shift`,
     and others.
 License: MIT + file LICENSE
-Depends: 
+Depends:
     distionary
 Imports: 
     ellipsis,
-    magrittr,
     rlang,
     vctrs,
     stats,
@@ -30,11 +29,11 @@ Suggests:
     tibble
 VignetteBuilder: 
     knitr
-Remotes: 
-    probaverse/distionary
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-URL: https://distplyr.netlify.app/
+URL: https://distplyr.probaverse.com/
+Remotes:  
+    probaverse/distionary@development
