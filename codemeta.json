@@ -181,7 +181,7 @@
     "SystemRequirements": null
   },
   "fileSize": "1246.599KB",
-  "relatedLink": "https://distplyr.netlify.app/",
+  "relatedLink": "https://distplyr.probaverse.com/",
   "releaseNotes": "https://github.com/probaverse/distplyr/blob/master/NEWS.md",
   "readme": "https://github.com/probaverse/distplyr/blob/main/README.md",
   "contIntegration": ["https://github.com/probaverse/distplyr/actions", "https://codecov.io/gh/probaverse/distplyr?branch=master", "https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml"],

@@ -3,7 +3,7 @@ Package: distplyr
 Title: Manipulation of Univariate Distributions
 Version: 0.1.5
 Authors@R: c(
-    person("Vincenzo", "Coia", email = "vincenzo.coia@stat.ubc.ca", 
+    person("Vincenzo", "Coia", email = "vincenzo.coia@gmail.com", 
            role = c("aut", "cre")),
     person("Amogh", "Joshi", role = "aut"),
     person("Shuyi", "Tan", role = "aut"),
@@ -37,4 +37,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-URL: https://distplyr.netlify.app/
+URL: https://distplyr.probaverse.com/
