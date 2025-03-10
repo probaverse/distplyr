@@ -35,13 +35,6 @@ variance.shift <- function(distribution) {
 }
 
 #' @export
-evi.shift <- function(distribution) {
-	with(distribution$components, {
-		distionary::evi(distribution)
-	})
-}
-
-#' @export
 skewness.shift <- function(distribution) {
 	with(distribution$components, {
 		distionary::skewness(distribution)
