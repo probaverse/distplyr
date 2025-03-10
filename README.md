@@ -18,23 +18,10 @@ MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.
 [![R-CMD-check](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-distplyr provides a grammar for manipulating (univariate) probability
-distributions, so that you can make probability distributions that
-realistically represent your data. Distributions add colour to your
-analysis: they show a complete picture of uncertainty.
-
-Use distplyr to:
-
-- start with distribution “building blocks” with the `dst_*()` family of
-  functions, and
-- manipulate these distributions using distplyr verbs.
-
-The result is easy access to a wide range of distributions – more than
-just “elementary” distributions like a Normal or Poisson distribution.
-
-distplyr sits on top of the [distionary](https://distionary.netlify.app)
-package, which provides a framework for creating distribution “building
-blocks” as well as evaluating distributions.
+distplyr breathes life into probability distributions by providing a
+grammar for their modification and reshaping. It works seamlessly with
+distribution objects from the
+[distionary](https://distionary.probaverses.com) package.
 
 The distplyr package name is inspired by the
 [dplyr](https://dplyr.tidyverse.org/) R package: whereas distplyr
@@ -46,11 +33,8 @@ grammar for manipulating *data*.
 `distplyr` is not on CRAN yet, so the best way to install it is:
 
 ``` r
-devtools::install_github("vincenzocoia/distplyr")
+remotes::install_github("probaverse/distplyr")
 ```
-
-Attaching the distplyr package with `library(distplyr)` also attaches
-the distionary package.
 
 ## Basic Usage
 
@@ -79,7 +63,7 @@ shifting a Poisson distribution.
 Here’s its probability mass function:
 
 ``` r
-enframe_pmf(d1, at = 0:10) %>% 
+enframe_pmf(d1, at = 0:10) |>
   plot()
 ```
 
@@ -91,7 +75,7 @@ continue as an exponential distribution:
 ``` r
 x <- c(1.6, 0.9, 0.2, 1.4, 0.4, 0.3, 0.2, 0.4, 0.2, 1.5)
 mu <- mean(x)
-(d2 <- dst_empirical(x) %>% 
+(d2 <- dst_empirical(x) |>
   graft_right(dst_exp(mu), breakpoint = max(x)))
 #> Mixture Distribution
 #> 
@@ -150,8 +134,16 @@ Some examples:
   distplyr aims to provide a human-centric interface by providing a
   grammar.
 
-------------------------------------------------------------------------
+## Acknowledgements
 
-Please note that the ‘distplyr’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
+The creation of distplyr would not have been possible without the
+support of the R Consortium, The Natural Science and Engineering
+Research Council of Canada (NSERC), The University of British Columbia,
+and BGC Engineering Inc.
+
+## Code of Conduct
+
+Please note that the distplyr project is released with a [Contributor
+Code of
+Conduct](https://probaverse.github.io/distplyr/CODE_OF_CONDUCT.html). By
+contributing to this project, you agree to abide by its terms.
