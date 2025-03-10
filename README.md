@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# distplyr <img src="man/figures/distplyr-240x278.png" align="right" height="150"/>
+# distplyr <a href="https://probaverse.github.io/distplyr/"><img src="man/figures/logo.png" align="right" height="139" alt="distplyr website" /></a>
 
 <!-- badges: start -->
 
@@ -24,9 +24,9 @@ analysis: they show a complete picture of uncertainty.
 
 Use distplyr to:
 
-- start with distribution “building blocks” with the `dst_*()` family of
-  functions, and
-- manipulate these distributions using distplyr verbs.
+-   start with distribution “building blocks” with the `dst_*()` family
+    of functions, and
+-   manipulate these distributions using distplyr verbs.
 
 The result is easy access to a wide range of distributions – more than
 just “elementary” distributions like a Normal or Poisson distribution.
@@ -62,11 +62,11 @@ shifting a Poisson distribution.
 
 ``` r
 (d1 <- dst_pois(1.5) + 1)
-#> [1] "shift" "dst"  
+#> shift dst
 #> 
 #>  components :
 #> $distribution
-#> [1] "pois"       "parametric" "dst"       
+#> pois parametric dst
 #> 
 #>  name :
 #> [1] "pois"
@@ -135,19 +135,20 @@ of the package distionary, which distplyr sits on top of.
 
 Some examples:
 
-- The distributional package also allows for distribution manipulation,
-  but is less flexible, and builds vectorization into the package.
-  distplyr (and distionary) deliberately leaves vectorization up to the
-  user, since distributions can be evaluated to produce a variety of
-  output types.
-  - Development of distributional appears to have happened at the same
-    time as distplyr, and distributional uses a similar family of
-    functions – `dist_*()` – to make probability distributions.
-- The [distr](https://cran.r-project.org/web/packages/distr/index.html)
-  package allows you to make distributions including empirical ones, and
-  transform them, using S4 classes, but the interface is complex.
-  distplyr aims to provide a human-centric interface by providing a
-  grammar.
+-   The distributional package also allows for distribution
+    manipulation, but is less flexible, and builds vectorization into
+    the package. distplyr (and distionary) deliberately leaves
+    vectorization up to the user, since distributions can be evaluated
+    to produce a variety of output types.
+    -   Development of distributional appears to have happened at the
+        same time as distplyr, and distributional uses a similar family
+        of functions – `dist_*()` – to make probability distributions.
+-   The
+    [distr](https://cran.r-project.org/web/packages/distr/index.html)
+    package allows you to make distributions including empirical ones,
+    and transform them, using S4 classes, but the interface is complex.
+    distplyr aims to provide a human-centric interface by providing a
+    grammar.
 
 ------------------------------------------------------------------------
 
