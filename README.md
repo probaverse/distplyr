@@ -7,9 +7,10 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/vincenzocoia/distplyr/workflows/R-CMD-check/badge.svg)](https://github.com/vincenzocoia/distplyr/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/vincenzocoia/distplyr/branch/master/graph/badge.svg)](https://codecov.io/gh/vincenzocoia/distplyr?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![codecov](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9)](https://codecov.io/gh/probaverse/distplyr)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/distplyr)](https://CRAN.R-project.org/package=distplyr)
 [![License:
@@ -24,9 +25,9 @@ analysis: they show a complete picture of uncertainty.
 
 Use distplyr to:
 
--   start with distribution “building blocks” with the `dst_*()` family
-    of functions, and
--   manipulate these distributions using distplyr verbs.
+- start with distribution “building blocks” with the `dst_*()` family of
+  functions, and
+- manipulate these distributions using distplyr verbs.
 
 The result is easy access to a wide range of distributions – more than
 just “elementary” distributions like a Normal or Poisson distribution.
@@ -62,11 +63,11 @@ shifting a Poisson distribution.
 
 ``` r
 (d1 <- dst_pois(1.5) + 1)
-#> shift dst
+#> [1] "shift" "dst"  
 #> 
 #>  components :
 #> $distribution
-#> pois parametric dst
+#> [1] "pois"       "parametric" "dst"       
 #> 
 #>  name :
 #> [1] "pois"
@@ -135,20 +136,19 @@ of the package distionary, which distplyr sits on top of.
 
 Some examples:
 
--   The distributional package also allows for distribution
-    manipulation, but is less flexible, and builds vectorization into
-    the package. distplyr (and distionary) deliberately leaves
-    vectorization up to the user, since distributions can be evaluated
-    to produce a variety of output types.
-    -   Development of distributional appears to have happened at the
-        same time as distplyr, and distributional uses a similar family
-        of functions – `dist_*()` – to make probability distributions.
--   The
-    [distr](https://cran.r-project.org/web/packages/distr/index.html)
-    package allows you to make distributions including empirical ones,
-    and transform them, using S4 classes, but the interface is complex.
-    distplyr aims to provide a human-centric interface by providing a
-    grammar.
+- The distributional package also allows for distribution manipulation,
+  but is less flexible, and builds vectorization into the package.
+  distplyr (and distionary) deliberately leaves vectorization up to the
+  user, since distributions can be evaluated to produce a variety of
+  output types.
+  - Development of distributional appears to have happened at the same
+    time as distplyr, and distributional uses a similar family of
+    functions – `dist_*()` – to make probability distributions.
+- The [distr](https://cran.r-project.org/web/packages/distr/index.html)
+  package allows you to make distributions including empirical ones, and
+  transform them, using S4 classes, but the interface is complex.
+  distplyr aims to provide a human-centric interface by providing a
+  grammar.
 
 ------------------------------------------------------------------------
 

@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/vincenzocoia/distplyr/workflows/R-CMD-check/badge.svg)](https://github.com/vincenzocoia/distplyr/actions)
-[![Codecov test coverage](https://codecov.io/gh/vincenzocoia/distplyr/branch/master/graph/badge.svg)](https://codecov.io/gh/vincenzocoia/distplyr?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![codecov](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9)](https://codecov.io/gh/probaverse/distplyr)
 [![CRAN status](https://www.r-pkg.org/badges/version/distplyr)](https://CRAN.R-project.org/package=distplyr)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
 [![R-CMD-check](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml)
