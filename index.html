@@ -92,11 +92,11 @@
 <p>Want to model a count variable that starts at 1, not 0? Consider shifting a Poisson distribution.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_pois.html" class="external-link">dst_pois</a></span><span class="op">(</span><span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; shift dst</span></span>
+<span><span class="co">#&gt; [1] "shift" "dst"  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  components :</span></span>
 <span><span class="co">#&gt; $distribution</span></span>
-<span><span class="co">#&gt; pois parametric dst</span></span>
+<span><span class="co">#&gt; [1] "pois"       "parametric" "dst"       </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  name :</span></span>
 <span><span class="co">#&gt; [1] "pois"</span></span>
@@ -195,8 +195,8 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://github.com/vincenzocoia/distplyr/actions" class="external-link"><img src="https://github.com/vincenzocoia/distplyr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/vincenzocoia/distplyr?branch=master" class="external-link"><img src="https://codecov.io/gh/vincenzocoia/distplyr/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://www.repostatus.org/#wip" class="external-link"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
+<li><a href="https://codecov.io/gh/probaverse/distplyr" class="external-link"><img src="https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9" alt="codecov"></a></li>
 <li><a href="https://CRAN.R-project.org/package=distplyr" class="external-link"><img src="https://www.r-pkg.org/badges/version/distplyr" alt="CRAN status"></a></li>
 <li><a href="https://cran.r-project.org/web/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a></li>
 <li><a href="https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
