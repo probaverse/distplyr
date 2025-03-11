@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# distplyr <a href="https://probaverse.github.io/distplyr/"><img src="man/figures/logo.png" align="right" height="139" alt="distplyr website" /></a>
+# distplyr <a href="https://distplyr.probaverse.com/"><img src="man/figures/logo.png" align="right" height="139" alt="distplyr website" /></a>
 
 <!-- badges: start -->
 
@@ -144,6 +144,5 @@ and BGC Engineering Inc.
 ## Code of Conduct
 
 Please note that the distplyr project is released with a [Contributor
-Code of
-Conduct](https://probaverse.github.io/distplyr/CODE_OF_CONDUCT.html). By
-contributing to this project, you agree to abide by its terms.
+Code of Conduct](https://distplyr.probaverse.com/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
