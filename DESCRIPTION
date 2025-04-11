@@ -17,7 +17,6 @@ Depends:
     distionary
 Imports: 
     ellipsis,
-    magrittr,
     rlang,
     vctrs,
     stats,

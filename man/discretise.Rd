@@ -57,8 +57,8 @@ plot(p3, "cdf", from = -3, to = 3, add = TRUE, col = "red", n = 1000)
 
 discretise(dst_exp(0.1), breakpoints = numeric())
 
-dst_norm(0, 1) \%>\%
-  slice_left(-2) \%>\%
-  slice_right(2) \%>\%
+dst_norm(0, 1) |>
+  slice_left(-2) |>
+  slice_right(2) |>
   discretize(-2:2)
 }

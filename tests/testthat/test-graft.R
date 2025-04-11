@@ -50,8 +50,8 @@ test_that("quantiles at breakpoint", {
 
 test_that("a graft distribution is only ever a mixture of two distributions.", {
 	d <- dst_norm(0, 1)
-	g <- d %>%
-		graft_right(d, breakpoint = 2) %>%
+	g <- d |>
+		graft_right(d, breakpoint = 2) |>
 		graft_left(d, breakpoint = -2)
 	expect_length(g$components$distributions, 2L)
 })

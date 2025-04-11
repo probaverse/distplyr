@@ -44,9 +44,9 @@ get_dfoo <- function(foo) {
 mu <- 0
 ss <- 4
 (f1 <- foo_norm(mu, ss))
-(f2 <- tibble(m = 0, v = 4) %>%
-		mutate(d = list(foo_norm(m, v))) %>%
-		pull(d) %>%
+(f2 <- tibble(m = 0, v = 4) |>
+		mutate(d = list(foo_norm(m, v))) |>
+		pull(d) |>
 		.[[1]])
 (f3 <- foo_norm(my_mean, my_var))
 (f4 <- foo_norm(my_mean, ss))

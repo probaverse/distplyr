@@ -26,8 +26,8 @@ my_dst <- as_dst("foo", param1 = 3, param2 = 6)
 While the above is enough, you might want to consider adding more information. With no knowledge of properties such as mean and variance, these quantities will be computed by their definition, often involving an integral. Instead, you can specify these things using the `set_*()` functions:
 
 ```
-my_dst <- my_dst %>%
-  set_mean(param1 / (param1 + param2)) %>% 
+my_dst <- my_dst |>
+  set_mean(param1 / (param1 + param2)) |> 
   set_variance({
     denominator <- param1 + param
     param1 / denominator
@@ -42,15 +42,15 @@ For example, here is an empirical distribution of the residuals of a regression 
 
 ```
 model <- lm(mpg ~ I(1 / disp), data = mtcars)
-error_dist <-  model %>% 
-	residuals() %>% 
+error_dist <-  model |> 
+	residuals() |> 
 	dst_empirical()
 ```
 
 It would be useful to add the mean back in to the error distribution:
 
 ```
-broom::augment(model) %>% 
+broom::augment(model) |> 
 	mutate(dist = map(.fitted, ~ .x + error_dist))
 ```
 
@@ -67,7 +67,7 @@ Your client wants you to come up with the best supervised learning model that pr
 To find the distribution of the residuals, set a generic Lognormal distribution with unspecified parameters `a` and `b`, then set the mean at 0. The remaining parameter can be estimated via maximum likelihood. 
 
 ```
-res <- dst_lnorm() %>% 
+res <- dst_lnorm() |> 
     set_mean(0)
 f <- get_density(res)   # Maximize
 ```
@@ -79,7 +79,7 @@ Notice that neither `a` nor `b` is the mean of the distribution, yet we can stil
 You're trying to forecast your income, and you know that most of the time you make between 3 and 4 thousand dollars per month. You decide to make this a 90% prediction interval of your income, using a Normal distribution:
 
 ```
-dst_norm() %>% 
+dst_norm() |> 
     set_quantiles(0.05 ~ 3000, 0.95 ~ 4000)
 ```
 
@@ -98,6 +98,6 @@ dst_norm(a, a)  # Then, resolve via MLE
 You'd like to fit a GPD, and you are confident that the distribution is heavy tailed, so would like the shape parameter to be positive. 
 
 ```
-dst_gpd() %>% 
+dst_gpd() |> 
    set_parameters(shape > 0)
 ```
