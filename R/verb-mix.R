@@ -53,12 +53,6 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
   if (length(probs) == 1L) {
     return(dsts[[1L]])
   }
-  res <- list(
-    components = list(
-      distributions = dsts,
-      probs = probs
-    )
-  )
   r <- lapply(dsts, range)
   r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
   r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))

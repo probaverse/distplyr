@@ -1,11 +1,6 @@
 #' @rdname slice
 #' @export
 slice_right <- function(distribution, breakpoint, include = TRUE, ...) {
-	UseMethod("slice_right")
-}
-
-#' @export
-slice_right.dst <- function(distribution, breakpoint, include = TRUE, ...) {
 	rng <- range(distribution)
 	left <- rng[1L]
 	right <- rng[2L]
@@ -31,30 +26,59 @@ slice_right.dst <- function(distribution, breakpoint, include = TRUE, ...) {
 		}
 	}
 	if (all_sliced) {
-	  warning("Sliced off entire distribution. Returning NULL.")
-	  return(NULL)
+	  warning("Sliced off entire distribution. Returning Null distribution.")
+	  return(distionary::dst_null())
 	}
-	l <- list(
-		distribution = distribution,
-		breakpoint = breakpoint,
-		include = include
-	)
-	v <- distionary::variable(distribution)
+	v <- distionary::vtype(distribution)
 	if (v == "mixed") {
 		v <- "unknown" # For now. Need to evaluate cumulative discrete probs.
 	}
-	distionary::new_distribution(l, variable = v, class = "slice_right")
-}
-
-#' @export
-slice_right.finite <- function(distribution, breakpoint, include = TRUE, ...) {
-	left_discretes <- distionary::prev_discrete(
-		distribution, from = breakpoint, n = Inf, include_from = !include
+	d <- distribution(
+	  cdf = function(x) {
+	    p_kept <- distionary::prob_left(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    cdf <- distionary::eval_cdf(distribution, at = x) / p_kept
+	    pmin(cdf, 1)
+	  },
+	  density = function(x) {
+	    p_kept <- distionary::prob_left(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    pdf <- distionary::eval_density(distribution, at = x) / p_kept
+	    if (include) {
+	      pdf[x >= breakpoint] <- 0
+	    } else {
+	      pdf[x > breakpoint] <- 0
+	    }
+	    pdf
+	  },
+	  pmf = function(x) {
+	    p_kept <- distionary::prob_left(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    pmf <- distionary::eval_pmf(distribution, at = x) / p_kept
+	    if (include) {
+	      pmf[x >= breakpoint] <- 0
+	    } else {
+	      pmf[x > breakpoint] <- 0
+	    }
+	    pmf
+	  },
+	  quantile = function(p) {
+	    p_kept <- distionary::prob_left(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    distionary::eval_quantile(distribution, at = p * p_kept)
+	  },
+	  range = c(left, breakpoint),
+	  .vtype = v,
+	  .name = "Right-Sliced",
+	  .parameters = list(
+	    distribution = distribution,
+	    breakpoint = breakpoint,
+	    include = include
+	  )
 	)
-	if (!length(left_discretes)) {
-	  warning("Sliced off entire distribution. Returning NULL.")
-	  return(NULL)
-	}
-	left_probs <- distionary::eval_pmf(distribution, at = left_discretes)
-	distionary::dst_empirical(left_discretes, weights = left_probs)
+	distionary::new_distribution(d, class = "slice_right")
 }
