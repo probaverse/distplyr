@@ -59,6 +59,9 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
       probs = probs
     )
   )
+  r <- lapply(dsts, range)
+  r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
+  r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
   var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
   if ("unknown" %in% var_type) {
@@ -100,6 +103,7 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
         FUN.VALUE = numeric(1L)
       )
     },
+    range = c(r1, r2),
     .vtype = var_unique,
     .name = "Mixture",
     .parameters = list(
@@ -109,8 +113,6 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
   )
   new_mixture(d)
 }
-
-
 
 
 
