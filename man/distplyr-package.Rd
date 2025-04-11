@@ -13,12 +13,12 @@ Provides an interface for manipulating univariate probability distributions, usi
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://distplyr.netlify.app/}
+  \item \url{https://distplyr.probaverse.com/}
 }
 
 }
 \author{
-\strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@stat.ubc.ca}
+\strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@gmail.com}
 
 Authors:
 \itemize{

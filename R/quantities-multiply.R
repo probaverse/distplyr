@@ -28,13 +28,6 @@ variance.scale <- function(distribution) {
 }
 
 #' @export
-evi.scale <- function(distribution) {
-	with(distribution$components, {
-		distionary::evi(distribution)
-	})
-}
-
-#' @export
 skewness.scale <- function(distribution) {
 	with(distribution$components, {
 		distionary::skewness(distribution)

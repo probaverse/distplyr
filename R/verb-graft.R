@@ -23,40 +23,41 @@
 #' @rdname graft
 #' @export
 graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
-	p_left <- distionary::prob_left(distribution, of = breakpoint,
-									inclusive = include)
-	if (p_left == 1) {
-		return(distribution)
-	}
-	if (p_left == 0) {
-		return(slice_left(graft, breakpoint = breakpoint, include = include))
-	}
-	left <- slice_right(distribution, breakpoint = breakpoint, include = !include)
-	right <- slice_left(graft, breakpoint = breakpoint, include = include)
-	mixture <- mix(left, right, weights = c(p_left, 1 - p_left))
-	mixture$components$breakpoint <- breakpoint
-	mixture$components$include <- include
-	new_graft(mixture)
+  p_left <- distionary::prob_left(
+    distribution, of = breakpoint, inclusive = include
+  )
+  if (p_left == 1) {
+    return(distribution)
+  }
+  if (p_left == 0) {
+    return(slice_left(graft, breakpoint = breakpoint, include = include))
+  }
+  left <- slice_right(distribution, breakpoint = breakpoint, include = !include)
+  right <- slice_left(graft, breakpoint = breakpoint, include = include)
+  mixture <- mix(left, right, weights = c(p_left, 1 - p_left))
+  mixture$components$breakpoint <- breakpoint
+  mixture$components$include <- include
+  new_graft(mixture)
 }
 
 #' @rdname graft
 #' @export
 graft_left <- function(distribution, graft, breakpoint, include = FALSE) {
-	p_right <- distionary::prob_right(distribution, of = breakpoint,
-									  inclusive = include)
-	if (p_right == 1) {
-		return(distribution)
-	}
-	if (p_right == 0) {
-		return(slice_right(graft, breakpoint = breakpoint, include = include))
-	}
-	left <- slice_right(graft, breakpoint = breakpoint, include = include)
-	right <- slice_left(distribution, breakpoint = breakpoint,
-						include = !include)
-	mixture <- mix(left, right, weights = c(1 - p_right, p_right))
-	mixture$components$breakpoint <- breakpoint
-	mixture$components$include <- include
-	new_graft(mixture)
+  p_right <- distionary::prob_right(
+    distribution, of = breakpoint, inclusive = include
+  )
+  if (p_right == 1) {
+    return(distribution)
+  }
+  if (p_right == 0) {
+    return(slice_right(graft, breakpoint = breakpoint, include = include))
+  }
+  left <- slice_right(graft, breakpoint = breakpoint, include = include)
+  right <- slice_left(distribution, breakpoint = breakpoint, include = !include)
+  mixture <- mix(left, right, weights = c(1 - p_right, p_right))
+  mixture$components$breakpoint <- breakpoint
+  mixture$components$include <- include
+  new_graft(mixture)
 }
 
 #' @param object Object to be tested
@@ -69,8 +70,10 @@ is_graft <- function(object) inherits(object, "graft")
 #'
 #' @param object A special mixture of conditional distributions.
 #' @note A graft distribution is a special case of a mixture distribution.
-#' @inheritParams new_mix
+#' @inheritParams new_mixture
 new_graft <- function(object, ..., class = character()) {
-	new_mix(object, variable = distionary::variable(object),
-			class = c(class, "graft"))
+  new_mixture(
+    object, variable = distionary::variable(object),
+    class = c(class, "graft")
+  )
 }

@@ -10,16 +10,17 @@
 #' @return A mixture distribution -- an empty distribution if any weights
 #' are \code{NA} and `na.rm = FALSE`, the default.
 #' @examples
-#' a <- distionary::dst_norm(0, 1)
-#' b <- distionary::dst_norm(5, 2)
+#' library(distionary)
+#' a <- dst_norm(0, 1)
+#' b <- dst_norm(5, 2)
 #' m1 <- mix(a, b, weights = c(1, 4))
 #' #plot(m1)
-#' distionary::variable(m1)
+#' vtype(m1)
 #'
-#' c <- distionary::dst_empirical(0:6)
+#' c <- dst_pois(6)
 #' m2 <- mix(a, b, c, weights = c(0.2, 0.5, 0.3))
 #' #plot(m2, n = 1001)
-#' distionary::variable(m2)
+#' vtype(m2)
 #' @export
 mix <- function(..., weights = 1, na.rm = FALSE) {
   dsts <- dots_to_dsts(..., na.rm = na.rm)
@@ -53,52 +54,100 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
     return(dsts[[1L]])
   }
   res <- list(
-  	components = list(
-  		distributions = dsts,
-  		probs = probs
-  	)
+    components = list(
+      distributions = dsts,
+      probs = probs
+    )
   )
-  var_type <- vapply(dsts, distionary::variable, FUN.VALUE = character(1L))
+  var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
-  if (length(var_unique) > 1L) {
+  if ("unknown" %in% var_type) {
+    var_unique <- "unknown"
+  } else if (length(var_unique) > 1L) {
     var_unique <- "mixed"
   }
-  new_mix(res, variable = var_unique)
+  ## Make distribution object
+  d <- distionary::distribution(
+    cdf = function(x) {
+      cdf_vals <- lapply(dsts, distionary::eval_cdf, at = x)
+      p_times_cdfs <- mapply(`*`, probs, cdf_vals, SIMPLIFY = FALSE)
+      Reduce(`+`, p_times_cdfs)
+    },
+    survival = function(x) {
+      surv_vals <- lapply(dsts, distionary::eval_survival, at = x)
+      p_times_survs <- mapply(`*`, probs, surv_vals, SIMPLIFY = FALSE)
+      Reduce(`+`, p_times_survs)
+    },
+    pmf = function(x) {
+      pmf_vals <- lapply(dsts, distionary::eval_pmf, at = x)
+      p_times_f <- mapply(`*`, probs, pmf_vals, SIMPLIFY = FALSE)
+      Reduce(`+`, p_times_f)
+    },
+    density = function(x) {
+      density_vals <- lapply(dsts, distionary::eval_density, at = x)
+      p_times_f <- mapply(`*`, probs, density_vals, SIMPLIFY = FALSE)
+      Reduce(`+`, p_times_f)
+    },
+    realise = function(n) {
+      if (n == 0) {
+        return(numeric())
+      }
+      k <- length(dsts)
+      id <- sample(1:k, size = n, replace = TRUE, prob = probs)
+      vapply(
+        id,
+        \(i) distionary::realise(dsts[[i]], n = 1),
+        FUN.VALUE = numeric(1L)
+      )
+    },
+    .vtype = var_unique,
+    .name = "Mixture",
+    .parameters = list(
+      distributions = dsts,
+      probs = probs
+    )
+  )
+  new_mixture(d)
 }
+
+
+
+
 
 #' Constructor function for "mix" objects
 #'
 #' @param l List containing the components of a mixture distribution object.
-#' @param variable Type of random variable: "continuous", "discrete",
-#'   or "mixed".
 #' @param ... Other attributes to add to the list.
 #' @param class If making a subclass, specify its name here.
 #' @export
-new_mix <- function(l, variable, ..., class = character()) {
-	distionary::new_distribution(
-		l, variable = variable, class = c(class, "mix")
-	)
+new_mixture <- function(l, ..., class = character()) {
+  distionary::new_distribution(l, class = c(class, "mixture"))
 }
 
 #' @param object Object to be tested
 #' @rdname mix
 #' @export
-is_mix <- function(object) inherits(object, "mix")
+is_mixture <- function(object) inherits(object, "mixture")
 
 #' @rdname mix
 #' @export
-is.mix <- function(object) inherits(object, "mix")
+is.mixture <- function(object) inherits(object, "mixture")
 
 
 #' @export
-print.mix <- function(x, ...) {
+print.mixture <- function(x, ...) {
   cat("Mixture Distribution\n")
   cat("\nComponents: ")
+  cat("\n")
+  params <- distionary::parameters(x)
+  params[["distributions"]] <- vapply(
+    params[["distributions"]], pretty_name, FUN.VALUE = character(1L)
+  )
   if (requireNamespace("tibble", quietly = TRUE)) {
-    cat("\n")
-    print(tibble::as_tibble(x$components))
+    df <- tibble::as_tibble(params)
   } else {
-    cat(length(x$components$probs))
+    df <- as.data.frame(params)
   }
+  print(df, ...)
 }
 
