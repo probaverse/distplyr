@@ -33,7 +33,7 @@ slice_right <- function(distribution, breakpoint, include = TRUE, ...) {
 	if (v == "mixed") {
 		v <- "unknown" # For now. Need to evaluate cumulative discrete probs.
 	}
-	d <- distribution(
+	d <- distionary::distribution(
 	  cdf = function(x) {
 	    p_kept <- distionary::prob_left(
 	      distribution, of = breakpoint, inclusive = !include

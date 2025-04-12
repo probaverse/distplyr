@@ -24,46 +24,33 @@ invert <- function(distribution) {
   if (p_zero > 0) {
     stop("Cannot invert a distribution for which 0 is a possible outcome.")
   }
-  dist <- list(
-    distribution = distribution
+  d <- distionary::distribution(
+    cdf = function(x) {
+      distionary::eval_cdf(distribution, at = 0) -
+        distionary::eval_cdf(distribution, at = 1 / x) +
+        distionary::eval_pmf(distribution, at = 1 / x) +
+        as.numeric(at >= 0)
+    },
+    density = function(x) {
+      distionary::eval_density(distribution, at = 1 / x) / x^2
+    },
+    pmf = function(x) {
+      distionary::eval_pmf(distribution, at = 1 / x)
+    },
+    quantile = function(p) {
+      quantile_0 <- distionary::eval_quantile(distribution, at = 0)
+      1 / distionary::eval_quantile(
+        distribution, at = quantile_0 + (p > quantile_0) - p
+      )
+    },
+    realize = function(n) {
+      1 / distionary::realize(distribution, n = n)
+    },
+    .vtype = distionary::vtype(distribution),
+    .name = "Inverse",
+    .parameters = list(
+      distribution = distribution
+    )
   )
-  distionary::new_distribution(
-  	dist, variable = distionary::variable(distribution), class = "inverse"
-  )
-}
-
-#' @export
-eval_cdf.inverse <- function(distribution, at) {
-  dist <- distribution$distribution
-  distionary::eval_cdf(dist, at = 0) -
-    distionary::eval_cdf(dist, at = 1 / at) +
-    distionary::eval_pmf(dist, at = 1 / at, strict = FALSE) +
-    as.numeric(at >= 0)
-}
-
-#' @export
-eval_density.inverse <- function(distribution, at, strict) {
-  distionary::eval_density(
-    distribution$distribution, at = 1 / at, strict = strict
-  ) / at^2
-}
-
-#' @export
-eval_pmf.inverse <- function(distribution, at, strict) {
-  distionary::eval_pmf(
-    distribution$distribution, at = 1 / at, strict = strict
-  )
-}
-
-#' @export
-eval_quantile.inverse <- function(distribution, at) {
-  quantile_0 <- distionary::eval_quantile(distribution$distribution, at = 0)
-  1 / distionary::eval_quantile(
-    distribution, at = quantile_0 + (at > quantile_0) - at
-  )
-}
-
-#' @export
-realise.inverse <- function(distribution, n) {
-  1 / distionary::realise(distribution$distribution, n = n)
+  distionary::new_distribution(d, class = "inverse")
 }
