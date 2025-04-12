@@ -35,7 +35,6 @@ distionary::dst_norm(0, 1) |>
   slice_right(2) |>
   distionary::enframe_cdf(at = -3:3)
 
-d <- distionary::dst_empirical(c(2, 5, 6, 9, 11))
 d |>
   slice_left(5) |>
   distionary::eval_pmf(at = 5)
