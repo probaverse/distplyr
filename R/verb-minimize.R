@@ -12,9 +12,9 @@
 #' @details To use precise language, if `X1`, ..., `Xp` are
 #' `p` independent random variables corresponding to the distributions
 #' in `...`, then the distribution returned is of `min(X1, ..., Xp)`.
-#' @rdname minimise
+#' @rdname minimum
 #' @export
-minimise <- function(..., draws = 1) {
+minimize <- function(..., draws = 1) {
   dsts <- dots_to_dsts(..., na.rm = TRUE)
   n_dsts <- length(dsts)
   if (n_dsts == 0) {
@@ -65,10 +65,50 @@ minimise <- function(..., draws = 1) {
       }
     }
   }
-  l <- list(components = list(distributions = dsts, draws = draws))
-  distionary::new_distribution(l, variable = v, class = "min")
+  r <- lapply(dsts, range)
+  r <- Reduce(pmin, r)
+  survival <- function(x) {
+    prob_rights <- lapply(dsts, distionary::eval_survival, at = x)
+    contributions <- Map(`^`, prob_rights, draws)
+    Reduce(`*`, contributions)
+  }
+  d <- distionary::distribution(
+    cdf = \(x) 1 - survival(x),
+    survival = survival,
+    density = function(x) {
+      # formula: survival * (sum draws_j f_j / surv_j)
+      full_surv <- survival(x)
+      survs <- lapply(d, distionary::eval_survival, at = x)
+      pdfs <- lapply(d, distionary::eval_density, at = x)
+      divide_if_nonzero <- function(draws, pdf, cdf) {
+        res <- draws * pdf / cdf
+        res[pdf == 0] <- 0
+        res
+      }
+      ratios <- Map(divide_if_nonzero, draws, pdfs, survs)
+      ratios_sum <- Reduce(`+`, ratios)
+      ratios_sum * full_surv
+    },
+    realise = function(n) {
+      iid_sample <- numeric(0L)
+      for (i in seq_len(n)) {
+        iid_sample_list <- Map(realise, dsts, draws)
+        iid_sample[i] <- min(unlist(iid_sample_list))
+      }
+      iid_sample
+    },
+    range = r,
+    .name = "Minumum",
+    .type = v,
+    .parameters = list(
+      distributions = dsts,
+      draws = draws
+    )
+  )
+  distionary::new_distribution(d, class = "minimum")
 }
 
-#' @rdname minimise
+#' @rdname minimum
 #' @export
-minimize <- minimise
+minimise <- function(..., draws = 1) minimize(..., draws = draws)
+

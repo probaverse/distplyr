@@ -12,9 +12,9 @@
 #' @details To use precise language, if `X1`, ..., `Xp` are
 #' `p` independent random variables corresponding to the distributions
 #' in `...`, then the distribution returned is of `max(X1, ..., Xp)`.
-#' @rdname maximise
+#' @rdname maximum
 #' @export
-maximise <- function(..., draws = 1) {
+maximize <- function(..., draws = 1) {
   dsts <- dots_to_dsts(..., na.rm = TRUE)
   n_dsts <- length(dsts)
   if (n_dsts == 0) {
@@ -98,15 +98,15 @@ maximise <- function(..., draws = 1) {
     },
     range = r,
     .vtype = v,
-    .name = "Maximise",
+    .name = "Maximum",
     .parameters = list(
       distributions = dsts,
       draws = draws
     )
   )
-  distionary::new_distribution(d, class = "maximise")
+  distionary::new_distribution(d, class = "maximum")
 }
 
-#' @rdname maximise
+#' @rdname maximum
 #' @export
-maximize <- function(..., draws = 1) maximise(..., draws = draws)
+maximise <- function(..., draws = 1) maximize(..., draws = draws)
