@@ -18,7 +18,6 @@
 #'   slice_right(2) |>
 #'   distionary::enframe_cdf(at = -3:3)
 #'
-#' d <- distionary::dst_empirical(c(2, 5, 6, 9, 11))
 #' d |>
 #'   slice_left(5) |>
 #'   distionary::eval_pmf(at = 5)
@@ -57,7 +56,6 @@ slice_left <- function(distribution, breakpoint, include = TRUE, ...) {
 	  warning("Sliced off entire distribution. Returning Null distribution")
 	  return(distionary::dst_null())
 	}
-	l <-
 	v <- distionary::vtype(distribution)
 	if (v == "mixed") {
 	  v <- "unknown" # For now. Need to evaluate cumulative discrete probs.
