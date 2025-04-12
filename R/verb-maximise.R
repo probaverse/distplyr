@@ -65,10 +65,48 @@ maximise <- function(..., draws = 1) {
       }
     }
   }
-  l <- list(components = list(distributions = dsts, draws = draws))
-  distionary::new_distribution(l, variable = v, class = "max")
+  r <- lapply(dsts, range)
+  r <- Reduce(pmax, r)
+  cdf <- function(x) {
+    prob_lefts <- lapply(dsts, eval_cdf, at = x)
+    contributions <- Map(`^`, prob_lefts, draws)
+    Reduce(`*`, contributions)
+  }
+  d <- distionary::distribution(
+    cdf = cdf,
+    density = function(x) {
+      # formula: cdf * (sum draws_j f_j / F_j)
+      full_cdf <- cdf(x)
+      cdfs <- lapply(dsts, distionary::eval_cdf, at = x)
+      pdfs <- lapply(dsts, distionary::eval_density, at = x)
+      divide_if_nonzero <- function(draws, pdf, cdf) {
+        res <- draws * pdf / cdf
+        res[pdf == 0] <- 0
+        res
+      }
+      ratios <- Map(divide_if_nonzero, draws, pdfs, cdfs)
+      ratios_sum <- Reduce(`+`, ratios)
+      ratios_sum * full_cdf
+    },
+    realise = function(n) {
+      iid_sample <- numeric(0L)
+      for (i in seq_len(n)) {
+        iid_sample_list <- Map(distionary::realise, dsts, draws)
+        iid_sample[i] <- max(unlist(iid_sample_list))
+      }
+      iid_sample
+    },
+    range = r,
+    .vtype = v,
+    .name = "Maximise",
+    .parameters = list(
+      distributions = dsts,
+      draws = draws
+    )
+  )
+  distionary::new_distribution(d, class = "maximise")
 }
 
 #' @rdname maximise
 #' @export
-maximize <- maximise
+maximize <- function(..., draws = 1) maximise(..., draws = draws)
