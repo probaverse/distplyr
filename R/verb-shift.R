@@ -44,20 +44,60 @@
 #' @rdname linear_transform
 #' @export
 shift <- function(distribution, constant) {
-  with(distionary::parameters(distribution), {
-    if (constant == 0) {
-      return(distribution)
+  if (constant == 0) {
+    return(distribution)
+  }
+  d <- distionary::distribution(
+    eval_cdf <- function(x) {
+      distionary::eval_cdf(distribution, at = x - constant)
     }
-    dist <- list(
-      components = list(
-        distribution = distribution,
-        shift = constant
-      )
+    eval_quantile <- function(p) {
+      distionary::eval_quantile(distribution, at = p) + constant
+    }
+    eval_pmf <- function(x) {
+      distionary::eval_pmf(distribution, at = x - constant)
+    }
+    eval_density <- function(x) {
+      distionary::eval_density(distribution, at = x - constant)
+    }
+    eval_survival <- function(x) {
+      distionary::eval_survival(distribution, at = x - constant)
+    }
+    realize <- function(n) {
+      distionary::realize(distribution, n = n) + constant
+    },
+    .vtype = distionary::vtype(distribution),
+    .name = "Shifted",
+    .parameters = list(
+      distribution = distribution,
+      shift = constant
     )
-    distionary::new_distribution(
-    	dist, variable = distionary::variable(distribution), class = "shift"
-    )
-  })
+  )
+  if (distionary:::is_intrinsic(distribution, "mean")) {
+    d[["mean"]] <- mean(distribution) + constant
+  }
+  if (distionary:::is_intrinsic(distribution, "median")) {
+    d[["median"]] <- median(distribution) + constant
+  }
+  if (distionary:::is_intrinsic(distribution, "stdev")) {
+    d[["stdev"]] <- distionary::stdev(distribution)
+  }
+  if (distionary:::is_intrinsic(distribution, "range")) {
+    d[["range"]] <- range(distribution) + constant
+  }
+  if (distionary:::is_intrinsic(distribution, "variance")) {
+    d[["variance"]] <- distionary::variance(distribution)
+  }
+  if (distionary:::is_intrinsic(distribution, "skewness")) {
+    d[["skewness"]] <- distionary::skewness(distribution)
+  }
+  if (distionary:::is_intrinsic(distribution, "kurtosis_exc")) {
+    d[["kurtosis_exc"]] <- distionary::kurtosis_exc(distribution)
+  }
+  if (distionary:::is_intrinsic(distribution, "kurtosis")) {
+    d[["kurtosis"]] <- distionary::kurtosis(distribution)
+  }
+  distionary::new_distribution(d, class = "shifted")
 }
 
 
