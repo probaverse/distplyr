@@ -1,15 +1,15 @@
-#' Discretise a Distribution
+#' discretize a Distribution
 #'
 #' Bins a distribution by specified breakpoints. Left and right endpoints of
 #' +/- infinity are implied.
 #'
-#' @param distribution Distribution to discretise.
+#' @param distribution Distribution to discretize.
 #' @param breakpoints Vector of breakpoints separating each bin.
-#' @param midpoints,values Specify the values associated with each new bin
-#' by either specifying a computation of the `midpoint`, or as a vector
-#' of `values` (of length one more than that of `breakpoints`) applied to the
-#' bins from smallest to largest. If specified,
-#' `values` will override `midpoint`.
+#' @param midpoints Calculation for the values associated with each new bin
+#' by either specifying a computation of the midpoint.
+#' @param values A vector of values associated with each bin (so, length is
+#' 1 greater than the length of breakpoints). If specified,
+#' `values` will override `midpoints`.
 #' @param closed Should the intervals be closed on the left or on the
 #' right? One of `"right"` (default) or `"left"`.
 #' @returns A finite distribution with the specified bins.
@@ -18,21 +18,21 @@
 #' one more than that of `breakpoints`.
 #' @examples
 #' p1 <- dst_norm(0, 1)
-#' p2 <- discretise(p1, breakpoints = -2:2)
-#' p3 <- discretise(p1, breakpoints = -2:2, midpoints = "mean")
+#' p2 <- discretize(p1, breakpoints = -2:2)
+#' p3 <- discretize(p1, breakpoints = -2:2, midpoints = "mean")
 #' plot(p1, "cdf", from = -3, to = 3)
 #' plot(p2, "cdf", from = -3, to = 3, add = TRUE, col = "blue", n = 1000)
 #' plot(p3, "cdf", from = -3, to = 3, add = TRUE, col = "red", n = 1000)
 #'
-#' discretise(dst_exp(0.1), breakpoints = numeric())
+#' discretize(dst_exp(0.1), breakpoints = numeric())
 #'
 #' dst_norm(0, 1) |>
 #'   slice_left(-2) |>
 #'   slice_right(2) |>
 #'   discretize(-2:2)
-#' @rdname discretise
+#' @rdname discretize
 #' @export
-discretise <- function(
+discretize <- function(
     distribution,
     breakpoints,
     midpoints = c("median", "mean", "label"),
@@ -102,7 +102,3 @@ discretise <- function(
   values <- values[nonzero]
   distionary::dst_empirical(values, weights = p)
 }
-
-#' @rdname discretise
-#' @export
-discretize <- discretise
