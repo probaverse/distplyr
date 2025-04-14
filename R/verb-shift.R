@@ -50,19 +50,19 @@ shift <- function(distribution, constant) {
   d <- distionary::distribution(
     eval_cdf <- function(x) {
       distionary::eval_cdf(distribution, at = x - constant)
-    }
+    },
     eval_quantile <- function(p) {
       distionary::eval_quantile(distribution, at = p) + constant
-    }
+    },
     eval_pmf <- function(x) {
       distionary::eval_pmf(distribution, at = x - constant)
-    }
+    },
     eval_density <- function(x) {
       distionary::eval_density(distribution, at = x - constant)
-    }
+    },
     eval_survival <- function(x) {
       distionary::eval_survival(distribution, at = x - constant)
-    }
+    },
     realize <- function(n) {
       distionary::realize(distribution, n = n) + constant
     },

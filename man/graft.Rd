@@ -3,14 +3,11 @@
 \name{graft_right}
 \alias{graft_right}
 \alias{graft_left}
-\alias{is_graft}
 \title{Graft Distribution}
 \usage{
 graft_right(distribution, graft, breakpoint, include = FALSE)
 
 graft_left(distribution, graft, breakpoint, include = FALSE)
-
-is_graft(object)
 }
 \arguments{
 \item{distribution}{Base distribution}
@@ -20,8 +17,6 @@ is_graft(object)
 \item{breakpoint}{The location of the graft}
 
 \item{include}{Logical; include the breakpoint in the base distribution?}
-
-\item{object}{Object to be tested}
 }
 \value{
 Graft distribution object, which is a special type of mixture

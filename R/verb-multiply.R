@@ -16,7 +16,7 @@ multiply <- function(distribution, constant) {
     },
     survival = function(x) {
       distionary::eval_survival(distribution, at = x / constant)
-    }
+    },
     quantile = function(p) {
       distionary::eval_quantile(distribution, at = p) * constant
     },

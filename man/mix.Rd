@@ -2,15 +2,9 @@
 % Please edit documentation in R/verb-mix.R
 \name{mix}
 \alias{mix}
-\alias{is_mixture}
-\alias{is.mixture}
 \title{Mixture Distributions}
 \usage{
 mix(..., weights = 1, na.rm = FALSE)
-
-is_mixture(object)
-
-is.mixture(object)
 }
 \arguments{
 \item{...}{Distribution objects, or lists of distributions.}
@@ -20,8 +14,6 @@ or, single numeric for equal weights.}
 
 \item{na.rm}{Remove \code{NA} distributions and \code{NA} weights? \code{TRUE} if yes;
 default is \code{FALSE}.}
-
-\item{object}{Object to be tested}
 }
 \value{
 A mixture distribution -- an empty distribution if any weights
