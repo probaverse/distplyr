@@ -109,27 +109,6 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
 }
 
 
-
-#' Constructor function for "mix" objects
-#'
-#' @param l List containing the components of a mixture distribution object.
-#' @param ... Other attributes to add to the list.
-#' @param class If making a subclass, specify its name here.
-#' @export
-new_mixture <- function(l, ..., class = character()) {
-  distionary::new_distribution(l, class = c(class, "mixture"))
-}
-
-#' @param object Object to be tested
-#' @rdname mix
-#' @export
-is_mixture <- function(object) inherits(object, "mixture")
-
-#' @rdname mix
-#' @export
-is.mixture <- function(object) inherits(object, "mixture")
-
-
 #' @export
 print.mixture <- function(x, ...) {
   cat("Mixture Distribution\n")

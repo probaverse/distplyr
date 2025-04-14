@@ -32,12 +32,13 @@ graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
   if (p_left == 0) {
     return(slice_left(graft, breakpoint = breakpoint, include = include))
   }
-  left <- slice_right(distribution, breakpoint = breakpoint, include = !include)
-  right <- slice_left(graft, breakpoint = breakpoint, include = include)
-  mixture <- mix(left, right, weights = c(p_left, 1 - p_left))
-  mixture$components$breakpoint <- breakpoint
-  mixture$components$include <- include
-  new_graft(mixture)
+  left <- slice_right(
+    distribution, breakpoint = breakpoint, include = !include
+  )
+  right <- slice_left(
+    graft, breakpoint = breakpoint, include = include
+  )
+  graft_general(left, right, p_left, 1 - p_left)
 }
 
 #' @rdname graft
@@ -52,28 +53,37 @@ graft_left <- function(distribution, graft, breakpoint, include = FALSE) {
   if (p_right == 0) {
     return(slice_right(graft, breakpoint = breakpoint, include = include))
   }
-  left <- slice_right(graft, breakpoint = breakpoint, include = include)
-  right <- slice_left(distribution, breakpoint = breakpoint, include = !include)
-  mixture <- mix(left, right, weights = c(1 - p_right, p_right))
-  mixture$components$breakpoint <- breakpoint
-  mixture$components$include <- include
-  new_graft(mixture)
+  left <- slice_right(
+    graft, breakpoint = breakpoint, include = include
+  )
+  right <- slice_left(
+    distribution, breakpoint = breakpoint, include = !include
+  )
+  graft_general(left, right, 1 - p_right, p_right)
 }
 
-#' @param object Object to be tested
-#' @rdname graft
-#' @export
-is_graft <- function(object) inherits(object, "graft")
-
-
-#' Constructor function for graft distributions
-#'
-#' @param object A special mixture of conditional distributions.
-#' @note A graft distribution is a special case of a mixture distribution.
-#' @inheritParams new_mixture
-new_graft <- function(object, ..., class = character()) {
-  new_mixture(
-    object, variable = distionary::variable(object),
-    class = c(class, "graft")
-  )
+#' @noRd
+graft_general <- function(left, right, p_left, p_right) {
+  mixture <- mix(left, right, weights = c(p_left, p_right))
+  parameters(mixture)[["breakpoint"]] <- breakpoint
+  parameters(mixture)[["inclusive"]] <- include
+  mixture[["quantile"]] <- function(p) {
+    p_cutoff <- p_left
+    res <- numeric(0L)
+    for (i in seq_along(p)) {
+      if (is.na(p[i])) {
+        res[i] <- NA_real_
+      } else if (p[i] <= p_cutoff) {
+        new_p <- p[i] / p_cutoff
+        this_d <- distribution$components$distributions[[1L]]
+        res[i] <- distionary::eval_quantile(this_d, at = new_p)
+      } else {
+        new_p <- (p[i] - p_cutoff) / (1 - p_cutoff)
+        this_d <- distribution$components$distributions[[2L]]
+        res[i] <- distionary::eval_quantile(this_d, at = new_p)
+      }
+    }
+    res
+  }
+  distionary::new_distribution(mixture, class = "graft")
 }
