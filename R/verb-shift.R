@@ -47,6 +47,31 @@ shift <- function(distribution, constant) {
   if (constant == 0) {
     return(distribution)
   }
+  if (distionary::pretty_name(distribution) == "Normal") {
+    return(distionary::dst_norm(
+      mean = distionary::mean(distribution) + constant,
+      sd = distionary::sd(distribution)
+    ))
+  } else if (distionary::pretty_name(distribution) == "Uniform") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_unif(
+      min = p[["min"]] + constant,
+      max = p[["max"]] + constant
+    ))
+  } else if (distionary::pretty_name(distribution) == "Cauchy") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_cauchy(
+      location = p[["location"]] + constant,
+      scale = p[["scale"]]
+    ))
+  } else if (distionary::pretty_name(distribution) == "Generalised Extreme Value") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_gev(
+      location = p[["location"]] + constant,
+      scale = p[["scale"]],
+      shape = p[["shape"]]
+    ))
+  }
   d <- distionary::distribution(
     eval_cdf <- function(x) {
       distionary::eval_cdf(distribution, at = x - constant)

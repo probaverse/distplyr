@@ -1,6 +1,24 @@
 #' @rdname linear_transform
 #' @export
 flip <- function(distribution) {
+  if (pretty_name(distribution) == "Normal") {
+    return(distionary::dst_norm(
+      mean = -mean(distribution),
+      sd = sd(distribution)
+    ))
+  } else if (pretty_name(distribution) == "Uniform") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_unif(
+      min = -p[["max"]],
+      max = -p[["min"]]
+    ))
+  } else if (distionary::pretty_name(distribution) == "Cauchy") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_cauchy(
+      location = -p[["location"]],
+      scale = p[["scale"]]
+    ))
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_pmf(distribution, at = -x) +

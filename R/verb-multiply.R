@@ -10,6 +10,25 @@ multiply <- function(distribution, constant) {
   } else if (is.infinite(constant)) {
     stop("Cannot multiply a distribution by infinity.")
   }
+  if (distionary::pretty_name(distribution) == "Normal") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_norm(
+      mean = p[["mean"]] * constant,
+      sd = p[["sd"]] * constant
+    ))
+  } else if (distionary::pretty_name(distribution) == "Uniform") {
+    p <- distionary::parameters(distribution)
+    return(distribution::dst_unif(
+      min = p[["min"]] * constant,
+      max = p[["max"]] * constant
+    ))
+  } else if (distionary::pretty_name(distribution) == "Generalized Pareto Distribution") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_gpd(
+      scale = p[["scale"]] * constant,
+      shape = p[["shape"]]
+    ))
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x / constant)
