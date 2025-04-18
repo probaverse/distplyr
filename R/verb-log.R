@@ -20,8 +20,11 @@ log_distribution <- function(distribution, base = exp(1)) {
     stop("Base must be a positive numeric value.")
   }
   r <- range(distribution)
-  if (r[1] <= 0) {
+  if (r[1] < 0) {
     stop("Cannot apply logarithm to a distribution with non-positive values.")
+  } else if (r[1] == 0 && distionary::vtype(distribution) != "continuous" &&
+             distionary::eval_pmf(distribution, at = 0) > 0) {
+    stop("Cannot apply logarithm to a distribution having mass at 0.")
   }
   scale_factor <- 1 / log(base)
   d <- distionary::distribution(
@@ -48,5 +51,19 @@ log_distribution <- function(distribution, base = exp(1)) {
       base = base
     )
   )
+  if (distionary:::is_intrinsic(distribution, "range")) {
+    d[["range"]] <- log(r, base = base)
+  }
   distionary::new_distribution(d, class = "logarithmic")
+}
+
+#' @export
+print.logarithmic <- function(x, ...) {
+  base <- distionary::parameters(x)[["base"]]
+  if (base == exp(1)) {
+    base <- "e"
+  }
+  attr(x, "name") <- paste("Logarithmic (base", base, ")")
+  parameters(x)[["base"]] <- NULL
+  print(x, ...)
 }

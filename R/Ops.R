@@ -63,23 +63,6 @@ Ops.dst <- function(e1, e2) {
       } else {
         stop("Invalid operands for `^`. One operand must be a distribution.")
       }
-    },
-    `log` = {
-      checkmate::assert_numeric(e2, len = 1)
-      if (missing(e2)) {
-        log_distribution(e1)
-      } else if (e2 > 0) {
-        multiply(log_distribution(e1), 1 / log(e2))
-      } else {
-        stop("Base must be a positive numeric value.")
-      }
-    },
-    `log10` = {
-      multiply(log_distribution(e1), 1 / log(10))
-    },
-    `exp` = {
-      exp_distribution(e1)
-    },
-    stop("Operation currently not supported.")
+    }
   )
 }

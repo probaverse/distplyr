@@ -7,9 +7,7 @@
 #' @param distribution A probability distribution.
 #' @return A distribution transformed by the exponential function.
 #' Specifically, a distribution with subclass "exponential".
-#' @examples
-#' exp_distribution(distionary::dst_norm(0, 1))
-#' @export
+#' @noRd
 exp_distribution <- function(distribution) {
   d <- distionary::distribution(
     cdf = function(x) {
@@ -30,7 +28,7 @@ exp_distribution <- function(distribution) {
       exp(distionary::realize(distribution, n = n))
     },
     .vtype = distionary::vtype(distribution),
-    .name = "Exponential",
+    .name = "Exponentiated",
     .parameters = list(
       distribution = distribution
     )
