@@ -38,7 +38,12 @@ graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
   right <- slice_left(
     graft, breakpoint = breakpoint, include = include
   )
-  graft_general(left, right, p_left, 1 - p_left)
+  attach_graft_ends(
+    left, right,
+    p_left = p_left,
+    p_right = 1 - p_left,
+    breakpoint = breakpoint
+  )
 }
 
 #' @rdname graft
@@ -59,14 +64,18 @@ graft_left <- function(distribution, graft, breakpoint, include = FALSE) {
   right <- slice_left(
     distribution, breakpoint = breakpoint, include = !include
   )
-  graft_general(left, right, 1 - p_right, p_right)
+  attach_graft_ends(
+    left, right,
+    p_left = 1 - p_right,
+    p_right = p_right,
+    breakpoint = breakpoint
+  )
 }
 
 #' @noRd
-graft_general <- function(left, right, p_left, p_right) {
+attach_graft_ends <- function(left, right, p_left, p_right, breakpoint) {
   mixture <- mix(left, right, weights = c(p_left, p_right))
   parameters(mixture)[["breakpoint"]] <- breakpoint
-  parameters(mixture)[["inclusive"]] <- include
   mixture[["quantile"]] <- function(p) {
     p_cutoff <- p_left
     res <- numeric(0L)
@@ -75,11 +84,11 @@ graft_general <- function(left, right, p_left, p_right) {
         res[i] <- NA_real_
       } else if (p[i] <= p_cutoff) {
         new_p <- p[i] / p_cutoff
-        this_d <- distribution$components$distributions[[1L]]
+        this_d <- left
         res[i] <- distionary::eval_quantile(this_d, at = new_p)
       } else {
         new_p <- (p[i] - p_cutoff) / (1 - p_cutoff)
-        this_d <- distribution$components$distributions[[2L]]
+        this_d <- right
         res[i] <- distionary::eval_quantile(this_d, at = new_p)
       }
     }

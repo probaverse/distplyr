@@ -105,7 +105,7 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
       probs = probs
     )
   )
-  new_mixture(d)
+  distionary::new_distribution(d, class = "mixture")
 }
 
 
@@ -116,7 +116,9 @@ print.mixture <- function(x, ...) {
   cat("\n")
   params <- distionary::parameters(x)
   params[["distributions"]] <- vapply(
-    params[["distributions"]], pretty_name, FUN.VALUE = character(1L)
+    params[["distributions"]],
+    distionary::pretty_name,
+    FUN.VALUE = character(1L)
   )
   if (requireNamespace("tibble", quietly = TRUE)) {
     df <- tibble::as_tibble(params)
