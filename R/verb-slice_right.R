@@ -15,9 +15,7 @@ slice_right <- function(distribution, breakpoint, include = TRUE, ...) {
 		if (include) {
 			all_sliced <- TRUE
 		} else {
-			p <- distionary::eval_pmf(
-			  distribution, at = breakpoint, strict = FALSE
-			)
+			p <- distionary::eval_pmf(distribution, at = breakpoint)
 			if (p == 0) {
 				all_sliced <- TRUE
 			} else {

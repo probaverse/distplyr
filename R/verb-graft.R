@@ -26,6 +26,7 @@ graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
   p_left <- distionary::prob_left(
     distribution, of = breakpoint, inclusive = include
   )
+
   if (p_left == 1) {
     return(distribution)
   }

@@ -167,7 +167,7 @@ verbs <- list(
     list(distionary::dst_gamma(2, 1), constant = 1)
   ),
   slice_left = list(
-    list(distionary::dst_bern(0.8), breakpoint = 2),
+    list(distionary::dst_bern(0.8), breakpoint = 0.5),
     list(distionary::dst_pois(3), breakpoint = 2, include = TRUE),
     list(distionary::dst_pois(3), breakpoint = 2, include = FALSE),
     list(distionary::dst_degenerate(0), breakpoint = -4),
@@ -178,7 +178,7 @@ verbs <- list(
     list(distionary::dst_gamma(2, 1), breakpoint = 1)
   ),
   slice_right = list(
-    list(distionary::dst_bern(0.8), breakpoint = 2),
+    list(distionary::dst_bern(0.8), breakpoint = 0.5),
     list(distionary::dst_pois(3), breakpoint = 2, include = TRUE),
     list(distionary::dst_pois(3), breakpoint = 2, include = FALSE),
     list(distionary::dst_degenerate(0), breakpoint = 4),
@@ -203,10 +203,11 @@ test_that("exp_distribution works with various distributions", {
       print(i)
       d <- rlang::exec(verb, !!!params)
       expect_s3_class(d, "dst")
-      x <- distionary::eval_quantile(d, at = p)
+      suppressWarnings(
+        x <- distionary::eval_quantile(d, at = p)
+      )
       ## Quantile
       if (distionary:::is_intrinsic(d, "quantile") && distionary::vtype(d) == "continuous") {
-        tested <- TRUE
         x2 <- distionary:::eval_quantile_from_network(d, at = p)
         expect_equal(x, x2)
       }
