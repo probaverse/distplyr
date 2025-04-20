@@ -11,15 +11,20 @@
 exp_distribution <- function(distribution) {
   d <- distionary::distribution(
     cdf = function(x) {
-      if (x <= 0) return(0)
-      distionary::eval_cdf(distribution, at = log(x))
+      res <- rep(0, length(x))
+      res[x > 0] <- distionary::eval_cdf(distribution, at = log(x[x > 0]))
+      res
     },
     density = function(x) {
-      if (x <= 0) return(0)
-      distionary::eval_density(distribution, at = log(x)) / x
+      res <- rep(0, length(x))
+      res[x > 0] <- distionary::eval_density(
+        distribution, at = log(x[x > 0])
+      ) / x[x > 0]
     },
     pmf = function(x) {
-      distionary::eval_pmf(distribution, at = log(x))
+      res <- rep(0, length(x))
+      res[x > 0] <- distionary::eval_pmf(distribution, at = log(x[x > 0]))
+      res
     },
     quantile = function(p) {
       exp(distionary::eval_quantile(distribution, at = p))

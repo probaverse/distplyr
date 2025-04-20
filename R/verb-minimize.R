@@ -25,24 +25,20 @@ minimize <- function(..., draws = 1) {
   if (n_dsts == 1 && sum(draws) == 1) {
     return(dsts[[1L]])
   }
-  all_finite <- all(vapply(dsts, is_finite_dst, FUN.VALUE = logical(1L)))
-  if (all_finite) {
-    x <- lapply(dsts, function(d) d$probabilities$location)
-    x <- unique(unlist(x))
-    upper <- lapply(dsts, prob_right, of = x, inclusive = TRUE)
-    lower <- lapply(dsts, prob_right, of = x, inclusive = FALSE)
-    contributions_upper <- Map(`^`, upper, draws)
-    contributions_lower <- Map(`^`, lower, draws)
-    surv_upper <- Reduce(`*`, contributions_upper)
-    surv_lower <- Reduce(`*`, contributions_lower)
-    new_probs <- surv_upper - surv_lower
-    return(dst_empirical(x, weights = new_probs))
-  }
-  vars <- unique(unlist(lapply(dsts, variable)))
-  if (any(vars == "categorical")) {
-    stop("Not meaningful to consider the minimum of a
-         categorical distribution.")
-  }
+  # all_finite <- all(vapply(dsts, is_finite_dst, FUN.VALUE = logical(1L)))
+  # if (all_finite) {
+  #   x <- lapply(dsts, function(d) d$probabilities$location)
+  #   x <- unique(unlist(x))
+  #   upper <- lapply(dsts, prob_right, of = x, inclusive = TRUE)
+  #   lower <- lapply(dsts, prob_right, of = x, inclusive = FALSE)
+  #   contributions_upper <- Map(`^`, upper, draws)
+  #   contributions_lower <- Map(`^`, lower, draws)
+  #   surv_upper <- Reduce(`*`, contributions_upper)
+  #   surv_lower <- Reduce(`*`, contributions_lower)
+  #   new_probs <- surv_upper - surv_lower
+  #   return(dst_empirical(x, weights = new_probs))
+  # }
+  vars <- unique(unlist(lapply(dsts, distionary::vtype)))
   if (length(vars) == 1 && vars != "mixed") {
     v <- vars
   } else {
@@ -55,7 +51,7 @@ minimize <- function(..., draws = 1) {
       sliced_d <- suppressWarnings(lapply(
         dsts, slice_right, breakpoint = smallest_max, include = FALSE
       ))
-      vars <- unique(unlist(lapply(sliced_d, variable)))
+      vars <- unique(unlist(lapply(sliced_d, distionary::vtype)))
       if (length(vars) == 1) {
         v <- vars
       } else if (any(vars == "unknown")) {
@@ -99,7 +95,7 @@ minimize <- function(..., draws = 1) {
     },
     range = r,
     .name = "Minumum",
-    .type = v,
+    .vtype = v,
     .parameters = list(
       distributions = dsts,
       draws = draws

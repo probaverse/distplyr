@@ -71,7 +71,7 @@ maximize <- function(..., draws = 1) {
   r <- Reduce(pmax, r)
   cdf <- function(x) {
     prob_lefts <- lapply(dsts, distionary::eval_cdf, at = x)
-    contributions <- Map(`^`, distionary::prob_lefts, draws)
+    contributions <- Map(`^`, prob_lefts, draws)
     Reduce(`*`, contributions)
   }
   d <- distionary::distribution(

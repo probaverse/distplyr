@@ -9,7 +9,7 @@
 #' Specifically, a distribution with subclass "inverse".
 #' @note An error is returned if the original distribution
 #' has 0 as a possible outcome
-#' (i.e., `eval_pmf(distribution, at = 0, strict = FALSE)` is non-zero),
+#' (i.e., `eval_pmf(distribution, at = 0)` is non-zero),
 #' because 0 does not have a reciprocal.
 #'
 #' You can also obtain the inverse distribution by putting
@@ -20,7 +20,7 @@
 #' invert(distionary::dst_norm(0, 1))
 #' @export
 invert <- function(distribution) {
-  p_zero <- distionary::eval_pmf(distribution, at = 0, strict = FALSE)
+  p_zero <- distionary::eval_pmf(distribution, at = 0)
   if (p_zero > 0) {
     stop("Cannot invert a distribution for which 0 is a possible outcome.")
   }
@@ -29,7 +29,7 @@ invert <- function(distribution) {
       distionary::eval_cdf(distribution, at = 0) -
         distionary::eval_cdf(distribution, at = 1 / x) +
         distionary::eval_pmf(distribution, at = 1 / x) +
-        as.numeric(at >= 0)
+        as.numeric(x >= 0)
     },
     density = function(x) {
       distionary::eval_density(distribution, at = 1 / x) / x^2
@@ -38,9 +38,9 @@ invert <- function(distribution) {
       distionary::eval_pmf(distribution, at = 1 / x)
     },
     quantile = function(p) {
-      quantile_0 <- distionary::eval_quantile(distribution, at = 0)
+      F0 <- distionary::eval_cdf(distribution, at = 0)
       1 / distionary::eval_quantile(
-        distribution, at = quantile_0 + (p > quantile_0) - p
+        distribution, at = F0 + as.numeric(p > F0) - p
       )
     },
     realize = function(n) {
