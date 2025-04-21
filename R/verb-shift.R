@@ -47,6 +47,13 @@ shift <- function(distribution, constant) {
   if (constant == 0) {
     return(distribution)
   }
+  if (distionary::vtype(distribution) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   if (distionary::pretty_name(distribution) == "Normal") {
     return(distionary::dst_norm(
       mean = distionary::mean(distribution) + constant,

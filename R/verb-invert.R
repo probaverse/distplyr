@@ -20,6 +20,13 @@
 #' invert(distionary::dst_norm(0, 1))
 #' @export
 invert <- function(distribution) {
+  if (distionary::vtype(distribution) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   p_zero <- distionary::eval_pmf(distribution, at = 0)
   if (p_zero > 0) {
     stop("Cannot invert a distribution for which 0 is a possible outcome.")

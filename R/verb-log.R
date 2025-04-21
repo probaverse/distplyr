@@ -16,6 +16,13 @@
 #' log_distribution(distionary::dst_unif(1, 10), base = 10) # Log base 10
 #' @export
 log_distribution <- function(distribution, base = exp(1)) {
+  if (distionary::vtype(distribution) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   if (base <= 0) {
     stop("Base must be a positive numeric value.")
   }
@@ -27,9 +34,17 @@ log_distribution <- function(distribution, base = exp(1)) {
     stop("Cannot apply logarithm to a distribution having mass at 0.")
   }
   scale_factor <- 1 / log(base)
+  if (base == exp(1)) {
+    base_print <- "e"
+  } else {
+    base_print <- base
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = exp(x / scale_factor))
+    },
+    survival = function(x) {
+      distionary::eval_survival(distribution, at = exp(x / scale_factor))
     },
     density = function(x) {
       exp_x <- exp(x / scale_factor)
@@ -45,7 +60,7 @@ log_distribution <- function(distribution, base = exp(1)) {
       log(distionary::realize(distribution, n = n)) * scale_factor
     },
     .vtype = distionary::vtype(distribution),
-    .name = paste("Logarithmic (base", base, ")"),
+    .name = paste0("Logarithmic (base ", base_print, ")"),
     .parameters = list(
       distribution = distribution,
       base = base
@@ -55,15 +70,4 @@ log_distribution <- function(distribution, base = exp(1)) {
     d[["range"]] <- log(r, base = base)
   }
   distionary::new_distribution(d, class = "logarithmic")
-}
-
-#' @export
-print.logarithmic <- function(x, ...) {
-  base <- distionary::parameters(x)[["base"]]
-  if (base == exp(1)) {
-    base <- "e"
-  }
-  attr(x, "name") <- paste("Logarithmic (base", base, ")")
-  parameters(x)[["base"]] <- NULL
-  print(x, ...)
 }

@@ -9,6 +9,13 @@
 #' Specifically, a distribution with subclass "exponential".
 #' @noRd
 exp_distribution <- function(distribution) {
+  if (distionary::vtype(distribution) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))
@@ -20,6 +27,7 @@ exp_distribution <- function(distribution) {
       res[x > 0] <- distionary::eval_density(
         distribution, at = log(x[x > 0])
       ) / x[x > 0]
+      res
     },
     pmf = function(x) {
       res <- rep(0, length(x))

@@ -58,6 +58,13 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
   r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
   var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
+  if (any(var_type != "continuous")) {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   if ("unknown" %in% var_type) {
     var_unique <- "unknown"
   } else if (length(var_unique) > 1L) {

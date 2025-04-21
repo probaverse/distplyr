@@ -28,8 +28,15 @@ slice_right <- function(distribution, breakpoint, include = TRUE, ...) {
 	  return(distionary::dst_null())
 	}
 	v <- distionary::vtype(distribution)
+	if (v != "continuous") {
+	  warning(
+	    "A non-continuous distribution has been entered into a distplyr verb.\n",
+	    "At this stage of distplyr's development, some inaccuracies can be\n",
+	    "expected in these cases, particularly for quantile calculations."
+	  )
+	}
 	if (v == "mixed") {
-		v <- "unknown" # For now. Need to evaluate cumulative discrete probs.
+		v <- "unknown" # For now.
 	}
 	d <- distionary::distribution(
 	  cdf = function(x) {

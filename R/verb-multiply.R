@@ -1,6 +1,13 @@
 #' @rdname linear_transform
 #' @export
 multiply <- function(distribution, constant) {
+  if (distionary::vtype(distribution) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   if (constant < 0) {
     return(flip(multiply(distribution, -constant)))
   } else if (constant == 0) {
@@ -18,7 +25,7 @@ multiply <- function(distribution, constant) {
     ))
   } else if (distionary::pretty_name(distribution) == "Uniform") {
     p <- distionary::parameters(distribution)
-    return(distribution::dst_unif(
+    return(distionary::dst_unif(
       min = p[["min"]] * constant,
       max = p[["max"]] * constant
     ))

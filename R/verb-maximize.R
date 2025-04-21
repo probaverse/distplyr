@@ -41,9 +41,12 @@ maximize <- function(..., draws = 1) {
   #   return(dst_empirical(x, weights = new_probs))
   # }
   vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (any(vars == "categorical")) {
-    stop("Not meaningful to consider the maximum of a
-         categorical distribution.")
+  if (any(vars != "continuous")) {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
   }
   if (length(vars) == 1 && vars != "mixed") {
     v <- vars

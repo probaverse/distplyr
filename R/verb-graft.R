@@ -23,6 +23,14 @@
 #' @rdname graft
 #' @export
 graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
+  if (distionary::vtype(distribution) != "continuous" ||
+      distionary::vtype(graft) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   p_left <- distionary::prob_left(
     distribution, of = breakpoint, inclusive = include
   )
@@ -50,6 +58,14 @@ graft_right <- function(distribution, graft, breakpoint, include = FALSE) {
 #' @rdname graft
 #' @export
 graft_left <- function(distribution, graft, breakpoint, include = FALSE) {
+  if (distionary::vtype(distribution) != "continuous" ||
+      distionary::vtype(graft) != "continuous") {
+    warning(
+      "A non-continuous distribution has been entered into a distplyr verb.\n",
+      "At this stage of distplyr's development, some inaccuracies can be\n",
+      "expected in these cases, particularly for quantile calculations."
+    )
+  }
   p_right <- distionary::prob_right(
     distribution, of = breakpoint, inclusive = include
   )
