@@ -1,0 +1,309 @@
+library(testthat)
+library(distionary)
+library(distplyr)
+
+
+verbs <- list(
+  exp = list(
+    list(distionary::dst_exp(3)),
+    list(distionary::dst_exp(3) + 1),
+    list(distionary::dst_exp(3) - 1),
+    list(distionary::dst_unif(-5, -2)),
+    list(distionary::dst_t(2)),
+    list(distionary::dst_gamma(2, 1))
+  ),
+  log = list(
+    list(distionary::dst_weibull(1, 1)),
+    list(distionary::dst_gpd(1, 1)),
+    list(distionary::dst_unif(0, 2)),
+    list(distionary::dst_exp(1)),
+    list(distionary::dst_gamma(2, 1))
+  ),
+  flip = list(
+    list(distionary::dst_norm(2, 1)),
+    list(distionary::dst_unif(-5, -2)),
+    list(distionary::dst_unif(-5, 2)),
+    list(distionary::dst_unif(2, 5)),
+    list(distionary::dst_exp(1)),
+    list(distionary::dst_gamma(2, 1)),
+    list(distionary::dst_gamma(2, 1) - 1),
+    list(distionary::dst_gamma(2, 1) + 1)
+  ),
+  graft_right = list(
+    list(
+      distionary::dst_norm(0.8, 0.2),
+      distionary::dst_gpd(1, 1) + 0.8,
+      breakpoint = 0.8
+    ),
+    list(distionary::dst_norm(0, 1), distionary::dst_exp(1), breakpoint = 0),
+    list(
+      distionary::dst_gamma(3, 1),
+      distionary::dst_weibull(3, 5),
+      breakpoint = 2,
+      include = TRUE
+    ),
+    list(
+      distionary::dst_gev(0, 1, 1),
+      distionary::dst_exp(1) + 10,
+      breakpoint = 10,
+      include = FALSE
+    ),
+    list(
+      distionary::dst_gamma(3, 2),
+      distionary::dst_gpd(1, 1),
+      breakpoint = 5,
+      include = TRUE
+    ),
+    list(
+      distionary::dst_t(3),
+      distionary::dst_gpd(1, 1),
+      breakpoint = 5,
+      include = FALSE
+    )
+  ),
+  graft_left = list(
+    list(
+      distionary::dst_norm(0.8, 0.2),
+      -distionary::dst_gpd(1, 1) - 0.8,
+      breakpoint = -0.8
+    ),
+    list(distionary::dst_norm(0, 1), -distionary::dst_exp(1), breakpoint = 0),
+    list(
+      distionary::dst_gamma(3, 1),
+      distionary::dst_weibull(3, 5),
+      breakpoint = 2,
+      include = TRUE
+    ),
+    list(
+      -distionary::dst_gev(0, 1, 1),
+      -distionary::dst_exp(1) - 10,
+      breakpoint = -10,
+      include = FALSE
+    ),
+    list(
+      distionary::dst_gamma(3, 2),
+      distionary::dst_gpd(1, 1),
+      breakpoint = 5,
+      include = TRUE
+    ),
+    list(
+      distionary::dst_t(3),
+      distionary::dst_gpd(1, 1),
+      breakpoint = 5,
+      include = FALSE
+    )
+  ),
+  invert = list(
+    list(distionary::dst_gpd(1, -2)),
+    list(-distionary::dst_gpd(1, -2)),
+    list(distionary::dst_unif(-5, -2)),
+    list(distionary::dst_unif(2, 5)),
+    list(distionary::dst_unif(-2, 2)),
+    list(distionary::dst_exp(1)),
+    list(distionary::dst_gamma(2, 1))
+  ),
+  maximize = list(
+    list(distionary::dst_norm(0, 2)),
+    list(distionary::dst_norm(0, 2), draws = 2.5),
+    list(distionary::dst_exp(3), distionary::dst_gamma(2, 1)),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      distionary::dst_gamma(2, 1)
+    ),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      draws = c(4, 3, 2),
+      distionary::dst_gamma(2, 1)
+    )
+  ),
+  minimize = list(
+    list(distionary::dst_norm(0, 2)),
+    list(distionary::dst_norm(0, 2), draws = 2.5),
+    list(distionary::dst_exp(3), distionary::dst_gamma(2, 1)),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      distionary::dst_gamma(2, 1)
+    ),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      draws = c(4, 3, 2),
+      distionary::dst_gamma(2, 1)
+    )
+  ),
+  mix = list(
+    list(distionary::dst_t(5)),
+    list(
+      distionary::dst_norm(3, 1.3),
+      distionary::dst_norm(0.8, 0.2),
+      weights = 1:2
+    ),
+    list(distionary::dst_gamma(3, 2), distionary::dst_norm(3, 1)),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      distionary::dst_gamma(2, 1)
+    ),
+    list(
+      distionary::dst_exp(3),
+      distionary::dst_norm(3, 1),
+      weights = 1:3,
+      distionary::dst_gamma(2, 1)
+    )
+  ),
+  multiply = list(
+    list(distionary::dst_gev(0, 1, 1), constant = 2),
+    list(distionary::dst_gev(0, 1, 1), constant = 0.5),
+    list(distionary::dst_unif(-5, -2), constant = 2),
+    list(distionary::dst_unif(2, 5), constant = 2),
+    list(distionary::dst_unif(-2, 5), constant = 2),
+    list(distionary::dst_exp(1), constant = 2),
+    list(distionary::dst_exp(1) + 1, constant = 2),
+    list(distionary::dst_gamma(2, 1) - 1, constant = 1)
+  ),
+  shift = list(
+    list(distionary::dst_gev(0, 1, 1), constant = 2),
+    list(distionary::dst_gev(0, 1, 1), constant = -0.5),
+    list(distionary::dst_gev(0, 1, 1), constant = 0),
+    list(distionary::dst_unif(-5, -2), constant = 3),
+    list(distionary::dst_exp(1), constant = -2),
+    list(distionary::dst_gamma(2, 1), constant = 1)
+  ),
+  slice_left = list(
+    list(distionary::dst_gev(0, 1, 1), breakpoint = 0),
+    list(distionary::dst_norm(3, 3), breakpoint = 2, include = TRUE),
+    list(distionary::dst_weibull(3, 3), breakpoint = 2, include = FALSE),
+    list(distionary::dst_gamma(2, 2), breakpoint = -4),
+    list(distionary::dst_gpd(1, -2), breakpoint = 0.2, include = FALSE),
+    list(distionary::dst_unif(-5, 2), breakpoint = 0, include = TRUE),
+    list(distionary::dst_unif(-5, 2), breakpoint = 0, include = FALSE),
+    list(distionary::dst_exp(1), breakpoint = -2),
+    list(distionary::dst_gamma(2, 1), breakpoint = 1)
+  ),
+  slice_right = list(
+    list(-distionary::dst_gev(0, 1, 1), breakpoint = 0),
+    list(distionary::dst_norm(3, 3), breakpoint = 2, include = TRUE),
+    list(distionary::dst_weibull(3, 3), breakpoint = 2, include = FALSE),
+    list(-distionary::dst_gamma(2, 2), breakpoint = 4),
+    list(distionary::dst_gpd(1, -2), breakpoint = 0.2, include = FALSE),
+    list(distionary::dst_unif(-5, 2), breakpoint = 0, include = TRUE),
+    list(distionary::dst_unif(-5, 2), breakpoint = 0, include = FALSE),
+    list(-distionary::dst_exp(1), breakpoint = 2),
+    list(distionary::dst_gamma(2, 1), breakpoint = 1)
+  )
+)
+
+test_that("exp_distribution works with various distributions", {
+  p <- 1:9 / 10
+  for (i in seq_along(verbs)) {
+    param_list <- verbs[[i]]
+    verb <- names(verbs)[i]
+    cat(verb, "-----\n")
+    i <- 0
+    for (params in param_list) {
+      i <- i + 1
+      print(i)
+      d <- rlang::exec(verb, !!!params)
+      expect_s3_class(d, "dst")
+      suppressWarnings(
+        x <- distionary::eval_quantile(d, at = p)
+      )
+      ## Quantile
+      if (distionary:::is_intrinsic(d, "quantile") && distionary::vtype(d) == "continuous") {
+        x2 <- distionary:::eval_quantile_from_network(d, at = p)
+        expect_equal(x, x2)
+      }
+      ## Density
+      # if (distionary:::is_intrinsic(d, "density") && distionary::vtype(d) == "continuous") {
+      #   density_x <- distionary::eval_density(d, at = x)
+      #   density_x2 <- distionary:::eval_density_from_network(d, at = x)
+      #   expect_equal(density_x, density_x2)
+      # }
+      ## Survival
+      if (distionary:::is_intrinsic(d, "survival")) {
+        survival_x <- distionary::eval_survival(d, at = x)
+        survival_x2 <- distionary:::eval_survival_from_network(d, at = x)
+        expect_equal(survival_x, survival_x2)
+      }
+      ## Range
+      if (distionary:::is_intrinsic(d, "range") && distionary:::is_intrinsic(d, "quantile")) {
+        r <- range(d)
+        r2 <- distionary:::eval_range_from_network(d)
+        expect_equal(r, r2)
+      }
+      ## Mean
+      if (distionary:::is_intrinsic(d, "mean")) {
+        mean_x <- mean(d)
+        mean_x2 <- distionary:::eval_mean_from_network(d)
+        if (is.infinite(mean_x) || is.na(mean_x)) {
+          expect_true(is.infinite(mean_x2) || is.na(mean_x2))
+        } else {
+          expect_equal(mean_x, mean_x2)
+        }
+      }
+      ## Variance
+      if (distionary:::is_intrinsic(d, "variance")) {
+        variance_x <- distionary::variance(d)
+        variance_x2 <- distionary:::eval_variance_from_network(d)
+        if (is.infinite(variance_x) || is.na(variance_x)) {
+          expect_true(is.infinite(variance_x2) || is.na(variance_x2))
+        } else {
+          expect_equal(variance_x, variance_x2)
+        }
+      }
+      ## Skewness
+      if (distionary:::is_intrinsic(d, "skewness")) {
+        skewness_x <- distionary::skewness(d)
+        skewness_x2 <- distionary:::eval_skewness_from_network(d)
+        if (is.infinite(skewness_x) || is.na(skewness_x)) {
+          expect_true(is.infinite(skewness_x2) || is.na(skewness_x2))
+        } else {
+          expect_equal(skewness_x, skewness_x2)
+        }
+      }
+      ## Kurtosis
+      if (distionary:::is_intrinsic(d, "kurtosis")) {
+        kurtosis_x <- distionary::kurtosis(d)
+        kurtosis_x2 <- distionary:::eval_kurtosis_from_network(d)
+        if (is.infinite(kurtosis_x) || is.na(kurtosis_x)) {
+          expect_true(is.infinite(kurtosis_x2) || is.na(kurtosis_x2))
+        } else {
+          expect_equal(kurtosis_x, kurtosis_x2)
+        }
+      }
+      ## Kurtosis Excess
+      if (distionary:::is_intrinsic(d, "kurtosis_exc")) {
+        kurtosis_exc_x <- distionary::kurtosis_exc(d)
+        kurtosis_exc_x2 <- distionary:::eval_kurtosis_exc_from_network(d)
+        if (is.infinite(kurtosis_exc_x) || is.na(kurtosis_exc_x)) {
+          expect_true(is.infinite(kurtosis_exc_x2) || is.na(kurtosis_exc_x2))
+        } else {
+          expect_equal(kurtosis_exc_x, kurtosis_exc_x2)
+        }
+      }
+      ## Stdev
+      if (distionary:::is_intrinsic(d, "stdev")) {
+        stdev_x <- distionary::stdev(d)
+        stdev_x2 <- distionary:::eval_stdev_from_network(d)
+        if (is.infinite(stdev_x) || is.na(stdev_x)) {
+          expect_true(is.infinite(stdev_x2) || is.na(stdev_x2))
+        } else {
+          expect_equal(stdev_x, stdev_x2)
+        }
+      }
+    }
+  }
+})
+
+test_that("exp_distribution handles edge cases", {
+  # Negative values in the range
+  d <- distionary::dst_unif(-1, 1)
+  expect_error(exp_distribution(d), "Cannot apply logarithm to a distribution with non-positive values.")
+
+  # Degenerate distribution at zero
+  d <- distionary::dst_degenerate(0)
+  expect_error(exp_distribution(d), "Cannot apply logarithm to a distribution with non-positive values.")
+})

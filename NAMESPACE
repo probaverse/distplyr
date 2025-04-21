@@ -2,7 +2,6 @@
 
 S3method(Math,dst)
 S3method(Ops,dst)
-S3method(print,logarithmic)
 S3method(print,mixture)
 export(discretize)
 export(flip)

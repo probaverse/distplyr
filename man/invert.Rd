@@ -21,7 +21,7 @@ distribution of \code{1 / X}.
 \note{
 An error is returned if the original distribution
 has 0 as a possible outcome
-(i.e., \code{eval_pmf(distribution, at = 0, strict = FALSE)} is non-zero),
+(i.e., \code{eval_pmf(distribution, at = 0)} is non-zero),
 because 0 does not have a reciprocal.
 
 You can also obtain the inverse distribution by putting
