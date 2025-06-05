@@ -215,12 +215,28 @@ test_that("exp_distribution works with various distributions", {
       }
       ## Density
       if (distionary:::is_intrinsic(d, "density") && vtype(d) == "continuous") {
-        a <- eval_quantile(d, at = c(0.005, 0.995))
+        a <- eval_quantile(d, at = c(0.01, 0.99))
         dens_vals <- eval_density(d, at = x)
         expect_true(all(dens_vals >= 0))
         dens_fun <- distionary:::representation_as_function(d, "density")
-        int <- stats::integrate(dens_fun, lower = a[1], upper = a[2])
-        expect_equal(int$value, 0.99, tolerance = 1e-5)
+        if (inherits(d, "inverse") && a[1] < 0 && a[2] > 0) {
+          # Issues with flat cdf around 0 when the distribution contains
+          # positive and negative values.
+          original_dst <- params[[1]]
+          r <- range(original_dst)
+          flat <- 1 / r
+          int1 <- stats::integrate(dens_fun, lower = a[1], upper = flat[1])
+          int2 <- stats::integrate(dens_fun, lower = flat[2], upper = a[2])
+          int <- int1$value + int2$value
+        } else if (inherits(d, "graft")) {
+          brk <- params$breakpoint
+          int1 <- stats::integrate(dens_fun, lower = a[1], upper = brk)
+          int2 <- stats::integrate(dens_fun, lower = brk, upper = a[2])
+          int <- int1$value + int2$value
+        } else {
+          int <- stats::integrate(dens_fun, lower = a[1], upper = a[2])$value
+        }
+        expect_equal(int, 0.98, tolerance = 1e-5)
 
         # Calculate CDF differences by integrating density
         cdf_increments <- numeric(length(x) - 1)
@@ -232,9 +248,6 @@ test_that("exp_distribution works with various distributions", {
             upper = x[j],
             stop.on.error = FALSE
           )
-          # if (integral_result$message != "OK") {
-          #
-          # }
           cdf_increments[j - 1] <- integral_result$value
         }
 
