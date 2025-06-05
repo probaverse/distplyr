@@ -46,9 +46,18 @@ invert <- function(distribution) {
     },
     quantile = function(p) {
       F0 <- distionary::eval_cdf(distribution, at = 0)
-      1 / distionary::eval_quantile(
-        distribution, at = F0 + as.numeric(p > F0) - p
+      res <- rep(NA_real_, length(p))
+      res[p != 1] <- 1 / distionary::eval_quantile(
+        distribution, at = F0 + as.numeric(p[p != 1] > F0) - p[p != 1]
       )
+      # p == 1 is a special case when the cdf of `distribution` is flat in a
+      # neighbourhood of 0. It should evaluate to the right-hand side of the
+      # flat part, but the quantile algorithm evaluates to the left.
+      # Flip `distribution` to solve the issue.
+      res[p == 1] <- -1 / distionary::eval_quantile(
+        flip(distribution), at = F0
+      )
+      res
     },
     realize = function(n) {
       1 / distionary::realize(distribution, n = n)

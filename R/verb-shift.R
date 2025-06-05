@@ -56,8 +56,8 @@ shift <- function(distribution, constant) {
   }
   if (distionary::pretty_name(distribution) == "Normal") {
     return(distionary::dst_norm(
-      mean = distionary::mean(distribution) + constant,
-      sd = distionary::sd(distribution)
+      mean = mean(distribution) + constant,
+      sd = distionary::stdev(distribution)
     ))
   } else if (distionary::pretty_name(distribution) == "Uniform") {
     p <- distionary::parameters(distribution)

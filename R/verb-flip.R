@@ -25,6 +25,8 @@ flip <- function(distribution) {
       location = -p[["location"]],
       scale = p[["scale"]]
     ))
+  } else if (distionary::pretty_name(distribution) == "Student t") {
+    return(distribution)
   }
   d <- distionary::distribution(
     cdf = function(x) {

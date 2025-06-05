@@ -1,3 +1,5 @@
+library(distionary)
+
 test_that("cdf of max distribution makes sense.", {
   d_norm <- dst_norm(0, 1)
   d_pois <- dst_pois(1)
@@ -55,7 +57,7 @@ test_that("draws works as expected", {
     eval_pmf(d2a, at = x, strict = FALSE),
     eval_pmf(d2c, at = x, strict = FALSE)
   )
-  expect_null(suppressWarnings(maximise(draws = 4)))
+  expect_null(expect_warning((maximise(draws = 4))))
   expect_error(maximise(d_norm, draws = 1:2))
   expect_error(maximise(d_norm, draws = numeric(0L)))
   d3a <- maximise(d_exp, d_norm, draws = 1:2)
@@ -127,4 +129,48 @@ test_that("Can maximise list of distributions.", {
   expect_error(maximise(a2))
   expect_equal(maximise(list(d1), list(d2)), maximise(d1, d2))
   expect_equal(maximise(a1, d3), maximise(d1, d2, d3))
+})
+
+
+test_that("maximize handles edge cases", {
+  # When no distributions are provided, should return NULL with a warning
+  expect_warning(result <- maximize())
+  expect_null(result)
+  
+  # When a single distribution is provided with draws=1, should return that
+  # distribution
+  norm_dist <- dst_norm(0, 1)
+  expect_equal(maximize(norm_dist, draws = 1), norm_dist)
+})
+
+test_that("maximize and maximise are identical functions", {
+  # Create test distributions
+  norm_dist <- dst_norm(0, 1)
+  exp_dist <- dst_exp(1)
+  
+  # Compare with no arguments
+  expect_warning(max1 <- maximize())
+  expect_warning(max2 <- maximise())
+  expect_identical(max1, max2)
+  
+  # Compare with single distribution
+  expect_identical(maximize(norm_dist), maximise(norm_dist))
+  
+  # Compare with multiple distributions
+  expect_identical(
+    maximize(norm_dist, exp_dist),
+    maximise(norm_dist, exp_dist)
+  )
+  
+  # Compare with draws parameter
+  expect_identical(
+    maximize(norm_dist, exp_dist, draws = 2),
+    maximise(norm_dist, exp_dist, draws = 2)
+  )
+  
+  # Compare with vector of draws
+  expect_identical(
+    maximize(norm_dist, exp_dist, draws = c(1, 2)),
+    maximise(norm_dist, exp_dist, draws = c(1, 2))
+  )
 })

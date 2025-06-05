@@ -81,8 +81,8 @@ minimize <- function(..., draws = 1) {
     density = function(x) {
       # formula: survival * (sum draws_j f_j / surv_j)
       full_surv <- survival(x)
-      survs <- lapply(d, distionary::eval_survival, at = x)
-      pdfs <- lapply(d, distionary::eval_density, at = x)
+      survs <- lapply(dsts, distionary::eval_survival, at = x)
+      pdfs <- lapply(dsts, distionary::eval_density, at = x)
       divide_if_nonzero <- function(draws, pdf, cdf) {
         res <- draws * pdf / cdf
         res[pdf == 0] <- 0
