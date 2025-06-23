@@ -20,7 +20,8 @@ Imports:
     rlang,
     vctrs,
     stats,
-    purrr
+    purrr,
+    checkmate
 Suggests: 
     covr,
     knitr,

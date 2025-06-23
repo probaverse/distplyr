@@ -1,7 +1,7 @@
 library(distionary)
 
 dat <- local({
-	base <- dst_t(2)
+	base <- dst_empirical(-2:2)
 	norm <- dst_norm(0, 1)
 	list(
 		base = base,
@@ -13,14 +13,14 @@ dat <- local({
 })
 
 test_that("check cdf at breakpoint", {
-	expect_equal(prob_left(dat$dle, of = 0, inclusive = TRUE), 0.5)
-	expect_equal(prob_left(dat$dle, of = 0, inclusive = FALSE), 0.5)
-	expect_equal(prob_left(dat$dli, of = 0, inclusive = TRUE), 0.5)
-	expect_equal(prob_left(dat$dli, of = 0, inclusive = FALSE), 0.5)
-	expect_equal(prob_left(dat$dre, of = 0, inclusive = TRUE), 0.5)
-	expect_equal(prob_left(dat$dre, of = 0, inclusive = FALSE), 0.5)
-	expect_equal(prob_left(dat$dri, of = 0, inclusive = TRUE), 0.5)
-	expect_equal(prob_left(dat$dri, of = 0, inclusive = FALSE), 0.5)
+	expect_equal(prob_left(dat$dle, of = 0, inclusive = TRUE), 0.6)
+	expect_equal(prob_left(dat$dle, of = 0, inclusive = FALSE), 0.6)
+	expect_equal(prob_left(dat$dli, of = 0, inclusive = TRUE), 0.6)
+	expect_equal(prob_left(dat$dli, of = 0, inclusive = FALSE), 0.4)
+	expect_equal(prob_left(dat$dre, of = 0, inclusive = TRUE), 0.4)
+	expect_equal(prob_left(dat$dre, of = 0, inclusive = FALSE), 0.4)
+	expect_equal(prob_left(dat$dri, of = 0, inclusive = TRUE), 0.6)
+	expect_equal(prob_left(dat$dri, of = 0, inclusive = FALSE), 0.4)
 })
 
 test_that("check cdf in base", {
@@ -45,9 +45,9 @@ test_that("check cdf in base", {
 
 test_that("quantiles at breakpoint", {
 	expect_equal(eval_quantile(dat$dri, at = 0.5), 0)
-	expect_equal(eval_quantile(dat$dre, at = 0.5), 0)
+	expect_gt(eval_quantile(dat$dre, at = 0.5), 0)
 	expect_equal(eval_quantile(dat$dli, at = 0.5), 0)
-	expect_equal(eval_quantile(dat$dle, at = 0.5), 0)
+	expect_lt(eval_quantile(dat$dle, at = 0.5), 0)
 })
 
 test_that("a graft distribution is only ever a mixture of two distributions.", {
@@ -55,7 +55,7 @@ test_that("a graft distribution is only ever a mixture of two distributions.", {
 	g <- d |>
 		graft_right(d, breakpoint = 2) |>
 		graft_left(d, breakpoint = -2)
-	expect_length(parameters(g)$distributions, 2L)
+	expect_length(g$components$distributions, 2L)
 })
 
 test_that("graft_right handles special cases", {

@@ -18,6 +18,7 @@
 #'   slice_right(2) |>
 #'   distionary::enframe_cdf(at = -3:3)
 #'
+#' d <- distionary::dst_pois(3)
 #' d |>
 #'   slice_left(5) |>
 #'   distionary::eval_pmf(at = 5)

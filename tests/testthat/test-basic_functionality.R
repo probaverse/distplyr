@@ -198,23 +198,25 @@ test_that("exp_distribution works with various distributions", {
   for (i in seq_along(verbs)) {
     param_list <- verbs[[i]]
     verb <- names(verbs)[i]
-    cat(verb, "-----\n")
+    # cat(verb, "-----\n")
     i <- 0
     for (params in param_list) {
       i <- i + 1
-      print(i)
+      # print(i)
       d <- rlang::exec(verb, !!!params)
       expect_s3_class(d, "dst")
       suppressWarnings(
         x <- eval_quantile(d, at = p)
       )
       ## Quantile
-      if (distionary:::is_intrinsic(d, "quantile") && vtype(d) == "continuous") {
+      if (distionary:::is_intrinsic(d, "quantile") &&
+          vtype(d) == "continuous") {
         x2 <- distionary:::eval_quantile_from_network(d, at = p)
         expect_equal(x, x2)
       }
       ## Density
-      if (distionary:::is_intrinsic(d, "density") && vtype(d) == "continuous") {
+      if (distionary:::is_intrinsic(d, "density") &&
+          vtype(d) == "continuous") {
         a <- eval_quantile(d, at = c(0.01, 0.99))
         dens_vals <- eval_density(d, at = x)
         expect_true(all(dens_vals >= 0))
@@ -267,7 +269,8 @@ test_that("exp_distribution works with various distributions", {
         expect_equal(survival_x, survival_x2)
       }
       ## Range
-      if (distionary:::is_intrinsic(d, "range") && distionary:::is_intrinsic(d, "quantile")) {
+      if (distionary:::is_intrinsic(d, "range") &&
+          distionary:::is_intrinsic(d, "quantile")) {
         r <- range(d)
         r2 <- distionary:::eval_range_from_network(d)
         expect_equal(r, r2)

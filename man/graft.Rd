@@ -30,12 +30,10 @@ to the right. The distribution being grafted is sliced at a breakpoint
 and fit to the base distribution also at that breakpoint.
 }
 \examples{
-set.seed(1)
-x <- stats::rcauchy(100)
-base <- distionary::dst_empirical(x)
+base <- distionary::dst_norm(0, 1)
 q <- distionary::eval_quantile(base, at = 0.9)
-right <- distionary::dst_gpd(q, 5, 1)
+right <- q + distionary::dst_gpd(1, 0.3)
 g <- graft_right(base, right, breakpoint = q)
-#plot(g, "cdf", n = 1001, to = 34)
-#plot(base, "cdf", n = 1001, lty = 2, add = TRUE)
+plot(g, "cdf", n = 1001)
+plot(base, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)
 }
