@@ -45,19 +45,25 @@ Ops.dst <- function(e1, e2) {
     },
     `^` = {
       if (distionary::is_distribution(e1)) {
+        ## Distribution base, numeric exponent
         if (missing(e2) || !is.numeric(e2)) {
-          stop("Exponent must be a numeric value.")
+          stop("Power must be numeric.")
         }
         if (e2 == 0) {
           distionary::dst_degenerate(1)
         } else if (e2 == 1) {
           e1
         } else {
-          exp_distribution(multiply(log_distribution(e1), e2))
+          if (eval_cdf(e1, at = 0) == 0) {
+            exp_distribution(multiply(log_distribution(e1), e2))
+          } else {
+            stop("Distribution base must be almost surely positive.")
+          }
         }
       } else if (is.numeric(e1) && distionary::is_distribution(e2)) {
+        ## Numeric base, distribution exponent
         if (e1 <= 0) {
-          stop("Base must be positive for exponentiation.")
+          stop("Base must be positive when exponentiating a distribution.")
         }
         exp_distribution(multiply(e2, log(e1)))
       } else {

@@ -26,9 +26,11 @@ distplyr provides a vocabulary of verbs for manipulating distributions.
 
 - `+`/`-` or `shift()`: Add a constant to a random variable.
 - `*`/`/` or `multiply()`: Multiply a constant to a random variable.
+- 
 - `invert()`: Invert a distribution, i.e, the distribution of the reciprocal of a random variable.
 - `flip()`: Flip a distribution about 0, i.e., the negative of a random variable.
 - `slice_left()` and `slice_right()`: Restrict the possible values that a random variable can take.
+- `exp()` and `log()`
 
 **Binary operations:**
 

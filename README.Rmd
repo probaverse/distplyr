@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 
 distplyr breathes life into probability distributions by providing a grammar for their modification and reshaping. It works seamlessly with distribution objects from the [distionary](https://distionary.probaverses.com) package.
 
-The distplyr package name is inspired by the [dplyr](https://dplyr.tidyverse.org/) R package: whereas distplyr provides a grammar for manipulating _distributions_, dplyr provides a grammar for manipulating _data_.
+The distplyr package name is inspired by the [dplyr](https://dplyr.tidyverse.org/) R package: while dplyr provides a grammar for manipulating data, distplyr provides a grammar for manipulating _distributions_.
 
 ## Installation
 
@@ -44,41 +44,6 @@ remotes::install_github("probaverse/distplyr")
 
 ```{r, warning = FALSE, message = FALSE}
 library(distplyr)
-```
-
-Want to model a count variable that starts at 1, not 0? Consider shifting a Poisson distribution.
-
-```{r}
-(d1 <- dst_pois(1.5) + 1)
-```
-
-Here's its probability mass function:
-
-```{r}
-enframe_pmf(d1, at = 0:10) |>
-  plot()
-```
-
-Or, maybe you have positive continuous data and you'd like its tail to continue as an exponential distribution:
-
-```
-x <- c(1.6, 0.9, 0.2, 1.4, 0.4, 0.3, 0.2, 0.4, 0.2, 1.5)
-mu <- mean(x)
-(d2 <- dst_empirical(x) |>
-  graft_right(dst_exp(mu), breakpoint = max(x)))
-```
-
-Here's the survival function:
-
-```
-plot(d2, "survival", from = 0, to = 5, n = 1000)
-```
-
-Or maybe you'd like to mix the empirical and Exponential distributions:
-
-```
-(d4 <- mix(dst_empirical(x), dst_exp(mu)))
-plot(d4, "survival", from = 0, to = 5, n = 1000)
 ```
 
 

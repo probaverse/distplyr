@@ -3,6 +3,8 @@
 S3method(Math,dst)
 S3method(Ops,dst)
 S3method(print,mixture)
+S3method(slice_left,dst)
+S3method(slice_left,mixture)
 export(flip)
 export(graft_left)
 export(graft_right)

@@ -5,9 +5,9 @@ Version: 0.1.5
 Authors@R: c(
     person("Vincenzo", "Coia", email = "vincenzo.coia@gmail.com", 
            role = c("aut", "cre")),
-    person("Amogh", "Joshi", role = "aut"),
-    person("Shuyi", "Tan", role = "aut"),
-    person("Zhipeng", "Zhu", role = "aut")
+    person("Amogh", "Joshi", role = "ctb"),
+    person("Shuyi", "Tan", role = "ctb"),
+    person("Zhipeng", "Zhu", role = "ctb")
   )
 Description: Provides an interface for manipulating univariate probability
     distributions, using verbs such as `graft`, `slice`, `mix`, `shift`,

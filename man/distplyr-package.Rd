@@ -20,11 +20,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@gmail.com}
 
-Authors:
+Other contributors:
 \itemize{
-  \item Amogh Joshi
-  \item Shuyi Tan
-  \item Zhipeng Zhu
+  \item Amogh Joshi [contributor]
+  \item Shuyi Tan [contributor]
+  \item Zhipeng Zhu [contributor]
 }
 
 }

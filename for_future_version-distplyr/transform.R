@@ -51,22 +51,3 @@ rv_transform <- function(.dst, g, ginv, gprime, ginvprime) {
 					has_pmf = .has_pmf)
 	)
 }
-
-#' Linearly Transform a Distribution
-#'
-#' If \code{X} has distribution \code{.dst}, then this function
-#' returns the distribution of \code{scale*X + loc}. A wrapper
-#' around \code{\link{rv_transform}}.
-#' @param .dst Original distribution to transform
-#' @param loc Single numeric.
-#' @param scale Single non-negative numeric.
-#' @return Object of class "dst" of the transformed random variable.
-#' @seealso \code{\link{rv_transform}}
-#' @export
-rv_locscale <- function(.dst, loc, scale) {
-	if (scale == 0) return(dst_degenerate(loc))
-	rv_transform(.dst,
-				 g         = function(x) scale * x + loc,
-				 ginv      = function(x) (x - loc) / scale,
-				 ginvprime = function(x) 1 / scale)
-}

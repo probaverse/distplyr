@@ -5,7 +5,7 @@
 \alias{slice_right}
 \title{Conditional Distributions}
 \usage{
-slice_left(distribution, breakpoint, include = TRUE, ...)
+slice_left(distribution, breakpoint, include, ...)
 
 slice_right(distribution, breakpoint, include = TRUE, ...)
 }

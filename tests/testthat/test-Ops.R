@@ -68,8 +68,7 @@ test_that("division operator works correctly", {
 })
 
 test_that("exponentiation operator works correctly", {
-  # Create test distributions
-  unif_dist <- dst_unif(1, 5)  # Using a positive-only distribution for x^d case
+  unif_dist <- dst_unif(0, 5)
 
   # Test distribution ^ constant
   # d^0 = 1
@@ -81,15 +80,17 @@ test_that("exponentiation operator works correctly", {
   expect_equal(result2, unif_dist)
 
   # d^n = exp(n*log(d))
-  result3 <- unif_dist^2
-  expected3 <- exp_distribution(multiply(log_distribution(unif_dist), 2))
+  result3 <- unif_dist^2.1
+  expected3 <- exp_distribution(multiply(log_distribution(unif_dist), 2.1))
   expect_equal(result3, expected3)
   expect_equal(
     eval_cdf(result3, at = 1:25),
-    eval_cdf(unif_dist, at = sqrt(1:25))
+    eval_cdf(unif_dist, at = (1:25)^(1/2.1))
   )
 
   # Test error cases
-  expect_error(unif_dist^"a")  # Non-numeric exponent
-  expect_error((-2)^unif_dist)  # Negative base
+  expect_error(unif_dist^"a")
+  expect_error((-2)^unif_dist)
+  expect_error(0^unif_dist)
+  expect_error(dst_norm(0, 1)^2)
 })

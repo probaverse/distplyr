@@ -27,7 +27,33 @@
 #'   distionary::eval_pmf(at = 5)
 #' @rdname slice
 #' @export
-slice_left <- function(distribution, breakpoint, include = TRUE, ...) {
+slice_left <- function(distribution, breakpoint, include, ...) UseMethod("slice_left")
+
+#' @export
+slice_left.mixture <- function(distribution, breakpoint, include = TRUE, ...) {
+  params <- distionary::parameters(distribution)
+  components <- params[["distributions"]]
+  mix_probs <- params[["probs"]]
+  right_probs <- vapply(
+    components,
+    function(d) {
+      distionary::prob_right(d, of = breakpoint, inclusive = !include)
+    },
+    FUN.VALUE = numeric(1L)
+  )
+  new_mix_weights <- right_probs * mix_probs
+  sliced_components <- lapply(components, function(d) {
+    suppressWarnings(slice_left(d, breakpoint = breakpoint, include = include))
+  })
+  if (all(new_mix_weights == 0)) {
+    warning("Sliced off entire distribution. Returning Null distribution.")
+    return(distionary::dst_null())
+  }
+  mix(sliced_components, weights = new_mix_weights)
+}
+
+#' @export
+slice_left.dst <- function(distribution, breakpoint, include = TRUE, ...) {
   checkmate::assert_class(distribution, "dst")
 	rng <- range(distribution)
 	left <- rng[1L]
@@ -52,7 +78,7 @@ slice_left <- function(distribution, breakpoint, include = TRUE, ...) {
 		}
 	}
 	if (all_sliced) {
-	  warning("Sliced off entire distribution. Returning Null distribution")
+	  warning("Sliced off entire distribution. Returning Null distribution.")
 	  return(distionary::dst_null())
 	}
 	v <- distionary::vtype(distribution)
@@ -65,6 +91,49 @@ slice_left <- function(distribution, breakpoint, include = TRUE, ...) {
 	}
 	if (v == "mixed") {
 	  v <- "unknown" # For now.
+	}
+	## If the breakpoint is on a flat part of the CDF, this will inaccurately
+	## specify the left endpoint of the distribution (and the 0-quantile).
+	## If this is the case, do not specify range, and adjust quantile function
+	## to calculate 0-quantile using the quantile algorithm.
+	dens_at_break <- distionary::eval_density(distribution, at = breakpoint)
+	if (dens_at_break == 0) {
+	  ## Slice occurs on flat part
+	  qf <- function(p) {
+	    p_kept <- distionary::prob_right(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    if (all(is.na(p))) {
+	      return(p)
+	    }
+	    if (any(p == 0)) {
+	      x_zero <- distionary:::eval_quantile_from_network(
+	        distribution, at = p_kept
+	      )
+	      x <- p
+	      x[!is.na(p) & p == 0] <- x_zero
+	      x[!is.na(p) & p != 0] <- distionary::eval_quantile(
+	        distribution, at = (1 - p_kept) + p[!is.na(p) & p != 0] * p_kept
+	      )
+	    } else {
+	      x <- distionary::eval_quantile(
+	        distribution, at = (1 - p_kept) + p * p_kept
+	      )
+	    }
+	    return(x)
+	  }
+	  rng <- NULL
+	} else {
+	  ## Slice does not occur on flat part.
+	  qf <- function(p) {
+	    p_kept <- distionary::prob_right(
+	      distribution, of = breakpoint, inclusive = !include
+	    )
+	    distionary::eval_quantile(
+	      distribution, at = (1 - p_kept) + p * p_kept
+	    )
+	  }
+	  rng <- c(breakpoint, right)
 	}
 	d <- distionary::distribution(
 	  cdf = function(x) {
@@ -105,15 +174,8 @@ slice_left <- function(distribution, breakpoint, include = TRUE, ...) {
 	    }
 	    pmf
 	  },
-	  quantile = function(p) {
-	    p_kept <- distionary::prob_right(
-	      distribution, of = breakpoint, inclusive = !include
-	    )
-	    distionary::eval_quantile(
-	      distribution, at = (1 - p_kept) + p * p_kept
-	    )
-	  },
-	  range = c(breakpoint, right),
+	  quantile = qf,
+	  range = rng,
 	  .vtype = v,
 	  .name = "Left-Sliced",
 	  .parameters = list(

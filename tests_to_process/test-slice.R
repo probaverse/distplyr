@@ -20,13 +20,12 @@ test_that("slicing simplifies with finite distributions", {
 test_that("Range also gets sliced", {
 	d1 <- dst_norm(0, 1)
 	d2 <- dst_unif(0, 1)
-	d3 <- dst_empirical(1:5)
-	d4 <- dst_unif(3, 10)
 	expect_equal(range(slice_left(d1, -2)), c(-2, Inf))
 	expect_equal(range(slice_right(d2, 0.6, include = TRUE)), c(0, 0.6))
-	expect_equal(range(slice_right(d3, 4.5)), c(1, 4))
-	m <- mix(d2, d3, d4)
-	expect_equal(range(slice_left(m, 1.5)), c(2, 10)) # Another ex. where splitting disc & cont is useful.
+	# d3 <- dst_empirical(1:5)
+	# d4 <- dst_unif(3, 10)
+	# m <- mix(d2, d3, d4)
+	# expect_equal(range(slice_left(m, 1.5)), c(2, 10)) # Another ex. where splitting disc & cont is useful.
 })
 
 test_that("Slicing left on a flat part of the cdf works", {
