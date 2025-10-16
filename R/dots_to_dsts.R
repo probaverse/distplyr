@@ -17,7 +17,17 @@
 #' distplyr:::dots_to_dsts(d, list(d, d), NULL)
 dots_to_dsts <- function(..., na.rm = FALSE) {
   dsts <- rlang::list2(...)
-  dsts <- purrr::list_flatten(dsts)
+  # Flatten while preserving distribution structure
+  # Note that `unlist` untangles a distribution object if it's at the top
+  # level, because it itself is a list. Wrap each distribution in a list
+  # to prevent untangling.
+  wrapped_dsts <- lapply(dsts, function(x) {
+    if (distionary::is_distribution(x)) {
+      x <- list(x)
+    }
+    x
+  })
+  dsts <- unlist(wrapped_dsts, recursive = FALSE)
   nulls <- vapply(dsts, is.null, FUN.VALUE = logical(1L))
   is_na <- function(x) length(x) == 1L && is.na(x)
   if (na.rm) {
