@@ -86,7 +86,7 @@ multiply <- function(distribution, constant) {
   if (distionary:::is_intrinsic(distribution, "range")) {
     d[["range"]] <- range(distribution) * constant
   }
-  distionary::new_distribution(d, class = "scaled")
+  distionary:::new_distribution(d, class = "scaled")
 }
 
 

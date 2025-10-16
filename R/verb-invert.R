@@ -68,5 +68,5 @@ invert <- function(distribution) {
       distribution = distribution
     )
   )
-  distionary::new_distribution(d, class = "inverse")
+  distionary:::new_distribution(d, class = "inverse")
 }

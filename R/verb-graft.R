@@ -109,5 +109,5 @@ attach_graft_ends <- function(left, right, p_left, p_right, breakpoint) {
     }
     res
   }
-  distionary::new_distribution(mixture, class = "graft")
+  distionary:::new_distribution(mixture, class = "graft")
 }

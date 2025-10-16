@@ -109,7 +109,7 @@ maximize <- function(..., draws = 1) {
       draws = draws
     )
   )
-  distionary::new_distribution(d, class = "maximum")
+  distionary:::new_distribution(d, class = "maximum")
 }
 
 #' @rdname maximum

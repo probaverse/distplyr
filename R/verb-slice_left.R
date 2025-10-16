@@ -184,7 +184,7 @@ slice_left.dst <- function(distribution, breakpoint, include = TRUE, ...) {
 	    include = include
 	  )
 	)
-	distionary::new_distribution(d, class = "slice_left")
+	distionary:::new_distribution(d, class = "slice_left")
 }
 
 

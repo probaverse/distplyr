@@ -112,7 +112,7 @@ mix <- function(..., weights = 1, na.rm = FALSE) {
       probs = probs
     )
   )
-  distionary::new_distribution(d, class = "mixture")
+  distionary:::new_distribution(d, class = "mixture")
 }
 
 

@@ -129,7 +129,7 @@ shift <- function(distribution, constant) {
   if (distionary:::is_intrinsic(distribution, "kurtosis")) {
     d[["kurtosis"]] <- distionary::kurtosis(distribution)
   }
-  distionary::new_distribution(d, class = "shifted")
+  distionary:::new_distribution(d, class = "shifted")
 }
 
 

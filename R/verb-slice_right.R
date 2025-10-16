@@ -85,5 +85,5 @@ slice_right <- function(distribution, breakpoint, include = TRUE, ...) {
 	    include = include
 	  )
 	)
-	distionary::new_distribution(d, class = "slice_right")
+	distionary:::new_distribution(d, class = "slice_right")
 }

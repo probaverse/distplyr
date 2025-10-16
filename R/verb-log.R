@@ -69,5 +69,5 @@ log_distribution <- function(distribution, base = exp(1)) {
   if (distionary:::is_intrinsic(distribution, "range")) {
     d[["range"]] <- log(r, base = base)
   }
-  distionary::new_distribution(d, class = "logarithmic")
+  distionary:::new_distribution(d, class = "logarithmic")
 }

@@ -108,7 +108,7 @@ minimize <- function(..., draws = 1) {
       draws = draws
     )
   )
-  distionary::new_distribution(d, class = "minimum")
+  distionary:::new_distribution(d, class = "minimum")
 }
 
 #' @rdname minimum

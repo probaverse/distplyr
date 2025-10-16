@@ -46,5 +46,5 @@ exp_distribution <- function(distribution) {
       distribution = distribution
     )
   )
-  distionary::new_distribution(d, class = "exponential")
+  distionary:::new_distribution(d, class = "exponential")
 }

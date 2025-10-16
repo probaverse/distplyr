@@ -80,6 +80,6 @@ flip <- function(distribution) {
   if (distionary:::is_intrinsic(distribution, "kurtosis")) {
     d[["kurtosis"]] <- distionary::kurtosis(distribution)
   }
-  distionary::new_distribution(d, class = "negated")
+  distionary:::new_distribution(d, class = "negated")
 }
 
