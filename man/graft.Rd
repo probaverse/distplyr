@@ -32,7 +32,7 @@ and fit to the base distribution also at that breakpoint.
 \examples{
 base <- distionary::dst_norm(0, 1)
 q <- distionary::eval_quantile(base, at = 0.9)
-right <- q + distionary::dst_gpd(1, 0.3)
+right <- q + distionary::dst_gp(1, 0.3)
 g <- graft_right(base, right, breakpoint = q)
 plot(g, "cdf", n = 1001)
 plot(base, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)

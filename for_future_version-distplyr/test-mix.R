@@ -2,7 +2,7 @@ library(distionary)
 
 d <- list(
   d1 = dst_norm(0, 1),
-  d2 = dst_gpd(scale = 1, shape = 1),
+  d2 = dst_gp(scale = 1, shape = 1),
   d3 = dst_empirical(1:5),
   d4 = dst_empirical(3:5)
 )

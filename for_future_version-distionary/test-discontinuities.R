@@ -36,17 +36,17 @@ test_that("Discontinuites Uniform works", {
   )
 })
 
-test_that("Discontinuites GPD works", {
+test_that("Discontinuites GP works", {
   expect_equal(
-    discontinuities(dst_gpd(1, 2, -1), -Inf, Inf),
+    discontinuities(dst_gp(1, 2, -1), -Inf, Inf),
     make_empty_discontinuities_df()
   )
   expect_equal(
-    discontinuities(dst_gpd(-1, 0.343, 12), 1, 1000),
+    discontinuities(dst_gp(-1, 0.343, 12), 1, 1000),
     make_empty_discontinuities_df()
   )
   expect_equal(
-    discontinuities(dst_gpd(-1, 0.343, 12)),
+    discontinuities(dst_gp(-1, 0.343, 12)),
     make_empty_discontinuities_df()
   )
 })

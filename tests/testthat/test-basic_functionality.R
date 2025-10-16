@@ -11,7 +11,7 @@ verbs <- list(
   ),
   log = list(
     list(dst_weibull(1, 1)),
-    list(dst_gpd(1, 1)),
+    list(dst_gp(1, 1)),
     list(dst_unif(0, 2)),
     list(dst_exp(1)),
     list(dst_gamma(2, 1))
@@ -29,7 +29,7 @@ verbs <- list(
   graft_right = list(
     list(
       dst_norm(0.8, 0.2),
-      dst_gpd(1, 1) + 0.8,
+      dst_gp(1, 1) + 0.8,
       breakpoint = 0.8
     ),
     list(dst_norm(0, 1), dst_exp(1), breakpoint = 0),
@@ -47,13 +47,13 @@ verbs <- list(
     ),
     list(
       dst_gamma(3, 2),
-      dst_gpd(1, 1),
+      dst_gp(1, 1),
       breakpoint = 5,
       include = TRUE
     ),
     list(
       dst_t(5),
-      dst_gpd(1, 1),
+      dst_gp(1, 1),
       breakpoint = 2,
       include = FALSE
     )
@@ -61,7 +61,7 @@ verbs <- list(
   graft_left = list(
     list(
       dst_norm(0.8, 0.2),
-      -dst_gpd(1, 1) - 0.8,
+      -dst_gp(1, 1) - 0.8,
       breakpoint = -0.8
     ),
     list(dst_norm(0, 1), -dst_exp(1), breakpoint = 0),
@@ -79,20 +79,20 @@ verbs <- list(
     ),
     list(
       dst_gamma(3, 2),
-      dst_gpd(1, 1),
+      dst_gp(1, 1),
       breakpoint = 5,
       include = TRUE
     ),
     list(
       dst_t(5),
-      dst_gpd(1, 1),
+      dst_gp(1, 1),
       breakpoint = 1,
       include = FALSE
     )
   ),
   invert = list(
-    list(dst_gpd(1, -2)),
-    list(-dst_gpd(1, -2)),
+    list(dst_gp(1, -2)),
+    list(-dst_gp(1, -2)),
     list(dst_unif(-5, -2)),
     list(dst_unif(2, 5)),
     list(dst_unif(-2, 2)),
@@ -174,7 +174,7 @@ verbs <- list(
     list(dst_norm(3, 3), breakpoint = 2, include = TRUE),
     list(dst_weibull(3, 3), breakpoint = 2, include = FALSE),
     list(dst_gamma(2, 2), breakpoint = -4),
-    list(dst_gpd(1, -2), breakpoint = 0.2, include = FALSE),
+    list(dst_gp(1, -2), breakpoint = 0.2, include = FALSE),
     list(dst_unif(-5, 2), breakpoint = 0, include = TRUE),
     list(dst_unif(-5, 2), breakpoint = 0, include = FALSE),
     list(dst_exp(1), breakpoint = -2),
@@ -185,7 +185,7 @@ verbs <- list(
     list(dst_norm(3, 3), breakpoint = 2, include = TRUE),
     list(dst_weibull(3, 3), breakpoint = 2, include = FALSE),
     list(-dst_gamma(2, 2), breakpoint = 4),
-    list(dst_gpd(1, -2), breakpoint = 0.2, include = FALSE),
+    list(dst_gp(1, -2), breakpoint = 0.2, include = FALSE),
     list(dst_unif(-5, 2), breakpoint = 0, include = TRUE),
     list(dst_unif(-5, 2), breakpoint = 0, include = FALSE),
     list(-dst_exp(1), breakpoint = 2),

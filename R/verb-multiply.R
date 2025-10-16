@@ -31,7 +31,7 @@ multiply <- function(distribution, constant) {
     ))
   } else if (distionary::pretty_name(distribution) == "Generalized Pareto Distribution") {
     p <- distionary::parameters(distribution)
-    return(distionary::dst_gpd(
+    return(distionary::dst_gp(
       scale = p[["scale"]] * constant,
       shape = p[["shape"]]
     ))

@@ -2,7 +2,7 @@ library(distionary)
 
 d <- list(
   d1 = dst_norm(0, 1),
-  d2 = dst_gpd(scale = 1, shape = 1)
+  d2 = dst_gp(scale = 1, shape = 1)
 )
 d$m0 <- mix(d$d1, d$d2, weights = c(1, 0))
 d$m1 <- mix(d$d1, d$d2, weights = c(0.4, 0.6))

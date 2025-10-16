@@ -33,10 +33,10 @@ test_that("next_discrete norm works", {
   expect_equal(numeric(), next_discrete(dst_norm(65, 1), 0, n = Inf))
 })
 
-test_that("next_discrete gpd works", {
-  expect_equal(numeric(), next_discrete(dst_gpd(1, 2, -4), 1))
-  expect_equal(numeric(), next_discrete(dst_gpd(1, 1, 2), 1546, n = 10))
-  expect_equal(numeric(), next_discrete(dst_gpd(561, 1, 8), -565, n = Inf))
+test_that("next_discrete GP works", {
+  expect_equal(numeric(), next_discrete(dst_gp(1, 2, -4), 1))
+  expect_equal(numeric(), next_discrete(dst_gp(1, 1, 2), 1546, n = 10))
+  expect_equal(numeric(), next_discrete(dst_gp(561, 1, 8), -565, n = Inf))
 })
 
 test_that("next_discrete unif works", {

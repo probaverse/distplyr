@@ -98,29 +98,29 @@ test_that("Transform finite works", {
   expect_equal(fin / 1, dst_finite(1:5, rep(0.2, 5)))
 })
 
-test_that("Transform gpd works", {
+test_that("Transform GP works", {
   expect_identical(
-		distionary::dst_gpd(2, 4, 6) + 5,
-		distionary::dst_gpd(7, 4, 6))
+		distionary::dst_gp(2, 4, 6) + 5,
+		distionary::dst_gp(7, 4, 6))
 	expect_identical(
-		distionary::dst_gpd(0, 54, 5) + 0,
-		distionary::dst_gpd(0, 54, 5))
+		distionary::dst_gp(0, 54, 5) + 0,
+		distionary::dst_gp(0, 54, 5))
 	expect_identical(
-		distionary::dst_gpd(2, 4, 9) - 5,
-		distionary::dst_gpd(-3, 4, 9))
+		distionary::dst_gp(2, 4, 9) - 5,
+		distionary::dst_gp(-3, 4, 9))
 	expect_identical(
-		distionary::dst_gpd(0, 1, -54) - 0,
-		distionary::dst_gpd(0, 1, -54))
+		distionary::dst_gp(0, 1, -54) - 0,
+		distionary::dst_gp(0, 1, -54))
 	expect_identical(
-		distionary::dst_gpd(1, 2, 54) * 2,
-		distionary::dst_gpd(1 * 2, 4, 54))
+		distionary::dst_gp(1, 2, 54) * 2,
+		distionary::dst_gp(1 * 2, 4, 54))
 	expect_identical(
-		distionary::dst_gpd(0, 1, 12) * 8,
-		distionary::dst_gpd(0, 8, 12))
+		distionary::dst_gp(0, 1, 12) * 8,
+		distionary::dst_gp(0, 8, 12))
 	expect_identical(
-		distionary::dst_gpd(1, 2, 4) / 2,
-		distionary::dst_gpd(1 / 2, 1, 4))
+		distionary::dst_gp(1, 2, 4) / 2,
+		distionary::dst_gp(1 / 2, 1, 4))
 	expect_identical(
-		distionary::dst_gpd(1, 2, 9) / 4,
-		distionary::dst_gpd(1 / 4, 0.5, 9))
+		distionary::dst_gp(1, 2, 9) / 4,
+		distionary::dst_gp(1 / 4, 0.5, 9))
 })
