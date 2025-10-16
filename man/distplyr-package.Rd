@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@gmail.com}
+\strong{Maintainer}: Vincenzo Coia \email{vincenzo.coia@gmail.com} [copyright holder]
 
 Other contributors:
 \itemize{

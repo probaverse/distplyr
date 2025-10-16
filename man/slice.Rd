@@ -5,7 +5,7 @@
 \alias{slice_right}
 \title{Conditional Distributions}
 \usage{
-slice_left(distribution, breakpoint, include, ...)
+slice_left(distribution, breakpoint, include = TRUE, ...)
 
 slice_right(distribution, breakpoint, include = TRUE, ...)
 }
@@ -40,6 +40,6 @@ d |>
   slice_left(5) |>
   distionary::eval_pmf(at = 5)
 d |>
-  slice_left(5, include = TRUE) |>
+  slice_left(5, include = FALSE) |>
   distionary::eval_pmf(at = 5)
 }

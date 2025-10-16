@@ -23,11 +23,11 @@
 #'   slice_left(5) |>
 #'   distionary::eval_pmf(at = 5)
 #' d |>
-#'   slice_left(5, include = TRUE) |>
+#'   slice_left(5, include = FALSE) |>
 #'   distionary::eval_pmf(at = 5)
 #' @rdname slice
 #' @export
-slice_left <- function(distribution, breakpoint, include, ...) UseMethod("slice_left")
+slice_left <- function(distribution, breakpoint, include = TRUE, ...) UseMethod("slice_left")
 
 #' @export
 slice_left.mixture <- function(distribution, breakpoint, include = TRUE, ...) {
@@ -96,7 +96,16 @@ slice_left.dst <- function(distribution, breakpoint, include = TRUE, ...) {
 	## specify the left endpoint of the distribution (and the 0-quantile).
 	## If this is the case, do not specify range, and adjust quantile function
 	## to calculate 0-quantile using the quantile algorithm.
-	dens_at_break <- distionary::eval_density(distribution, at = breakpoint)
+	if (v == "discrete") {
+	  prob_breakpoint <- distionary::eval_pmf(distribution, at = breakpoint)
+	  if (prob_breakpoint > 0) {
+	    dens_at_break <- Inf
+	  } else {
+	    dens_at_break <- 0
+	  }
+	} else {
+	  dens_at_break <- distionary::eval_density(distribution, at = breakpoint)
+	}
 	if (dens_at_break == 0) {
 	  ## Slice occurs on flat part
 	  qf <- function(p) {
