@@ -9,12 +9,9 @@
 #' Specifically, a distribution with subclass "exponential".
 #' @noRd
 exp_distribution <- function(distribution) {
-  if (distionary::vtype(distribution) != "continuous") {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
+  checkmate::assert_class(distribution, "dst")
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
   }
   d <- distionary::distribution(
     cdf = function(x) {

@@ -20,6 +20,10 @@
 #' invert(distionary::dst_norm(0, 1))
 #' @export
 invert <- function(distribution) {
+  checkmate::assert_class(distribution, "dst")
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
+  }
   if (distionary::vtype(distribution) != "continuous") {
     warning(
       "A non-continuous distribution has been entered into a distplyr verb.\n",

@@ -12,42 +12,41 @@
 #' @details To use precise language, if `X1`, ..., `Xp` are
 #' `p` independent random variables corresponding to the distributions
 #' in `...`, then the distribution returned is of `max(X1, ..., Xp)`.
+#' Distributions and `draws` are recycled to the same length using
+#' `vctrs::vec_recycle_common()`.
 #' @rdname maximum
 #' @export
-maximize <- function(..., draws = 1) {
-  dsts <- dots_to_dsts(..., na.rm = TRUE)
-  n_dsts <- length(dsts)
-  if (n_dsts == 0) {
-    warning("Received no distributions. Returning NULL.")
-    return(NULL)
+maximize <- function(...,
+                     draws = 1,
+                     na_action_y = c("null", "drop", "fail"),
+                     na_action_w = c("null", "drop", "fail")) {
+  preprocess <- pair_dots_num(
+    ...,
+    num = draws,
+    na_action_dst = na_action_dst,
+    na_action_num = na_action_draws
+  )
+  if (distionary::is_distribution(preprocess)) {
+    return(preprocess)
   }
-  draws <- vctrs::vec_recycle(draws, size = n_dsts)
-  if (n_dsts == 1 && sum(draws) == 1) {
-    return(dsts[[1L]])
+  dsts <- preprocess$dsts
+  draws <- preprocess$num
+  all_finite <- all(vapply(
+    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+  ))
+  if (all_finite) {
+    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
+    x <- unique(unlist(x))
+    upper <- lapply(dsts, distionary::prob_left, of = x, inclusive = TRUE)
+    lower <- lapply(dsts, distionary::prob_left, of = x, inclusive = FALSE)
+    contributions_upper <- Map(`^`, upper, draws)
+    contributions_lower <- Map(`^`, lower, draws)
+    cdf_upper <- Reduce(`*`, contributions_upper)
+    cdf_lower <- Reduce(`*`, contributions_lower)
+    new_probs <- cdf_upper - cdf_lower
+    return(distionary::dst_empirical(x, weights = new_probs))
   }
-  # all_finite <- all(vapply(
-  #   dsts, distionary::is_finite_dst, FUN.VALUE = logical(1L)
-  # ))
-  # if (all_finite) {
-  #   x <- lapply(dsts, function(d) d$probabilities$location)
-  #   x <- unique(unlist(x))
-  #   upper <- lapply(dsts, distionary::prob_left, of = x, inclusive = TRUE)
-  #   lower <- lapply(dsts, distionary::prob_left, of = x, inclusive = FALSE)
-  #   contributions_upper <- Map(`^`, upper, draws)
-  #   contributions_lower <- Map(`^`, lower, draws)
-  #   cdf_upper <- Reduce(`*`, contributions_upper)
-  #   cdf_lower <- Reduce(`*`, contributions_lower)
-  #   new_probs <- cdf_upper - cdf_lower
-  #   return(dst_empirical(x, weights = new_probs))
-  # }
   vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (any(vars != "continuous")) {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
-  }
   if (length(vars) == 1 && vars != "mixed") {
     v <- vars
   } else {

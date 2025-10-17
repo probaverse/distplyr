@@ -1,19 +1,16 @@
 #' @rdname linear_transform
 #' @export
 flip <- function(distribution) {
-  if (distionary::vtype(distribution) != "continuous") {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
+  checkmate::assert_class(distribution, "dst")
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
   }
-  if (pretty_name(distribution) == "Normal") {
+  if (distionary::pretty_name(distribution) == "Normal") {
     return(distionary::dst_norm(
       mean = -mean(distribution),
       sd = stdev(distribution)
     ))
-  } else if (pretty_name(distribution) == "Uniform") {
+  } else if (distionary::pretty_name(distribution) == "Uniform") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_unif(
       min = -p[["max"]],

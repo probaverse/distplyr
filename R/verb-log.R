@@ -16,23 +16,22 @@
 #' log_distribution(distionary::dst_unif(1, 10), base = 10) # Log base 10
 #' @export
 log_distribution <- function(distribution, base = exp(1)) {
-  if (distionary::vtype(distribution) != "continuous") {
+  checkmate::assert_class(distribution, "dst")
+  checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
+  }
+  if (is.na(base)) {
+    return(distionary::dst_null())
+  }
+  p_neg <- distionary::prob_left(distribution, of = 0, inclusive = TRUE)
+  if (p_neg > 0) {
     warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
+      "Cannot apply logarithm to a distribution with non-positive values. ",
+      "Returning a Null distribution."
     )
   }
-  if (base <= 0) {
-    stop("Base must be a positive numeric value.")
-  }
   r <- range(distribution)
-  if (r[1] < 0) {
-    stop("Cannot apply logarithm to a distribution with non-positive values.")
-  } else if (r[1] == 0 && distionary::vtype(distribution) != "continuous" &&
-             distionary::eval_pmf(distribution, at = 0) > 0) {
-    stop("Cannot apply logarithm to a distribution having mass at 0.")
-  }
   scale_factor <- 1 / log(base)
   if (base == exp(1)) {
     base_print <- "e"

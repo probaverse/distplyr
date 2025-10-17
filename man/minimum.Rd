@@ -5,7 +5,12 @@
 \alias{minimise}
 \title{Min Value of Several Distributions}
 \usage{
-minimize(..., draws = 1)
+minimize(
+  ...,
+  draws = 1,
+  na_action_dst = c("null", "drop", "fail"),
+  na_action_draws = c("null", "drop", "fail")
+)
 
 minimise(..., draws = 1)
 }

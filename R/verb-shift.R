@@ -47,31 +47,25 @@ shift <- function(distribution, constant) {
   if (constant == 0) {
     return(distribution)
   }
-  if (distionary::vtype(distribution) != "continuous") {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
-  }
-  if (distionary::pretty_name(distribution) == "Normal") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Normal") {
     return(distionary::dst_norm(
       mean = mean(distribution) + constant,
       sd = distionary::stdev(distribution)
     ))
-  } else if (distionary::pretty_name(distribution) == "Uniform") {
+  } else if (nm == "Uniform") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_unif(
       min = p[["min"]] + constant,
       max = p[["max"]] + constant
     ))
-  } else if (distionary::pretty_name(distribution) == "Cauchy") {
+  } else if (nm == "Cauchy") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_cauchy(
       location = p[["location"]] + constant,
       scale = p[["scale"]]
     ))
-  } else if (distionary::pretty_name(distribution) == "Generalised Extreme Value") {
+  } else if (nm == "Generalised Extreme Value") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_gev(
       location = p[["location"]] + constant,

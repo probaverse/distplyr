@@ -5,7 +5,12 @@
 \alias{maximise}
 \title{Max Value of Several Distributions}
 \usage{
-maximize(..., draws = 1)
+maximize(
+  ...,
+  draws = 1,
+  na_action_y = c("null", "drop", "fail"),
+  na_action_w = c("null", "drop", "fail")
+)
 
 maximise(..., draws = 1)
 }
@@ -28,4 +33,6 @@ each component distribution.
 To use precise language, if \code{X1}, ..., \code{Xp} are
 \code{p} independent random variables corresponding to the distributions
 in \code{...}, then the distribution returned is of \code{max(X1, ..., Xp)}.
+Distributions and \code{draws} are recycled to the same length using
+\code{vctrs::vec_recycle_common()}.
 }

@@ -7,8 +7,7 @@
 #' or, single numeric for equal weights.
 #' @param na.rm Remove `NA` distributions and `NA` weights? `TRUE` if yes;
 #' default is `FALSE`.
-#' @return A mixture distribution -- an empty distribution if any weights
-#' are \code{NA} and `na.rm = FALSE`, the default.
+#' @return A mixture distribution.
 #' @examples
 #' library(distionary)
 #' a <- dst_norm(0, 1)
@@ -22,49 +21,28 @@
 #' #plot(m2, n = 1001)
 #' vtype(m2)
 #' @export
-mix <- function(..., weights = 1, na.rm = FALSE) {
-  dsts <- dots_to_dsts(..., na.rm = na.rm)
-  n_dsts <- length(dsts)
-  if (n_dsts == 0) {
-    warning("Received no distributions. Returning NULL.")
-    return(NULL)
+mix <- function(...,
+                weights = 1,
+                na_action_dst = c("null", "drop", "fail"),
+                na_action_w = c("null", "drop", "fail")) {
+  preprocess <- pair_dots_num(
+    ...,
+    num = weights,
+    na_action_dst = na_action_dst,
+    na_action_num = na_action_w
+  )
+  if (distionary::is_distribution(preprocess)) {
+    return(preprocess)
   }
-  if (n_dsts == 1) {
-    return(dsts[[1L]])
-  }
-  weights <- vctrs::vec_recycle(weights, size = n_dsts)
-  if (any(weights < 0, na.rm = TRUE)) {
-    stop("Weights must not be negative.")
-  }
+  dsts <- preprocess$dsts
+  weights <- preprocess$num
   probs <- weights / sum(weights, na.rm = TRUE)
   na_probs <- is.na(probs)
-  if (any(na_probs)) {
-    if (!na.rm) {
-      return(NA)
-    }
-    probs <- probs[!na_probs]
-    dsts <- dsts[!na_probs]
-  }
-  zero_probs <- probs == 0
-  if (any(zero_probs)) {
-    probs <- probs[!zero_probs]
-    dsts <- dsts[!zero_probs]
-  }
-  if (length(probs) == 1L) {
-    return(dsts[[1L]])
-  }
   r <- lapply(dsts, range)
   r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
   r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
   var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
-  if (any(var_type != "continuous")) {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
-  }
   if ("unknown" %in% var_type) {
     var_unique <- "unknown"
   } else if (length(var_unique) > 1L) {
@@ -134,4 +112,3 @@ print.mixture <- function(x, ...) {
   }
   print(df, ...)
 }
-

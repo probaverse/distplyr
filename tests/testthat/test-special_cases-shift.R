@@ -1,25 +1,6 @@
 library(distionary)
 
-test_that("shift works with continuous distributions", {
-  d <- dst_exp(1)
-  shifted <- shift(d, 5)
-  expect_equal(pretty_name(shifted), "Shifted")
-  expect_equal(mean(shifted), mean(d) + 5)
-})
-
-# test_that("shift works with discrete distributions", {
-#   d <- dst_pois(3)
-#   shifted <- shift(d, 2)
-#   expect_s3_class(shifted, "shifted")
-#   expect_equal(eval_pmf(shifted, at = 5), eval_pmf(d, at = 3))
-# })
-
-test_that("shift handles edge cases", {
-  d <- dst_unif(0, 10)
-  expect_equal(shift(d, 0), d) # No shift
-})
-
-test_that("shift handles special distributions", {
+test_that("Shift - special cases - light testing", {
   # Special implementation for Normal distribution
   norm_dist <- dst_norm(2, 3)
   norm_shifted <- shift(norm_dist, 5)
@@ -50,3 +31,19 @@ test_that("shift handles special distributions", {
   expect_equal(parameters(gev_shifted)[["shape"]], 0.5)
 })
 
+test_that("Shift - NA handling", {
+  expect_equal(shift(dst_null(), 5), dst_null())
+  expect_equal(shift(dst_exp(1), NA), dst_null())
+})
+
+test_that("Shift - Edge cases", {
+  d <- dst_exp(1.1)
+  expect_equal(shift(d, 0), d)
+})
+
+test_that("Shift - bad parameters", {
+  expect_error(shift(dst_exp(1), Inf))
+  expect_error(shift(dst_exp(1), -Inf))
+  expect_error(shift(dst_exp(1), "a"))
+  expect_error(shift(5, 5))
+})

@@ -4,7 +4,12 @@
 \alias{mix}
 \title{Mixture Distributions}
 \usage{
-mix(..., weights = 1, na.rm = FALSE)
+mix(
+  ...,
+  weights = 1,
+  na_action_dst = c("null", "drop", "fail"),
+  na_action_w = c("null", "drop", "fail")
+)
 }
 \arguments{
 \item{...}{Distribution objects, or lists of distributions.}
@@ -16,8 +21,7 @@ or, single numeric for equal weights.}
 default is \code{FALSE}.}
 }
 \value{
-A mixture distribution -- an empty distribution if any weights
-are \code{NA} and \code{na.rm = FALSE}, the default.
+A mixture distribution.
 }
 \description{
 Create a mixture distribution.
