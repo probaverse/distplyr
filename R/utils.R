@@ -62,9 +62,11 @@ pair_dots_num <- function(...,
   if (n_dsts == 0) {
     return(distionary::dst_null())
   }
-  if (n_dsts == 1 && num == 1) {
-    return(dsts[[1L]])
-  }
+  ## Aggregate Weights
+  grps <- match(dsts, dsts)
+  num <- tapply(num, grps, FUN = sum, simplify = TRUE)
+  dsts <- tapply(dsts, grps, FUN = unique, simplify = TRUE)
+
   list(
     dsts = dsts,
     num = num

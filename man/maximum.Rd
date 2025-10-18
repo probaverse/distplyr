@@ -8,8 +8,8 @@
 maximize(
   ...,
   draws = 1,
-  na_action_y = c("null", "drop", "fail"),
-  na_action_w = c("null", "drop", "fail")
+  na_action_dst = c("null", "drop", "fail"),
+  na_action_draws = c("null", "drop", "fail")
 )
 
 maximise(..., draws = 1)

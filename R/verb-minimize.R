@@ -29,6 +29,9 @@ minimize <- function(...,
   }
   dsts <- preprocess$dsts
   draws <- preprocess$num
+  if (length(draws) == 1 && draws == 1) {
+    return(dsts[[1]])
+  }
   all_finite <- all(vapply(
     dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
   ))

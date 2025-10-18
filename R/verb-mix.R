@@ -36,7 +36,11 @@ mix <- function(...,
   }
   dsts <- preprocess$dsts
   weights <- preprocess$num
+  if (length(weights) == 1) {
+    return(dsts[[1]])
+  }
   probs <- weights / sum(weights, na.rm = TRUE)
+  rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
   na_probs <- is.na(probs)
   r <- lapply(dsts, range)
   r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
