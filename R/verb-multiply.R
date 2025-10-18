@@ -1,13 +1,6 @@
 #' @rdname linear_transform
 #' @export
 multiply <- function(distribution, constant) {
-  if (distionary::vtype(distribution) != "continuous") {
-    warning(
-      "A non-continuous distribution has been entered into a distplyr verb.\n",
-      "At this stage of distplyr's development, some inaccuracies can be\n",
-      "expected in these cases, particularly for quantile calculations."
-    )
-  }
   if (constant < 0) {
     return(flip(multiply(distribution, -constant)))
   } else if (constant == 0) {
@@ -17,19 +10,29 @@ multiply <- function(distribution, constant) {
   } else if (is.infinite(constant)) {
     stop("Cannot multiply a distribution by infinity.")
   }
-  if (distionary::pretty_name(distribution) == "Normal") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
+    return(distribution)
+  }
+  if (nm == "Normal") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_norm(
       mean = p[["mean"]] * constant,
       sd = p[["sd"]] * constant
     ))
-  } else if (distionary::pretty_name(distribution) == "Uniform") {
+  } else if (nm == "Uniform") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_unif(
       min = p[["min"]] * constant,
       max = p[["max"]] * constant
     ))
-  } else if (distionary::pretty_name(distribution) == "Generalized Pareto Distribution") {
+  } else if (nm == "Cauchy") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_cauchy(
+      location = p[["location"]] * constant,
+      scale = p[["scale"]] * abs(constant)
+    ))
+  } else if (nm == "Generalized Pareto Distribution") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_gp(
       scale = p[["scale"]] * constant,

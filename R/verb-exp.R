@@ -10,8 +10,15 @@
 #' @noRd
 exp_distribution <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
-  if (distionary::pretty_name(distribution) == "Null") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
     return(distribution)
+  }
+  if (nm == "Normal") {
+    param <- distionary::parameters(distribution)
+    meanlog <- param[["mean"]]
+    sdlog <- param[["sd"]]
+    return(distionary::dst_lognorm(meanlog = meanlog, sdlog = sdlog))
   }
   d <- distionary::distribution(
     cdf = function(x) {

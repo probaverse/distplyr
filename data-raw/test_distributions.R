@@ -4,11 +4,6 @@
 # testing of distribution representations. The testing strategy is the same as
 # in distionary: compare the specified formulas against that recovered from
 # other properties.
-#
-# Each distribution entry contains:
-# - `distribution`: The constructor function name
-# - `invalid`: Parameter sets that should fail validation
-# - `valid`: Parameter sets for systematic testing
 library(distionary)
 
 test_distributions <- list(
@@ -33,10 +28,10 @@ test_distributions <- list(
     list(dst_norm(0, 1), dst_norm(5, 2), dst_norm(-5, 0.5), draws = 1:3)
   ),
   shift = list(
-    list(dst_unif(0, 1), 5),
+    list(dst_gamma(3, 4)),
+    list(dst_t(5)),
     list(dst_pois(1), -0.5),
     list(dst_exp(1.5), -2),
-    list(dst_norm(0, 1), 3.5)
   ),
   multiply = list(
     list(dst_exp(1.5), 2),

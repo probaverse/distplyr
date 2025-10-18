@@ -48,6 +48,9 @@ shift <- function(distribution, constant) {
     return(distribution)
   }
   nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
+    return(distribution)
+  }
   if (nm == "Normal") {
     return(distionary::dst_norm(
       mean = mean(distribution) + constant,

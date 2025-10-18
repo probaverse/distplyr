@@ -18,11 +18,18 @@
 log_distribution <- function(distribution, base = exp(1)) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
-  if (distionary::pretty_name(distribution) == "Null") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
     return(distribution)
   }
   if (is.na(base)) {
     return(distionary::dst_null())
+  }
+  if (nm == "Log Normal") {
+    param <- distionary::parameters(distribution)
+    mu <- param[["meanlog"]] / log(base)
+    sigma <- param[["sdlog"]] / log(base)
+    return(distionary::dst_norm(mean = mu, sd = sigma))
   }
   p_neg <- distionary::prob_left(distribution, of = 0, inclusive = TRUE)
   if (p_neg > 0) {
