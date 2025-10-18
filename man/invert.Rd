@@ -18,6 +18,12 @@ Access the inverse of a distribution. Specifically, if \code{X} is a random
 variable coming from a distribution, \code{invert()} returns the
 distribution of \code{1 / X}.
 }
+\details{
+Simplifications for this verb include:
+\itemize{
+\item "Finite" distributions become other Finite distributions.
+}
+}
 \note{
 An error is returned if the original distribution
 has 0 as a possible outcome

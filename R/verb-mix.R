@@ -46,14 +46,13 @@ mix <- function(...,
   ))
   if (all_finite) {
     x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
-    p <- lapply(dsts, \(d) distionary::parametres(d)[["probs"]])
+    p <- lapply(dsts, \(d) distionary::parameters(d)[["probs"]])
     pnew <- Map(`*`, probs, p)
-    l <- aggregate_weights(unlist(x), unlist(pnew))
+    l <- distionary:::aggregate_weights(unlist(x), unlist(pnew))
     return(distionary::dst_empirical(l[["y"]], weights = l[["weight"]]))
   }
   ## END special simplifications -----------------------------------------------
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
-  na_probs <- is.na(probs)
   r <- lapply(dsts, range)
   r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
   r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
