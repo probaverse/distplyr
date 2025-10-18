@@ -40,6 +40,18 @@ mix <- function(...,
     return(dsts[[1]])
   }
   probs <- weights / sum(weights, na.rm = TRUE)
+  ## Special cases: all finite distributions
+  all_finite <- all(vapply(
+    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+  ))
+  if (all_finite) {
+    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
+    p <- lapply(dsts, \(d) distionary::parametres(d)[["probs"]])
+    pnew <- Map(`*`, probs, p)
+    l <- aggregate_weights(unlist(x), unlist(pnew))
+    return(distionary::dst_empirical(l[["y"]], weights = l[["weight"]]))
+  }
+  ## END Special cases
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
   na_probs <- is.na(probs)
   r <- lapply(dsts, range)
@@ -47,10 +59,12 @@ mix <- function(...,
   r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
   var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
-  if ("unknown" %in% var_type) {
-    var_unique <- "unknown"
-  } else if (length(var_unique) > 1L) {
-    var_unique <- "mixed"
+  if (length(var_unique) == 1) {
+    v <- var_unique
+  } else if ("unknown" %in% var_type) {
+    v <- "unknown"
+  } else {
+    v <- "mixed"
   }
   ## Make distribution object
   d <- distionary::distribution(
@@ -87,7 +101,7 @@ mix <- function(...,
       )
     },
     range = c(r1, r2),
-    .vtype = var_unique,
+    .vtype = v,
     .name = "Mixture",
     .parameters = list(
       distributions = dsts,

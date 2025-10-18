@@ -3,8 +3,10 @@
 # "draws" in max/min or "weights" in mix.
 # - Checks inputs with NA handling.
 # - Recycles inputs.
-# - Returns a distribution if possible.
-# - Otherwise, returns a list of the recycled distributions and numbers.
+# - Aggregates `num` (by addition) and `...` (by `unique()`).
+# - Returns dst_null().
+# - Otherwise, returns a list of the recycled & aggregated distributions and
+#   numbers.
 pair_dots_num <- function(...,
                           num,
                           na_action_dst = c("null", "drop", "fail"),
