@@ -40,7 +40,7 @@ mix <- function(...,
     return(dsts[[1]])
   }
   probs <- weights / sum(weights, na.rm = TRUE)
-  ## Special cases: all finite distributions
+  ## BEGIN special simplifications ---------------------------------------------
   all_finite <- all(vapply(
     dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
   ))
@@ -51,7 +51,7 @@ mix <- function(...,
     l <- aggregate_weights(unlist(x), unlist(pnew))
     return(distionary::dst_empirical(l[["y"]], weights = l[["weight"]]))
   }
-  ## END Special cases
+  ## END special simplifications -----------------------------------------------
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
   na_probs <- is.na(probs)
   r <- lapply(dsts, range)

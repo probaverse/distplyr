@@ -5,6 +5,7 @@ flip <- function(distribution) {
   if (distionary::pretty_name(distribution) == "Null") {
     return(distribution)
   }
+  ## BEGIN special simplifications ---------------------------------------------
   if (distionary::pretty_name(distribution) == "Normal") {
     return(distionary::dst_norm(
       mean = -mean(distribution),
@@ -24,7 +25,13 @@ flip <- function(distribution) {
     ))
   } else if (distionary::pretty_name(distribution) == "Student t") {
     return(distribution)
+  } else if (nm == "Finite") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_empirical(
+      -p[["outcomes"]], weights = p[["probs"]]
+    ))
   }
+  ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_pmf(distribution, at = -x) +

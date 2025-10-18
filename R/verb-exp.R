@@ -14,12 +14,20 @@ exp_distribution <- function(distribution) {
   if (nm == "Null") {
     return(distribution)
   }
+  ## BEGIN special simplifications ---------------------------------------------
   if (nm == "Normal") {
     param <- distionary::parameters(distribution)
     meanlog <- param[["mean"]]
     sdlog <- param[["sd"]]
     return(distionary::dst_lognorm(meanlog = meanlog, sdlog = sdlog))
   }
+  if (nm == "Finite") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_empirical(
+      exp(p[["outcomes"]]), weights = p[["probs"]]
+    ))
+  }
+  ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))

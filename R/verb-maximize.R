@@ -34,6 +34,7 @@ maximize <- function(...,
   if (length(draws) == 1 && draws == 1) {
     return(dsts[[1]])
   }
+  ## BEGIN special simplifications ---------------------------------------------
   all_finite <- all(vapply(
     dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
   ))
@@ -49,6 +50,7 @@ maximize <- function(...,
     new_probs <- cdf_upper - cdf_lower
     return(distionary::dst_empirical(x, weights = new_probs))
   }
+  ## END special simplifications -----------------------------------------------
   vars <- unique(unlist(lapply(dsts, distionary::vtype)))
   if (length(vars) == 1 && vars != "mixed") {
     v <- vars

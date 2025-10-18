@@ -15,19 +15,32 @@
 #' You can also obtain the inverse distribution by putting
 #' the distribution in the denominator of `/`.
 #' @seealso `flip()`, `scale()`
+#' @details
+#' Simplifications for this verb include:
+#'
+#' - "Finite" distributions become other Finite distributions.
 #' @examples
 #' 1 / (distionary::dst_pois(3.4) + 1)
 #' invert(distionary::dst_norm(0, 1))
 #' @export
 invert <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
-  if (distionary::pretty_name(distribution) == "Null") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
     return(distribution)
   }
   p_zero <- distionary::eval_pmf(distribution, at = 0)
   if (p_zero > 0) {
     stop("Cannot invert a distribution for which 0 is a possible outcome.")
   }
+  ## BEGIN special simplifications ---------------------------------------------
+  if (nm == "Finite") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_empirical(
+      1 / p[["outcomes"]], weights = p[["probs"]]
+    ))
+  }
+  ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = 0) -

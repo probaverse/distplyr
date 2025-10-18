@@ -14,6 +14,7 @@ multiply <- function(distribution, constant) {
   if (nm == "Null") {
     return(distribution)
   }
+  ## BEGIN special simplifications ---------------------------------------------
   if (nm == "Normal") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_norm(
@@ -38,7 +39,13 @@ multiply <- function(distribution, constant) {
       scale = p[["scale"]] * constant,
       shape = p[["shape"]]
     ))
+  } else if (nm == "Finite") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_empirical(
+      p[["outcomes"]] * constant, weights = p[["probs"]]
+    ))
   }
+  ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x / constant)

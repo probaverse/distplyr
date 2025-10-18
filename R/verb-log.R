@@ -25,12 +25,6 @@ log_distribution <- function(distribution, base = exp(1)) {
   if (is.na(base)) {
     return(distionary::dst_null())
   }
-  if (nm == "Log Normal") {
-    param <- distionary::parameters(distribution)
-    mu <- param[["meanlog"]] / log(base)
-    sigma <- param[["sdlog"]] / log(base)
-    return(distionary::dst_norm(mean = mu, sd = sigma))
-  }
   p_neg <- distionary::prob_left(distribution, of = 0, inclusive = TRUE)
   if (p_neg > 0) {
     warning(
@@ -38,6 +32,22 @@ log_distribution <- function(distribution, base = exp(1)) {
       "Returning a Null distribution."
     )
   }
+  ## BEGIN special simplifications ---------------------------------------------
+  if (nm == "Log Normal") {
+    param <- distionary::parameters(distribution)
+    mu <- param[["meanlog"]] / log(base)
+    sigma <- param[["sdlog"]] / log(base)
+    return(distionary::dst_norm(mean = mu, sd = sigma))
+  }
+  if (nm == "Finite") {
+    p <- distionary::parameters(distribution)
+    outcomes <- p[["outcomes"]]
+    probs <- p[["probs"]]
+    return(distionary::dst_empirical(
+      log(outcomes, base = base), weights = probs
+    ))
+  }
+  ## END special simplifications -----------------------------------------------
   r <- range(distribution)
   scale_factor <- 1 / log(base)
   if (base == exp(1)) {

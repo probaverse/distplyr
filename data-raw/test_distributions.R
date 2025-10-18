@@ -4,6 +4,12 @@
 # testing of distribution representations. The testing strategy is the same as
 # in distionary: compare the specified formulas against that recovered from
 # other properties.
+#
+# Should not contain combinations that trigger a simplification (e.g.,
+# exp of a Normal distribution) -- although not harmful, they will not
+# contribute much because they will only be testing that the simplified
+# distribution is correctly specified (e.g., that the LogNormal distribution
+# has been correctly coded), but this is the job of distionary, not distplyr.
 library(distionary)
 
 test_distributions <- list(
@@ -36,16 +42,14 @@ test_distributions <- list(
   multiply = list(
     list(dst_exp(1.5), 2),
     list(dst_gamma(2, 4), 0.5),
-    list(dst_unif(3, 5), 5),
+    list(dst_weibull(2, 2), 5),
     list(dst_beta(5, 2), -8)
   ),
   flip = list(
     list(dst_geom(0.3)),
     list(dst_binom(5, 0.4)),
-    list(dst_unif(-1, 5)),
-    list(dst_empirical(-4:7)),
-    list(dst_unif(4, 5)),
-    list(dst_unif(-10, -4))
+    list(dst_exp(4)),
+    list(dst_gp(2, 0.4))
   ),
   invert = list(
     list(dst_geom(0.3) + 1),
