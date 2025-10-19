@@ -49,7 +49,7 @@ log_distribution <- function(distribution, base = exp(1)) {
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
-  scale_factor <- 1 / log(base)
+  logbase <- log(base)
   if (base == exp(1)) {
     base_print <- "e"
   } else {
@@ -57,23 +57,23 @@ log_distribution <- function(distribution, base = exp(1)) {
   }
   d <- distionary::distribution(
     cdf = function(x) {
-      distionary::eval_cdf(distribution, at = exp(x / scale_factor))
+      distionary::eval_cdf(distribution, at = exp(x * logbase))
     },
     survival = function(x) {
-      distionary::eval_survival(distribution, at = exp(x / scale_factor))
+      distionary::eval_survival(distribution, at = exp(x * logbase))
     },
     density = function(x) {
-      exp_x <- exp(x / scale_factor)
-      distionary::eval_density(distribution, at = exp_x) * exp_x / scale_factor
+      exp_x <- exp(x * logbase)
+      distionary::eval_density(distribution, at = exp_x) * exp_x * logbase
     },
     pmf = function(x) {
-      distionary::eval_pmf(distribution, at = exp(x / scale_factor))
+      distionary::eval_pmf(distribution, at = exp(x * logbase))
     },
     quantile = function(p) {
-      log(distionary::eval_quantile(distribution, at = p)) * scale_factor
+      log(distionary::eval_quantile(distribution, at = p)) / logbase
     },
     realize = function(n) {
-      log(distionary::realize(distribution, n = n)) * scale_factor
+      log(distionary::realize(distribution, n = n)) / logbase
     },
     .vtype = distionary::vtype(distribution),
     .name = paste0("Logarithmic (base ", base_print, ")"),

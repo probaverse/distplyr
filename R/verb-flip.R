@@ -2,28 +2,29 @@
 #' @export
 flip <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
-  if (distionary::pretty_name(distribution) == "Null") {
+  nm <- distionary::pretty_name(distribution)
+  if (nm == "Null") {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------
-  if (distionary::pretty_name(distribution) == "Normal") {
+  if (nm == "Normal") {
     return(distionary::dst_norm(
       mean = -mean(distribution),
       sd = stdev(distribution)
     ))
-  } else if (distionary::pretty_name(distribution) == "Uniform") {
+  } else if (nm == "Uniform") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_unif(
       min = -p[["max"]],
       max = -p[["min"]]
     ))
-  } else if (distionary::pretty_name(distribution) == "Cauchy") {
+  } else if (nm == "Cauchy") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_cauchy(
       location = -p[["location"]],
       scale = p[["scale"]]
     ))
-  } else if (distionary::pretty_name(distribution) == "Student t") {
+  } else if (nm == "Student t") {
     return(distribution)
   } else if (nm == "Finite") {
     p <- distionary::parameters(distribution)

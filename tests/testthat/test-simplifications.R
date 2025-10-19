@@ -17,18 +17,26 @@ test_that("Simplifications: CDFs match.", {
   for (verb in names(special_distributions)) {
     cases <- special_distributions[[verb]]
     for (case in cases) {
+      case0 <- case
       dst_simplified <- rlang::exec(verb, !!!case)
       i_dst <- which(vapply(case, distionary::is_distribution, logical(1L)))
       for (i in i_dst) {
         attr(case[[i]], "name") <- "Unknown"
       }
       dst_standard <- rlang::exec(verb, !!!case)
-      r <- range(dst_simplified)
+      r <- eval_quantile(dst_simplified, c(0.001, 0.999))
       x <- seq(r[1], r[2], length.out = 100)
       cdf_simplified <- distionary::eval_cdf(dst_simplified, x)
       cdf_standard <- distionary::eval_cdf(dst_standard, x)
       expect_true(length(unique(cdf_simplified)) > 1)
-      expect_equal(cdf_simplified, cdf_standard)
+      if (verb == "log" && distionary::vtype(case0[[1]]) == "discrete") {
+        # Rounding issue: exp(log(19)) - 19 = -3.552714e-15
+        cdf_standard_eps <- distionary::eval_cdf(dst_standard, x + 1e-15)
+        expect_true(all(cdf_simplified >= cdf_standard))
+        expect_true(all(cdf_simplified <= cdf_standard_eps))
+      } else {
+        expect_equal(cdf_simplified, cdf_standard)
+      }
     }
   }
 })

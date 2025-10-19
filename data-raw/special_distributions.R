@@ -22,7 +22,7 @@ special_distributions <- list(
       dst_empirical(c(-2, 0, 6, 10), weights = 1:4),
       dst_empirical(c(-5, 4)),
       dst_empirical(c(23, 34, 14), weights = 1:3),
-      weights = c(2, 3, 5)
+      draws = c(2, 3, 5)
     ),
     list(dst_empirical(-10:-5), dst_empirical(3:5))
   ),
@@ -31,7 +31,7 @@ special_distributions <- list(
       dst_empirical(c(-2, 0, 6, 10), weights = 1:4),
       dst_empirical(c(-5, 4)),
       dst_empirical(c(23, 34, 14), weights = 1:3),
-      weights = c(2, 3, 5)
+      draws = c(2, 3, 5)
     ),
     list(dst_empirical(-10:-5), dst_empirical(3:5))
   ),
@@ -72,7 +72,7 @@ special_distributions <- list(
     list(dst_t(2)),
     list(dst_t(3)),
     list(dst_empirical(-4:7)),
-    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), 3),
+    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4)),
     list(dst_empirical(c(6, 10, 50), weights = 1:3))
   ),
   exp = list(

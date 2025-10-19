@@ -19,7 +19,7 @@ exp_distribution <- function(distribution) {
     param <- distionary::parameters(distribution)
     meanlog <- param[["mean"]]
     sdlog <- param[["sd"]]
-    return(distionary::dst_lognorm(meanlog = meanlog, sdlog = sdlog))
+    return(distionary::dst_lnorm(meanlog = meanlog, sdlog = sdlog))
   }
   if (nm == "Finite") {
     p <- distionary::parameters(distribution)
