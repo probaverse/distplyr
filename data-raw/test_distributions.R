@@ -34,10 +34,10 @@ test_distributions <- list(
     list(dst_norm(0, 1), dst_norm(5, 2), dst_norm(-5, 0.5), draws = 1:3)
   ),
   shift = list(
-    list(dst_gamma(3, 4)),
-    list(dst_t(5)),
+    list(dst_gamma(3, 4), 2),
+    list(dst_t(5), 1),
     list(dst_pois(1), -0.5),
-    list(dst_exp(1.5), -2),
+    list(dst_exp(1.5), -2)
   ),
   multiply = list(
     list(dst_exp(1.5), 2),

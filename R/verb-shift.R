@@ -44,6 +44,11 @@
 #' @rdname linear_transform
 #' @export
 shift <- function(distribution, constant) {
+  checkmate::assert_number(constant, finite = TRUE, na.ok = TRUE)
+  checkmate::assert_class(distribution, "dst")
+  if (is.na(constant)) {
+    return(distionary::dst_null())
+  }
   if (constant == 0) {
     return(distribution)
   }

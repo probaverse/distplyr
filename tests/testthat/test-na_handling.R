@@ -8,7 +8,7 @@ test_that("Entering NA parameters returns Null distribution by default.", {
       for (j in seq_along(paramset)) {
         this_paramset <- paramset
         if (is_distribution(this_paramset[[j]])) {
-          this_paramset[[j]] <- dst_null()
+          this_paramset[[j]] <- distionary::dst_null()
         } else {
           this_paramset[[j]] <- NA
         }
