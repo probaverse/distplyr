@@ -86,6 +86,9 @@ shift <- function(distribution, constant) {
     return(distionary::dst_empirical(
       p[["outcomes"]] + constant, weights = p[["probs"]]
     ))
+  } else if (nm == "Degenerate") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_degenerate(p[["location"]] + constant))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

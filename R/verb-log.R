@@ -27,10 +27,12 @@ log_distribution <- function(distribution, base = exp(1)) {
   }
   p_neg <- distionary::prob_left(distribution, of = 0, inclusive = TRUE)
   if (p_neg > 0) {
-    warning(
-      "Cannot apply logarithm to a distribution with non-positive values. ",
-      "Returning a Null distribution."
+    stop(
+      "Cannot apply logarithm to a distribution with non-positive values."
     )
+  }
+  if (base == 0) {
+    return(distionary::dst_degenerate(0))
   }
   ## BEGIN special simplifications ---------------------------------------------
   if (nm == "Log Normal") {
@@ -46,6 +48,9 @@ log_distribution <- function(distribution, base = exp(1)) {
     return(distionary::dst_empirical(
       log(outcomes, base = base), weights = probs
     ))
+  } else if (nm == "Degenerate") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_degenerate(log(p[["location"]], base = base)))
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)

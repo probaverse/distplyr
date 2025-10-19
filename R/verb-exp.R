@@ -26,6 +26,9 @@ exp_distribution <- function(distribution) {
     return(distionary::dst_empirical(
       exp(p[["outcomes"]]), weights = p[["probs"]]
     ))
+  } else if (nm == "Degenerate") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_degenerate(exp(p[["location"]])))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

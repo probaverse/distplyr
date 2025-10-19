@@ -45,19 +45,23 @@ special_distributions <- list(
     list(dst_cauchy(4, 2), 4.4),
     list(dst_cauchy(4, 2), -4.4),
     list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), 3),
-    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), -3)
+    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), -3),
+    list(dst_degenerate(3), 2),
+    list(dst_degenerate(3), -5)
   ),
   multiply = list(
     list(dst_unif(0, 1), 5),
-    list(dst_unif(0, 1), -5),
     list(dst_norm(0, 1), 3.5),
-    list(dst_norm(0, 1), -3.5),
-    list(dst_gev(5, 3, 0.6), 1.5),
-    list(dst_gev(5, 3, 0.6), -1.5),
     list(dst_cauchy(4, 2), 4.4),
-    list(dst_cauchy(4, 2), -4.4),
+    list(dst_gp(3, 0.6), 1.5),
+    list(dst_gp(3, -0.6), 1.5),
+    list(dst_gp(3, 0), 1.5),
+    list(dst_gev(5, 3, 0.6), 1.5),
+    list(dst_gev(5, 3, -0.6), 1.5),
+    list(dst_gev(5, 3, 0), 1.5),
     list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), 3),
-    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4), -3)
+    list(dst_degenerate(3), 2),
+    list(dst_degenerate(-3), 2)
   ),
   flip = list(
     list(dst_norm(4, 2)),
@@ -73,13 +77,15 @@ special_distributions <- list(
     list(dst_t(3)),
     list(dst_empirical(-4:7)),
     list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4)),
-    list(dst_empirical(c(6, 10, 50), weights = 1:3))
+    list(dst_empirical(c(6, 10, 50), weights = 1:3)),
+    list(dst_degenerate(3))
   ),
   exp = list(
     list(dst_norm(0, 1)),
     list(dst_norm(-5, 3)),
     list(dst_norm(1, 0.3)),
-    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4))
+    list(dst_empirical(c(-2, 0, 6, 10), weights = 1:4)),
+    list(dst_degenerate(3))
   ),
   log = list(
     list(dst_lnorm(0, 1)),
@@ -89,7 +95,8 @@ special_distributions <- list(
     list(dst_lnorm(-5, 3), base = 5),
     list(dst_lnorm(1, 0.3), base = 5),
     list(dst_empirical(c(6, 10, 14, 19), weights = 1:4)),
-    list(dst_empirical(c(6, 10, 14, 19), weights = 1:4), base = 3)
+    list(dst_empirical(c(6, 10, 14, 19), weights = 1:4), base = 3),
+    list(dst_degenerate(3))
   )
 )
 

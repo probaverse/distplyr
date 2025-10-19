@@ -39,6 +39,9 @@ invert <- function(distribution) {
     return(distionary::dst_empirical(
       1 / p[["outcomes"]], weights = p[["probs"]]
     ))
+  } else if (nm == "Degenerate") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_degenerate(1 / p[["location"]]))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

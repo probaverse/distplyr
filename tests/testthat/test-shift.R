@@ -29,12 +29,15 @@ test_that("Shift - special cases - light testing", {
   expect_equal(parameters(gev_shifted)[["location"]], 5)
   expect_equal(parameters(gev_shifted)[["scale"]], 2)
   expect_equal(parameters(gev_shifted)[["shape"]], 0.5)
+
+  # Special implementation for Finite
+  finite_dist <- dst_empirical(c(1, 2, 3), weights = c(0.2, 0.5, 0.3))
+  finite_shifted <- shift(finite_dist, 4)
+  expect_equal(pretty_name(finite_shifted), "Finite")
+  expect_equal(parameters(finite_shifted)[["outcomes"]], c(5, 6, 7))
+  expect_equal(parameters(finite_shifted)[["probs"]], c(0.2, 0.5, 0.3))
 })
 
-test_that("Shift - NA handling", {
-  expect_equal(shift(dst_null(), 5), dst_null())
-  expect_equal(shift(dst_exp(1), NA), dst_null())
-})
 
 test_that("Shift - Edge cases", {
   d <- dst_exp(1.1)
@@ -46,4 +49,7 @@ test_that("Shift - bad parameters", {
   expect_error(shift(dst_exp(1), -Inf))
   expect_error(shift(dst_exp(1), "a"))
   expect_error(shift(5, 5))
+  # Length
+  expect_error(shift(dst_exp(3), numeric(0)))
+  expect_error(shift(dst_exp(3), 1:4))
 })

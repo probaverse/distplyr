@@ -38,9 +38,16 @@ multiply <- function(distribution, constant) {
       location = p[["location"]] * constant,
       scale = p[["scale"]] * abs(constant)
     ))
-  } else if (nm == "Generalized Pareto Distribution") {
+  } else if (nm == "Generalised Pareto") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_gp(
+      scale = p[["scale"]] * constant,
+      shape = p[["shape"]]
+    ))
+  } else if (nm == "Generalised Extreme Value") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_gev(
+      location = p[["location"]] * constant,
       scale = p[["scale"]] * constant,
       shape = p[["shape"]]
     ))
@@ -49,6 +56,9 @@ multiply <- function(distribution, constant) {
     return(distionary::dst_empirical(
       p[["outcomes"]] * constant, weights = p[["probs"]]
     ))
+  } else if (nm == "Degenerate") {
+    p <- distionary::parameters(distribution)
+    return(distionary::dst_degenerate(p[["location"]] * constant))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(
