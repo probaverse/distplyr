@@ -135,13 +135,13 @@ maximize_simplifications <- function(dsts, draws) {
   if (all_finite) {
     x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
     x <- unique(unlist(x))
-    upper <- lapply(dsts, distionary::prob_right, of = x, inclusive = TRUE)
-    lower <- lapply(dsts, distionary::prob_right, of = x, inclusive = FALSE)
+    upper <- lapply(dsts, distionary::prob_left, of = x, inclusive = TRUE)
+    lower <- lapply(dsts, distionary::prob_left, of = x, inclusive = FALSE)
     contributions_upper <- Map(`^`, upper, draws)
     contributions_lower <- Map(`^`, lower, draws)
-    surv_upper <- Reduce(`*`, contributions_upper)
-    surv_lower <- Reduce(`*`, contributions_lower)
-    new_probs <- surv_upper - surv_lower
+    cdf_upper <- Reduce(`*`, contributions_upper)
+    cdf_lower <- Reduce(`*`, contributions_lower)
+    new_probs <- cdf_upper - cdf_lower
     return(distionary::dst_empirical(x, weights = new_probs))
   }
   list(

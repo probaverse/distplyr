@@ -15,7 +15,7 @@ Description: Provides an interface for manipulating univariate probability
 License: MIT + file LICENSE
 Depends: 
     distionary,
-    R (>= 2.10)
+    R (>= 3.5)
 Imports: 
     ellipsis,
     rlang,
