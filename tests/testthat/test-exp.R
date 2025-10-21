@@ -21,3 +21,7 @@ test_that("Exp - special cases - light testing", {
   expect_equal(pretty_name(finite_trns), "Degenerate")
   expect_equal(parameters(finite_trns)[["location"]], exp(3))
 })
+
+test_that("Exp - bad parameters", {
+  expect_error(exp_distribution(5))
+})
