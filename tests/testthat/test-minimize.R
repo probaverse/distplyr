@@ -257,55 +257,56 @@ test_that("Minimize - Aggregation", {
 test_that("Minimize - Edge cases", {
   # Draws = 1
   expect_equal(minimize(dst_gamma(1, 3)), dst_gamma(1, 3))
+  x <- -5:5
   # Distributions fully to the left of others are removed
   # --> Continuous distribution leading
-  expect_equal(
-    minimize(
-      -dst_gamma(1, 3), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
-      draws = c(2, 3, 1, 2)
-    ),
-    minimize(
-      -dst_gamma(1, 3),
-      draws = 2
-    )
+  d1 <- minimize(
+    -dst_gamma(1, 3), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
+    draws = c(2, 3, 1, 2)
   )
+  d2 <- minimize(
+    -dst_gamma(1, 3),
+    draws = 2
+  )
+  expect_equal(d1, d2)
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
   # --> Discrete distribution leading
-  expect_equal(
-    minimize(
-      -dst_pois(1), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
-      draws = c(2, 3, 1, 2)
-    ),
-    minimize(
-      -dst_pois(1),
-      draws = 2
-    )
+  d1 <- minimize(
+    -dst_pois(1), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
+    draws = c(2, 3, 1, 2)
   )
+  d2 <- minimize(
+    -dst_pois(1),
+    draws = 2
+  )
+  expect_equal(d1, d2)
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
   # --> Degenerate distribution leading
-  expect_equal(
-    minimize(
-      dst_degenerate(0), dst_unif(0, 3), dst_unif(2, 4), dst_pois(3),
-      draws = c(2, 3, 1, 2)
-    ),
-    dst_degenerate(0)
+  d1 <- minimize(
+    dst_degenerate(0), dst_unif(0, 3), dst_unif(2, 4), dst_pois(3),
+    draws = c(2, 3, 1, 2)
   )
+  d2 <- dst_degenerate(0)
+  expect_equal(d1, d2)
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
   # --> Mixed mode distribution leading
-  expect_equal(
-    minimize(
-      mix(dst_degenerate(0), -dst_exp(1)), dst_unif(0, 3), dst_pois(3)
-    ),
-    mix(dst_degenerate(0), -dst_exp(1))
+  d1 <- minimize(
+    mix(dst_degenerate(0), -dst_exp(1)), dst_unif(0, 3), dst_pois(3)
   )
+  d2 <- mix(dst_degenerate(0), -dst_exp(1))
+  expect_equal(d1, d2)
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
   # --> Two distributions leading
-  expect_equal(
-    minimize(
-      -dst_gamma(1, 3), -dst_pois(1), dst_unif(0, 3), dst_degenerate(0),
-      draws = c(2, 3, 1, 2)
-    ),
-    minimize(
-      -dst_gamma(1, 3), -dst_pois(1),
-      draws = c(2, 3)
-    )
+  d1 <- minimize(
+    -dst_gamma(1, 3), -dst_pois(1), dst_unif(0, 3), dst_degenerate(0),
+    draws = c(2, 3, 1, 2)
   )
+  d2 <- minimize(
+    -dst_gamma(1, 3), -dst_pois(1),
+    draws = c(2, 3)
+  )
+  expect_equal(d1, d2)
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
   # Culling distributions outside of the range of the new distribution
   # happens first.
   expect_equal(
