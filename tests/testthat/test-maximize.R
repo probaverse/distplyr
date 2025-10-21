@@ -260,53 +260,75 @@ test_that("Maximize - Edge cases", {
   expect_equal(maximize(dst_gamma(1, 3)), dst_gamma(1, 3))
   # Distributions fully to the left of others are removed
   # --> Continuous distribution leading
-  d1 <- maximize(
-    dst_gamma(1, 3), dst_unif(-3, 0), dst_unif(-4, -2), dst_degenerate(0),
-    draws = c(2, 3, 1, 2)
+  components <- list(
+    dst_gamma(1, 3), dst_unif(-3, 0), dst_unif(-4, -2), dst_degenerate(0)
   )
-  d2 <- maximize(
-    dst_gamma(1, 3),
-    draws = 2
-  )
+  d1 <- maximize(components, draws = c(2, 3, 1, 2))
+  d2 <- maximize(components[[1]], draws = 2)
   expect_equal(d1, d2)
-  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
+  components <- lapply(components, \(d) {
+    d$range <- c(-Inf, Inf)
+    d
+  })
+  d3 <- maximize(components, draws = c(2, 3, 1, 2))
+  expect_error(expect_equal(d1, d3))
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d3, at = x))
   # --> Discrete distribution leading
-  d1 <- maximize(
-    dst_pois(1), dst_unif(-3, 0), dst_unif(-4, -2), dst_degenerate(0),
-    draws = c(2, 3, 1, 2)
+  components <- list(
+    dst_pois(1), dst_unif(-3, 0), dst_unif(-4, -2), dst_degenerate(0)
   )
-  d2 <- maximize(
-    dst_pois(1),
-    draws = 2
-  )
+  d1 <- maximize(components, draws = c(2, 3, 1, 2))
+  d2 <- maximize(components[[1]], draws = 2)
   expect_equal(d1, d2)
-  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
+  components <- lapply(components, \(d) {
+    d$range <- c(-Inf, Inf)
+    d
+  })
+  d3 <- maximize(components, draws = c(2, 3, 1, 2))
+  expect_error(expect_equal(d1, d3))
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d3, at = x))
   # --> Degenerate distribution leading
-  d1 <- maximize(
-    dst_degenerate(0), dst_unif(-3, 0), dst_unif(-4, -2), -dst_pois(3),
-    draws = c(2, 3, 1, 2)
+  components <- list(
+    dst_degenerate(0), dst_unif(-3, 0), dst_unif(-4, -2), -dst_pois(3)
   )
+  d1 <- maximize(components, draws = c(2, 3, 1, 2))
   d2 <- dst_degenerate(0)
   expect_equal(d1, d2)
-  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
+  components <- lapply(components, \(d) {
+    d$range <- c(-Inf, Inf)
+    d
+  })
+  d3 <- maximize(components, draws = c(2, 3, 1, 2))
+  expect_error(expect_equal(d1, d3))
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d3, at = x))
   # --> Mixed mode distribution leading
-  d1 <- maximize(
+  components <- list(
     mix(dst_degenerate(0), dst_exp(1)), dst_unif(-3, 0), -dst_pois(3)
   )
-  d2 <- mix(dst_degenerate(0), dst_exp(1))
+  d1 <- maximize(components)
+  d2 <- components[[1]]
   expect_equal(d1, d2)
-  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
+  components <- lapply(components, \(d) {
+    d$range <- c(-Inf, Inf)
+    d
+  })
+  d3 <- maximize(components)
+  expect_error(expect_equal(d1, d3))
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d3, at = x))
   # --> Two distributions leading
-  d1 <- maximize(
-    dst_gamma(1, 3), dst_pois(1), dst_unif(-3, 0), dst_degenerate(0),
-    draws = c(2, 3, 1, 2)
+  components <- list(
+    dst_gamma(1, 3), dst_pois(1), dst_unif(-3, 0), dst_degenerate(0)
   )
-  d2 <- maximize(
-    dst_gamma(1, 3), dst_pois(1),
-    draws = c(2, 3)
-  )
+  d1 <- maximize(components, draws = c(2, 3, 1, 2))
+  d2 <- maximize(components[1:2], draws = c(2, 3))
   expect_equal(d1, d2)
-  expect_equal(eval_cdf(d1, at = x), eval_cdf(d2, at = x))
+  components <- lapply(components, \(d) {
+    d$range <- c(-Inf, Inf)
+    d
+  })
+  d3 <- maximize(components, draws = c(2, 3, 1, 2))
+  expect_error(expect_equal(d1, d3))
+  expect_equal(eval_cdf(d1, at = x), eval_cdf(d3, at = x))
   # Culling distributions outside of the range of the new distribution
   # happens first.
   expect_equal(
