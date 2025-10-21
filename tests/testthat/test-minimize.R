@@ -253,3 +253,82 @@ test_that("Minimize - Aggregation", {
 })
 
 ## END test structure identical for mix, maximize, minimize -----
+
+test_that("Minimize - Edge cases", {
+  # Draws = 1
+  expect_equal(minimize(dst_gamma(1, 3)), dst_gamma(1, 3))
+  # Distributions fully to the left of others are removed
+  # --> Continuous distribution leading
+  expect_equal(
+    minimize(
+      -dst_gamma(1, 3), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
+      draws = c(2, 3, 1, 2)
+    ),
+    minimize(
+      -dst_gamma(1, 3),
+      draws = 2
+    )
+  )
+  # --> Discrete distribution leading
+  expect_equal(
+    minimize(
+      -dst_pois(1), dst_unif(0, 3), dst_unif(2, 4), dst_degenerate(0),
+      draws = c(2, 3, 1, 2)
+    ),
+    minimize(
+      -dst_pois(1),
+      draws = 2
+    )
+  )
+  # --> Degenerate distribution leading
+  expect_equal(
+    minimize(
+      dst_degenerate(0), dst_unif(0, 3), dst_unif(2, 4), dst_pois(3),
+      draws = c(2, 3, 1, 2)
+    ),
+    dst_degenerate(0)
+  )
+  # --> Mixed mode distribution leading
+  expect_equal(
+    minimize(
+      mix(dst_degenerate(0), -dst_exp(1)), dst_unif(0, 3), dst_pois(3)
+    ),
+    mix(dst_degenerate(0), -dst_exp(1))
+  )
+  # --> Two distributions leading
+  expect_equal(
+    minimize(
+      -dst_gamma(1, 3), -dst_pois(1), dst_unif(0, 3), dst_degenerate(0),
+      draws = c(2, 3, 1, 2)
+    ),
+    minimize(
+      -dst_gamma(1, 3), -dst_pois(1),
+      draws = c(2, 3)
+    )
+  )
+  # Culling distributions outside of the range of the new distribution
+  # happens first.
+  expect_equal(
+    pretty_name(
+      minimize(dst_unif(20, 30), dst_empirical(0:5), dst_empirical(c(0, 3, 10)))
+    ),
+    "Finite"
+  )
+  # Just to be sure: these simplifications don't ruin the ability to accept
+  # distributions all having left-endpoint of Inf.
+  expect_equal(
+    parameters(minimize(dst_norm(0, 1), dst_t(3), dst_exp(1)))$distributions,
+    list(dst_norm(0, 1), dst_t(3), dst_exp(1))
+  )
+})
+
+test_that("Minimize - vtype", {
+  expect_equal(vtype(minimize(dst_gamma(2, 3), dst_exp(3))), "continuous")
+  expect_equal(vtype(minimize(dst_pois(3), dst_nbinom(3, 0.4))), "discrete")
+  expect_equal(vtype(minimize(dst_pois(3), -dst_exp(1))), "continuous")
+  # Here's one that should be continuous but don't have the capability
+  # currently to know this.
+  m <- mix(-dst_binom(5, 0.5), -dst_gp(10, 1))
+  d <- minimize(m, -dst_exp(1) - 6)
+  expect_equal(vtype(d), "unknown")
+})

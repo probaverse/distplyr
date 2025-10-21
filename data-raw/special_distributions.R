@@ -33,7 +33,7 @@ special_distributions <- list(
       dst_empirical(c(23, 34, 14), weights = 1:3),
       draws = c(2, 3, 5)
     ),
-    list(dst_empirical(-10:-5), dst_empirical(3:5))
+    list(dst_empirical(-10:-5), dst_empirical(3:5)),
   ),
   shift = list(
     list(dst_unif(0, 1), 5),

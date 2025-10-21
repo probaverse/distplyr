@@ -66,9 +66,10 @@ pair_dots_num <- function(...,
   }
   ## Aggregate Weights
   grps <- match(dsts, dsts)
-  num <- tapply(num, grps, FUN = sum, simplify = TRUE)
+  num <- tapply(num, grps, FUN = sum, simplify = FALSE)
   dsts <- tapply(dsts, grps, FUN = unique, simplify = TRUE)
-
+  num <- unlist(unname(num))
+  dsts <- unname(dsts)
   list(
     dsts = dsts,
     num = num

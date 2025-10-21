@@ -29,50 +29,25 @@ maximize <- function(...,
   if (distionary::is_distribution(preprocess)) {
     return(preprocess)
   }
-  dsts <- preprocess$dsts
-  draws <- preprocess$num
-  if (length(draws) == 1 && draws == 1) {
-    return(dsts[[1]])
+  simplification <- maximize_simplifications(
+    dsts = preprocess$dsts,
+    draws = preprocess$num
+  )
+  rm("preprocess")
+  if (distionary::is_distribution(simplification)) {
+    return(simplification)
   }
-  ## BEGIN special simplifications ---------------------------------------------
-  all_finite <- all(vapply(
-    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
-  ))
-  if (all_finite) {
-    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
-    x <- unique(unlist(x))
-    upper <- lapply(dsts, distionary::prob_left, of = x, inclusive = TRUE)
-    lower <- lapply(dsts, distionary::prob_left, of = x, inclusive = FALSE)
-    contributions_upper <- Map(`^`, upper, draws)
-    contributions_lower <- Map(`^`, lower, draws)
-    cdf_upper <- Reduce(`*`, contributions_upper)
-    cdf_lower <- Reduce(`*`, contributions_lower)
-    new_probs <- cdf_upper - cdf_lower
-    return(distionary::dst_empirical(x, weights = new_probs))
-  }
-  ## END special simplifications -----------------------------------------------
+  dsts <- simplification$dsts
+  draws <- simplification$draws
+  ## Variable type determination
   vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (length(vars) == 1 && vars != "mixed") {
+  if (length(vars) == 1) {
     v <- vars
+  } else if (identical(sort(vars), c("continuous", "discrete"))) {
+    v <- "mixed"
   } else {
-    r <- lapply(dsts, range)
-    mins <- vapply(r, function(r_) r_[1L], FUN.VALUE = numeric(1L))
-    largest_min <- max(mins)
-    if (is.na(largest_min)) {
-      v <- "unknown"
-    } else {
-      sliced_d <- suppressWarnings(lapply(
-        dsts, slice_left, breakpoint = largest_min, include = FALSE
-      ))
-      vars <- unique(unlist(lapply(sliced_d, distionary::vtype)))
-      if (length(vars) == 1) {
-        v <- vars
-      } else if (any(vars == "unknown")) {
-        v <- "unknown"
-      } else {
-        v <- "mixed"
-      }
-    }
+    # Would need to dig more to know for sure.
+    v <- "unknown"
   }
   r <- lapply(dsts, range)
   r <- Reduce(pmax, r)
@@ -114,6 +89,65 @@ maximize <- function(...,
     )
   )
   distionary:::new_distribution(d, class = "maximum")
+}
+
+# Function to handle specific simplifications for maximize. For example.
+# distributions entirely to the left of others get removed; if all finite
+# distributions are input, then the result is also finite; etc.
+#
+# This is useful so that the variables used in these algorithms don't show up
+# in the enclosing environment of the resulting distribution's representations,
+# which makes it hard to do unit tests.
+#
+# Outputs a distribution if a simplification was possible, or a reduced list
+# of dsts and draws otherwise.
+maximize_simplifications <- function(dsts, draws) {
+  ## The largest minimum becomes the new overall minimum.
+  r <- lapply(dsts, range)
+  mins <- vapply(r, function(r_) r_[1L], FUN.VALUE = numeric(1L))
+  maxs <- vapply(r, function(r_) r_[2L], FUN.VALUE = numeric(1L))
+  new_min <- max(mins)
+  # All distributions with max less than or equal to the new min go away,
+  # except if one of those distributions happens to be degenerate AND no
+  # other distributions have a min at the new min (then that degenerate
+  # distribution stays and becomes the maximum).
+  if (any(maxs <= new_min)) {
+    leading_dsts <- dsts[mins == new_min]
+    leading_degen <- vapply(
+      leading_dsts,
+      \(d) distionary::eval_pmf(d, at = new_min) == 1,
+      FUN.VALUE = logical(1L)
+    )
+    if (all(leading_degen)) {
+      return(distionary::dst_degenerate(new_min))
+    }
+    cull <- maxs <= new_min
+    dsts <- dsts[!cull]
+    draws <- draws[!cull]
+  }
+  if (length(draws) == 1 && draws == 1) {
+    return(dsts[[1]])
+  }
+  ## Simplification based on distribution type
+  all_finite <- all(vapply(
+    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+  ))
+  if (all_finite) {
+    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
+    x <- unique(unlist(x))
+    upper <- lapply(dsts, distionary::prob_right, of = x, inclusive = TRUE)
+    lower <- lapply(dsts, distionary::prob_right, of = x, inclusive = FALSE)
+    contributions_upper <- Map(`^`, upper, draws)
+    contributions_lower <- Map(`^`, lower, draws)
+    surv_upper <- Reduce(`*`, contributions_upper)
+    surv_lower <- Reduce(`*`, contributions_lower)
+    new_probs <- surv_upper - surv_lower
+    return(distionary::dst_empirical(x, weights = new_probs))
+  }
+  list(
+    dsts = dsts,
+    draws = draws
+  )
 }
 
 #' @rdname maximum
