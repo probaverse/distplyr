@@ -72,14 +72,6 @@ maximize <- function(...,
       ratios_sum <- Reduce(`+`, ratios)
       ratios_sum * full_cdf
     },
-    realise = function(n) {
-      iid_sample <- numeric(0L)
-      for (i in seq_len(n)) {
-        iid_sample_list <- Map(distionary::realise, dsts, draws)
-        iid_sample[i] <- max(unlist(iid_sample_list))
-      }
-      iid_sample
-    },
     range = r,
     .vtype = v,
     .name = "Maximum",
@@ -88,6 +80,17 @@ maximize <- function(...,
       draws = draws
     )
   )
+  if (all(draws %% 1 == 0)) {
+    # All draws are integers.
+    d[["realise"]] <- function(n) {
+      iid_sample <- numeric(0L)
+      for (i in seq_len(n)) {
+        iid_sample_list <- Map(distionary::realise, dsts, draws)
+        iid_sample[i] <- max(unlist(iid_sample_list))
+      }
+      iid_sample
+    }
+  }
   distionary:::new_distribution(d, class = "maximum")
 }
 

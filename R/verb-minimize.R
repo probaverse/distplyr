@@ -71,14 +71,6 @@ minimize <- function(...,
       ratios_sum <- Reduce(`+`, ratios)
       ratios_sum * full_surv
     },
-    realise = function(n) {
-      iid_sample <- numeric(0L)
-      for (i in seq_len(n)) {
-        iid_sample_list <- Map(realise, dsts, draws)
-        iid_sample[i] <- min(unlist(iid_sample_list))
-      }
-      iid_sample
-    },
     range = r,
     .name = "Minumum",
     .vtype = v,
@@ -87,6 +79,17 @@ minimize <- function(...,
       draws = draws
     )
   )
+  if (all(draws %% 1 == 0)) {
+    # All draws are integers.
+    d[["realise"]] <- function(n) {
+      iid_sample <- numeric(0L)
+      for (i in seq_len(n)) {
+        iid_sample_list <- Map(realise, dsts, draws)
+        iid_sample[i] <- min(unlist(iid_sample_list))
+      }
+      iid_sample
+    }
+  }
   distionary:::new_distribution(d, class = "minimum")
 }
 
