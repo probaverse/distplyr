@@ -75,8 +75,6 @@ test_that("division operator works correctly", {
   # Test constant / distribution with negative constant
   result4 <- -5 / gamma_dist
   expect_equal(result4, multiply(invert(gamma_dist), -5))
-  plot(result4, "density", from = -5, to = 0, n = 1000)
-  plot(multiply(invert(gamma_dist), -5), "density", from = -5, to = 0, n = 1000)
 
   # Test 0 / distribution
   result5 <- 0 / gamma_dist
