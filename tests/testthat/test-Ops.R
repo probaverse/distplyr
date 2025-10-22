@@ -6,14 +6,16 @@ test_that("addition operator works correctly", {
 
   # Test distribution + constant
   result1 <- gamma_dist + 5
-  expect_equal(result1, shift(gamma_dist, 5))
+  expected <- shift(gamma_dist, 5)
+  expect_equal(result1, expected)
 
   # Test constant + distribution
   result2 <- 5 + gamma_dist
-  expect_equal(result2, shift(gamma_dist, 5))
+  expect_equal(result2, expected)
 
-  # Test that both approaches give same result
-  expect_equal(result1, result2)
+  # Test `+` as unary operator.
+  result3 <- +gamma_dist
+  expect_equal(result3, gamma_dist)
 })
 
 test_that("subtraction operator works correctly", {
@@ -44,6 +46,14 @@ test_that("multiplication operator works correctly", {
   # Test constant * distribution
   result2 <- 5 * gamma_dist
   expect_equal(result2, multiply(gamma_dist, 5))
+
+  # Test distribution * -constant
+  result3 <- gamma_dist * -5
+  expect_equal(result3, multiply(gamma_dist, -5))
+
+  # Test -constant * distribution
+  result4 <- -5 * gamma_dist
+  expect_equal(result4, multiply(gamma_dist, -5))
 })
 
 test_that("division operator works correctly", {
@@ -54,17 +64,23 @@ test_that("division operator works correctly", {
   result1 <- gamma_dist / 5
   expect_equal(result1, multiply(gamma_dist, 1 / 5))
 
-  # Test constant / distribution with positive constant
+  # Test 1 / distribution
   result2 <- 5 / gamma_dist
-  expect_equal(result2, invert(multiply(gamma_dist, 1 / 5)))
+  expect_equal(result2, multiply(invert(gamma_dist), 5))
+
+  # Test constant / distribution with positive constant
+  result3 <- 5 / gamma_dist
+  expect_equal(result3, multiply(invert(gamma_dist), 5))
 
   # Test constant / distribution with negative constant
-  result3 <- -5 / gamma_dist
-  expect_equal(result3, invert(flip(multiply(gamma_dist, 5))))
+  result4 <- -5 / gamma_dist
+  expect_equal(result4, multiply(invert(gamma_dist), -5))
+  plot(result4, "density", from = -5, to = 0, n = 1000)
+  plot(multiply(invert(gamma_dist), -5), "density", from = -5, to = 0, n = 1000)
 
-  # Test constant / distribution with zero constant
-  result4 <- 0 / gamma_dist
-  expect_equal(result4, dst_degenerate(0))
+  # Test 0 / distribution
+  result5 <- 0 / gamma_dist
+  expect_equal(result5, dst_degenerate(0))
 })
 
 test_that("exponentiation operator works correctly", {
@@ -88,9 +104,25 @@ test_that("exponentiation operator works correctly", {
     eval_cdf(unif_dist, at = (1:25)^(1/2.1))
   )
 
+  # n^d = exp(log(n)*d)
+  result4 <- 2.5^unif_dist
+  expected4 <- exp(multiply(unif_dist, log(2.5)))
+  expect_equal(result4, expected4)
+
   # Test error cases
   expect_error(unif_dist^"a")
   expect_error((-2)^unif_dist)
   expect_error(0^unif_dist)
   expect_error(dst_norm(0, 1)^2)
+  expect_error(0 / dst_pois(1))
+})
+
+test_that("Two distributions input into a binary operator throws an error.", {
+  d1 <- dst_exp(5)
+  d2 <- dst_weibull(5, 3)
+  expect_error(d1 + d2)
+  expect_error(d1 - d2)
+  expect_error(d1 * d2)
+  expect_error(d1 / d2)
+  expect_error(d1 ^ d2)
 })
