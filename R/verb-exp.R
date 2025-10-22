@@ -55,6 +55,7 @@ exp_distribution <- function(distribution) {
     realize = function(n) {
       exp(distionary::realize(distribution, n = n))
     },
+    range = exp(range(distribution)),
     .vtype = distionary::vtype(distribution),
     .name = "Exponentiated",
     .parameters = list(
