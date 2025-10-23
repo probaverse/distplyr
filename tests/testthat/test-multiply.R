@@ -49,6 +49,13 @@ test_that("Multiply - special cases - light testing", {
   finite_trns <- multiply(finite_dist, 2)
   expect_equal(pretty_name(finite_trns), "Degenerate")
   expect_equal(parameters(finite_trns)[["location"]], 6)
+
+  # Double multiply
+  expect_equal(
+    multiply(multiply(dst_pois(1), 2), -3),
+    multiply(dst_pois(1), -6)
+  )
+  expect_equal(multiply(multiply(dst_pois(1), 3), 1 / 3), dst_pois(1))
 })
 
 

@@ -42,6 +42,9 @@ invert <- function(distribution) {
   } else if (nm == "Degenerate") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_degenerate(1 / p[["location"]]))
+  } else if (nm == "Inverse") {
+    p <- distionary::parameters(distribution)
+    return(p[["distribution"]])
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

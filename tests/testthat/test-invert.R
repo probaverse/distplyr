@@ -13,6 +13,9 @@ test_that("Invert - special cases - light testing", {
   deg_trns <- invert(deg_dist)
   expect_equal(pretty_name(deg_trns), "Degenerate")
   expect_equal(parameters(deg_trns)[["location"]], 1 / 5)
+
+  # Double inverting
+  expect_equal(invert(invert(dst_norm(1, 1))), dst_norm(1, 1))
 })
 
 test_that("Invert - bad parameters", {

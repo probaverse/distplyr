@@ -42,6 +42,10 @@ test_that("Shift - special cases - light testing", {
   finite_trns <- shift(finite_dist, 2)
   expect_equal(pretty_name(finite_trns), "Degenerate")
   expect_equal(parameters(finite_trns)[["location"]], 5)
+
+  # Double shifting
+  expect_equal(shift(shift(dst_pois(1), 5), -3), shift(dst_pois(1), 2))
+  expect_equal(shift(shift(dst_pois(1), 3), -3), dst_pois(1))
 })
 
 

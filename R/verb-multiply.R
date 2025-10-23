@@ -59,6 +59,9 @@ multiply <- function(distribution, constant) {
   } else if (nm == "Degenerate") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_degenerate(p[["location"]] * constant))
+  } else if (nm == "Scaled") {
+    p <- distionary::parameters(distribution)
+    return(multiply(p[["distribution"]], constant * p[["constant"]]))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

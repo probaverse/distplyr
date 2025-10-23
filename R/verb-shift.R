@@ -1,27 +1,26 @@
 #' Linear Transformations
 #'
-#' `shift()` a distribution by adding a constant, or `multiply()` a
-#' distribution by a constant. `flip()` is a specific case of multiplying
-#' a distribution by `-1`, resulting in "flipping" the distribution about 0.
+#' Change the location (`shift()`) and scale (`multiply()`) of a distribution.
+#' The `flip()` verb is also available for negating a distribution, and is
+#' called internally when `multiply()` receives a negative constant. These
+#' transformations can also be accessed by the binary operators `+`, `-`,
+#' and `*`.
 #'
-#' @param distribution A probability distribution.
+#' @param distribution A probability distribution of class `"dst"`.
 #' @param constant A single numeric by which to shift or multiply the
 #' distribution by.
 #' @return A distribution, shifted or multiplied by the constant.
 #' Specifically, a distribution with subclass "shift", "scale", or "flip".
-#' @note You can also use the binary operations `+`, `-`, `*`, and `/`
-#' to access these transformations.
-#' @details Specifically, if `X` is a random variable coming from a
-#' distribution, then the resulting distributions are as follows:
+#' @details If `X` is a random variable,
+#' then the transformations correspond to the following:
 #'
-#' - For `shift()`, is the distribution of `X + constant`.
-#' - For `multiply()`, is the distribution of `X * constant`.
-#' - For `flip()`, is the distribution of `-X`.
+#' - `shift()` provides the distribution of `X + constant`.
+#' - `multiply()` provides the distribution of `X * constant`.
+#' - `flip()` provides the distribution of `-X`.
 #'
-#' Although the `multiply()` function accepts negative constants,
-#' the corresponding "scale" distribution class only holds positive
-#' constants, delegating a potential negative sign to the "flip" class.
-#' @seealso `invert()`
+#' Simplifications are made for certain distributions: Normal, Uniform,
+#' Cauchy, GEV, Finite, and Degenerate.
+#' @seealso [invert()] for division by a distribution.
 #' @examples
 #' d_pois <- distionary::dst_pois(1.1)
 #' d_norm <- distionary::dst_norm(4, 1)
@@ -31,7 +30,7 @@
 #' shift(d_pois, 1)
 #' d_pois + 1
 #'
-#' # Multiply a Uniform distribution by 2.
+#' # Multiply a Uniform distribution by 2: simplifies to a Uniform distribution.
 #' multiply(d_unif, 2)
 #' d_unif * 2
 #'
@@ -89,6 +88,11 @@ shift <- function(distribution, constant) {
   } else if (nm == "Degenerate") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_degenerate(p[["location"]] + constant))
+  } else if (nm == "Shifted") {
+    p <- distionary::parameters(distribution)
+    prev_const <- p[["shift"]]
+    base_dist <- p[["distribution"]]
+    return(shift(base_dist, constant + prev_const))
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

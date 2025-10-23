@@ -40,6 +40,9 @@ test_that("Flip - special cases - light testing", {
   finite_trns <- flip(finite_dist)
   expect_equal(pretty_name(finite_trns), "Degenerate")
   expect_equal(parameters(finite_trns)[["location"]], -3)
+
+  # Special implementation for Negated
+  expect_equal(flip(flip(dst_nbinom(3, 0.5))), dst_nbinom(3, 0.5))
 })
 
 
