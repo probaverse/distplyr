@@ -18,8 +18,8 @@
 #' - `multiply()` provides the distribution of `X * constant`.
 #' - `flip()` provides the distribution of `-X`.
 #'
-#' Simplifications are made for certain distributions: Normal, Uniform,
-#' Cauchy, GEV, Finite, and Degenerate.
+#' Simplifications are made in some situations, and will improve with future
+#' versions of distplyr.
 #' @seealso [invert()] for division by a distribution.
 #' @examples
 #' d_pois <- distionary::dst_pois(1.1)
@@ -34,7 +34,7 @@
 #' multiply(d_unif, 2)
 #' d_unif * 2
 #'
-#' # Flip a Normal distribution.
+#' # Flip a Normal distribution: simplifies to another Normal distribution.
 #' flip(d_norm)
 #' -d_norm
 #'

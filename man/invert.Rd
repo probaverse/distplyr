@@ -7,36 +7,27 @@
 invert(distribution)
 }
 \arguments{
-\item{distribution}{A probability distribution.}
+\item{distribution}{A probability distribution of class \code{"dst"}.}
 }
 \value{
 An inverse distribution.
-Specifically, a distribution with subclass "inverse".
 }
 \description{
-Access the inverse of a distribution. Specifically, if \code{X} is a random
-variable coming from a distribution, \code{invert()} returns the
-distribution of \code{1 / X}.
+Invert a distribution. Specifically, if \code{X} is a random
+variable, \code{invert()} returns the distribution of \code{1 / X}.
+The \code{/} operator can also be used to obtain the distribution.
 }
 \details{
-Simplifications for this verb include:
-\itemize{
-\item "Finite" distributions become other Finite distributions.
-}
-}
-\note{
-An error is returned if the original distribution
-has 0 as a possible outcome
-(i.e., \code{eval_pmf(distribution, at = 0)} is non-zero),
-because 0 does not have a reciprocal.
+Distributions must not have mass at 0, otherwise an error is returned
+(i.e., \code{eval_pmf(distribution, at = 0)} is non-zero).
 
-You can also obtain the inverse distribution by putting
-the distribution in the denominator of \code{/}.
+Simplifications are made in some situations, and will improve with future
+versions of distplyr.
 }
 \examples{
-1 / (distionary::dst_pois(3.4) + 1)
 invert(distionary::dst_norm(0, 1))
+1 / (distionary::dst_pois(3.4) + 1)
 }
 \seealso{
-\code{flip()}, \code{scale()}
+\code{\link[=flip]{flip()}}
 }

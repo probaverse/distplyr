@@ -13,7 +13,7 @@ multiply(distribution, constant)
 shift(distribution, constant)
 }
 \arguments{
-\item{distribution}{A probability distribution.}
+\item{distribution}{A probability distribution of class \code{"dst"}.}
 
 \item{constant}{A single numeric by which to shift or multiply the
 distribution by.}
@@ -23,26 +23,23 @@ A distribution, shifted or multiplied by the constant.
 Specifically, a distribution with subclass "shift", "scale", or "flip".
 }
 \description{
-\code{shift()} a distribution by adding a constant, or \code{multiply()} a
-distribution by a constant. \code{flip()} is a specific case of multiplying
-a distribution by \code{-1}, resulting in "flipping" the distribution about 0.
+Change the location (\code{shift()}) and scale (\code{multiply()}) of a distribution.
+The \code{flip()} verb is also available for negating a distribution, and is
+called internally when \code{multiply()} receives a negative constant. These
+transformations can also be accessed by the binary operators \code{+}, \code{-},
+and \code{*}.
 }
 \details{
-Specifically, if \code{X} is a random variable coming from a
-distribution, then the resulting distributions are as follows:
+If \code{X} is a random variable,
+then the transformations correspond to the following:
 \itemize{
-\item For \code{shift()}, is the distribution of \code{X + constant}.
-\item For \code{multiply()}, is the distribution of \code{X * constant}.
-\item For \code{flip()}, is the distribution of \code{-X}.
+\item \code{shift()} provides the distribution of \code{X + constant}.
+\item \code{multiply()} provides the distribution of \code{X * constant}.
+\item \code{flip()} provides the distribution of \code{-X}.
 }
 
-Although the \code{multiply()} function accepts negative constants,
-the corresponding "scale" distribution class only holds positive
-constants, delegating a potential negative sign to the "flip" class.
-}
-\note{
-You can also use the binary operations \code{+}, \code{-}, \code{*}, and \code{/}
-to access these transformations.
+Simplifications are made in some situations, and will improve with future
+versions of distplyr.
 }
 \examples{
 d_pois <- distionary::dst_pois(1.1)
@@ -53,11 +50,11 @@ d_unif <- distionary::dst_unif(0, 1)
 shift(d_pois, 1)
 d_pois + 1
 
-# Multiply a Uniform distribution by 2.
+# Multiply a Uniform distribution by 2: simplifies to a Uniform distribution.
 multiply(d_unif, 2)
 d_unif * 2
 
-# Flip a Normal distribution.
+# Flip a Normal distribution: simplifies to another Normal distribution.
 flip(d_norm)
 -d_norm
 
@@ -65,5 +62,5 @@ flip(d_norm)
 4 - 2 * d_pois
 }
 \seealso{
-\code{invert()}
+\code{\link[=invert]{invert()}} for division by a distribution.
 }
