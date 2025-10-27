@@ -13,3 +13,4 @@
 ^\.github$
 ^distplyr\.Rproj$
 ^cran-comments\.md$
+^codemeta\.json$

@@ -1,15 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# distplyr <img src="man/figures/distplyr-240x278.png" align="right" height="150"/>
+# distplyr <a href="https://distplyr.probaverse.com/"><img src="man/figures/logo.png" align="right" height="139" alt="distplyr website" /></a>
 
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/vincenzocoia/distplyr/workflows/R-CMD-check/badge.svg)](https://github.com/vincenzocoia/distplyr/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/vincenzocoia/distplyr/branch/master/graph/badge.svg)](https://codecov.io/gh/vincenzocoia/distplyr?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![codecov](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9)](https://codecov.io/gh/probaverse/distplyr)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/distplyr)](https://CRAN.R-project.org/package=distplyr)
 [![License:
@@ -17,23 +18,10 @@ MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.
 [![R-CMD-check](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-distplyr provides a grammar for manipulating (univariate) probability
-distributions, so that you can make probability distributions that
-realistically represent your data. Distributions add colour to your
-analysis: they show a complete picture of uncertainty.
-
-Use distplyr to:
-
-- start with distribution “building blocks” with the `dst_*()` family of
-  functions, and
-- manipulate these distributions using distplyr verbs.
-
-The result is easy access to a wide range of distributions – more than
-just “elementary” distributions like a Normal or Poisson distribution.
-
-distplyr sits on top of the [distionary](https://distionary.netlify.app)
-package, which provides a framework for creating distribution “building
-blocks” as well as evaluating distributions.
+distplyr breathes life into probability distributions by providing a
+grammar for their modification and reshaping. It works seamlessly with
+distribution objects from the
+[distionary](https://distionary.probaverses.com) package.
 
 The distplyr package name is inspired by the
 [dplyr](https://dplyr.tidyverse.org/) R package: whereas distplyr
@@ -45,11 +33,8 @@ grammar for manipulating *data*.
 `distplyr` is not on CRAN yet, so the best way to install it is:
 
 ``` r
-devtools::install_github("vincenzocoia/distplyr")
+remotes::install_github("probaverse/distplyr")
 ```
-
-Attaching the distplyr package with `library(distplyr)` also attaches
-the distionary package.
 
 ## Basic Usage
 
@@ -78,7 +63,7 @@ shifting a Poisson distribution.
 Here’s its probability mass function:
 
 ``` r
-enframe_pmf(d1, at = 0:10) %>% 
+enframe_pmf(d1, at = 0:10) |>
   plot()
 ```
 
@@ -90,7 +75,7 @@ continue as an exponential distribution:
 ``` r
 x <- c(1.6, 0.9, 0.2, 1.4, 0.4, 0.3, 0.2, 0.4, 0.2, 1.5)
 mu <- mean(x)
-(d2 <- dst_empirical(x) %>% 
+(d2 <- dst_empirical(x) |>
   graft_right(dst_exp(mu), breakpoint = max(x)))
 #> Mixture Distribution
 #> 
@@ -149,8 +134,15 @@ Some examples:
   distplyr aims to provide a human-centric interface by providing a
   grammar.
 
-------------------------------------------------------------------------
+## Acknowledgements
 
-Please note that the ‘distplyr’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
+The creation of distplyr would not have been possible without the
+support of the R Consortium, The Natural Science and Engineering
+Research Council of Canada (NSERC), The University of British Columbia,
+and BGC Engineering Inc.
+
+## Code of Conduct
+
+Please note that the distplyr project is released with a [Contributor
+Code of Conduct](https://distplyr.probaverse.com/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.

@@ -47,7 +47,6 @@ rv_transform <- function(.dst, g, ginv, gprime, ginvprime) {
 		prop = list(mean = NA,
 					sd   = NA,
 					var  = NA,
-					evi  = NA,
 					has_pdf = .has_pdf,
 					has_pmf = .has_pmf)
 	)

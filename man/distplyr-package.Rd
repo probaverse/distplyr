@@ -6,6 +6,8 @@
 \alias{distplyr-package}
 \title{distplyr: Manipulation of Univariate Distributions}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.
 }
 \seealso{
