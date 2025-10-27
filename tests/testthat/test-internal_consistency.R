@@ -1,3 +1,20 @@
+# Test the internal consistency of distributions coming from distplyr
+#
+# "Internal consistency" means that all the properties that have been
+# defined for a distribution are consistent with each other. For example,
+# the specified density integrates to the CDF; the specified mean matches
+# the mean calculated from the density; etc.
+#
+# This also is a way of checking that the distribution properties are valid,
+# such as the density integrating to an area of 1. For instance, if it didn't,
+# then it probably wouldn't match the density derived from the CDF, or the
+# specified mean wouldn't match the mean calculated from the density.
+#
+# The strategy is the same as in distionary, which defines distributions like
+# Normal, Gamma, etc., and checks that the specified properties are internally
+# consistent. In fact, the code is mostly a copy-paste, with minor changes
+# specific to distplyr. A future version aims to make this testing more
+# intuitive rather than hacky.
 library(distionary)
 
 test_that("Internal consistency of the distributions arising from verbs.", {

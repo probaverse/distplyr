@@ -2,17 +2,38 @@
 #
 # For most verbs, distribution simplifications are helpful conceptually and
 # for efficiency. For example, the logarithm of a Normal distribution is a
-# Log Normal; a mixture of Finite distributions is also Finite. Parameter
-# combinations for each verb that results in such simplifications are covered
-# in the `special_distributions` internal object.
+# Log Normal; a mixture of Finite distributions is also Finite. But are the
+# simplifications coded up correctly?
 #
-# To test that the correct simplified distribution was identified, one only
-# needs to check that one of the representations of the simplified distribution
-# matches that of the standard implementation. Not all representations need to
-# be checked, because in all cases, a valid distribution object is returned,
+# This is tested in two ways:
+#
+# 1. Light testing by comparing parameters. E.g., checking that the log of a
+#    LogNormal distribution is a specific Normal distribution.
+#    - These are conducted in a file for each verb.
+#    - This does not check that the simplification was correct. This case is
+#      obvious, but what about, for example, `maximize()`ing multiple finite
+#      distributions resulting in another finite distribution?
+# 2. More rigorous testing to verify that calculations (and derivations!)
+#    are correct (or at least, provide good evidence that they are correct).
+#    This is done here.
+#
+# Strategy of rigorous testing:
+#
+# - Define a `special_distributions` object that defines
+#   parameter combinations for each verb that results in a simplification.
+# - For each case, compute the simplified distribution using the verb. Also
+#   compute the standard distribution (i.e., without simplifications). In most
+#   cases, this can be done by the hack of setting the "name" attribute of each
+#   input distribution to "Unknown", but some simplifications (maximize and
+#   minimize) require more work (done in those verb files).
+# - Compare the CDFs of the two resulting distributions over a fine grid.
+#
+# Only one representation is needed to be checked,
+# because in all cases, a valid distribution object is returned,
 # and the internal consistency of each distribution family has already been
-# checked (either in distplyr for verb-based distributions, or in distionary
-# for standard distribution families).
+# checked (either in distplyr under `test-internal_consistency` or in distionary
+# for standard distribution families). CDF is used because it's currently
+# required for all distributions.
 test_that("Simplifications: CDFs match.", {
   ## Consider all families that are treated specially for each verb.
   special_distributions <- list(
