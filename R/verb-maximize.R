@@ -1,20 +1,86 @@
-#' Max Value of Several Distributions
+#' Extremum of Several Distributions
 #'
-#' For a collection of distributions, this function provides the
-#' distribution of the maximum value from independent draws of
+#' @description
+#' For a collection of distributions, obtain the distributions of the
+#' maximum (`maximize()`) and minimum (`minimize()`) from independent draws of
 #' each component distribution.
 #'
-#' @inheritParams dots_to_dsts
+#' Aliases `maximise()` and `minimise()` are also provided.
+#'
+#' @param ... Distribution objects, or list of distributions.
 #' @param draws Number of draws from each distribution considered in the
-#' maximum. Either a single numeric applying to all distributions in `...`,
+#' maximum (possibly not integer, but never negative).
+#' Either a single numeric applying to all distributions in `...`,
 #' or a vector matching the number of distributions in `...`.
+#' @param na_action_dst,na_action_draws What should be done with Null
+#' distributions in `...` and `NA` in `draws`?
+#' Character vector of length 1:
+#' one of "fail", "null" (default), or "drop". See details.
 #' @return A distribution of class `"max"`.
-#' @details To use precise language, if `X1`, ..., `Xp` are
-#' `p` independent random variables corresponding to the distributions
-#' in `...`, then the distribution returned is of `max(X1, ..., Xp)`.
-#' Distributions and `draws` are recycled to the same length using
-#' `vctrs::vec_recycle_common()`.
-#' @rdname maximum
+#' @details
+#' To give an example of what distribution is returned, if X1 and X2 are
+#' two random variables with distributions D1 and D2 respectively, then
+#' `maximize(D1, D2, draws = c(2, 3))` returns the distribution of
+#' `max(X1, X1, X2, X2, X2)`.
+#'
+#' Distributions in `...` and the `draws` vector are recycled to have the
+#' same length, but only if one of them has length 1
+#' (via `vctrs::vec_recycle_common()`).
+#'
+#' `na_action_dst` and `na_action_draws` specify the NA action for distributions
+#' and `draws`. "NA" here means either `NA` in the `draws` vector, or
+#' a Null distribution (`distionary::dst_null()`) in the distributions.
+#' Options are, in order of precedence:
+#'
+#' - `"fail"`: Throw an error in the presence of NAs.
+#' - `"null"`: Return a Null distribution in the presence of NAs.
+#' - `"drop"`: Remove distribution-weight pairs having an NA value
+#'
+#' Simplifications made in these functions include the following:
+#'
+#' - If any distributions are entirely to the left (right) of others,
+#'   then they are removed from consideration in `maximize()` (`minimize()`).
+#' - If all Finite distributions are input, the result is also a Finite
+#'   distribution.
+#' - If the same distribution is input multiple times, their corresponding
+#'   draws are summed.
+#' @examples
+#' # One is always more extreme than the other in this case.
+#' d1 <- dst_unif(-1, 2)
+#' d2 <- dst_unif(5, 6)
+#' maximize(d1, d2) # d2
+#' minimize(d1, d2) # d1
+#'
+#' # Visualizing the maximum and minimum
+#' d3 <- dst_norm(4, 1)
+#' d4 <- dst_exp(0.3)
+#'
+#' dmax <- maximize(d3, d4, draws = 1:2)
+#' dmin <- minimize(d3, d4, draws = 1:2)
+#'
+#' # Maximum
+#' plot(d3, col = "blue", lty = 2, from = 0, to = 14)
+#' plot(d4, col = "red", lty = 2, add = TRUE)
+#' plot(dmax, add = TRUE, n = 1000)
+#' legend(
+#'  "topright",
+#'  legend = c("Maximum", "N(4,1)", "Exp(0.3)"),
+#'  col = c("black", "blue", "red"),
+#'  lty = c(1, 2, 2)
+#' )
+#'
+#' # Minimum
+#' plot(d3, col = "blue", lty = 2, from = 0, to = 10)
+#' plot(d4, col = "red", lty = 2, add = TRUE)
+#' plot(dmin, add = TRUE, n = 1000)
+#' legend(
+#'   "topright",
+#'   legend = c("Minimum", "N(4,1)", "Exp(0.3)"),
+#'   col = c("black", "blue", "red"),
+#'   lty = c(1, 2, 2)
+#' )
+#'
+#' @rdname extremum
 #' @export
 maximize <- function(...,
                      draws = 1,
@@ -94,16 +160,17 @@ maximize <- function(...,
   distionary:::new_distribution(d, class = "maximum")
 }
 
-# Function to handle specific simplifications for maximize. For example.
-# distributions entirely to the left of others get removed; if all finite
-# distributions are input, then the result is also finite; etc.
-#
-# This is useful so that the variables used in these algorithms don't show up
-# in the enclosing environment of the resulting distribution's representations,
-# which makes it hard to do unit tests.
-#
-# Outputs a distribution if a simplification was possible, or a reduced list
-# of dsts and draws otherwise.
+#' Function to handle specific simplifications for maximize. For example.
+#' distributions entirely to the left of others get removed; if all finite
+#' distributions are input, then the result is also finite; etc.
+#'
+#' This is useful so that the variables used in these algorithms don't show up
+#' in the enclosing environment of the resulting distribution's representations,
+#' which makes it hard to do unit tests.
+#'
+#' Outputs a distribution if a simplification was possible, or a reduced list
+#' of dsts and draws otherwise.
+#' @noRd
 maximize_simplifications <- function(dsts, draws) {
   ## The largest minimum becomes the new overall minimum.
   r <- lapply(dsts, range)
@@ -153,6 +220,17 @@ maximize_simplifications <- function(dsts, draws) {
   )
 }
 
-#' @rdname maximum
+#' @rdname extremum
+#' @usage NULL
 #' @export
-maximise <- function(..., draws = 1) maximize(..., draws = draws)
+maximise <- function(...,
+                     draws = 1,
+                     na_action_dst = c("null", "drop", "fail"),
+                     na_action_draws = c("null", "drop", "fail")) {
+  maximize(
+    ...,
+    draws = draws,
+    na_action_dst = na_action_dst,
+    na_action_draws = na_action_draws
+  )
+}

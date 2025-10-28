@@ -1,45 +1,68 @@
-#' Linear Transformations
+#' Linear and Reciprocal Transformations
 #'
-#' Change the location (`shift()`) and scale (`multiply()`) of a distribution.
-#' The `flip()` verb is also available for negating a distribution, and is
-#' called internally when `multiply()` receives a negative constant. These
-#' transformations can also be accessed by the binary operators `+`, `-`,
-#' and `*`.
+#' Transform distributions using location shifts, scaling, negation, and
+#' reciprocals. If `X` is a random variable following a distribution, these
+#' functions return the distribution of the transformed variable.
 #'
-#' @param distribution A probability distribution of class `"dst"`.
-#' @param constant A single numeric by which to shift or multiply the
-#' distribution by.
-#' @return A distribution, shifted or multiplied by the constant.
-#' Specifically, a distribution with subclass "shift", "scale", or "flip".
-#' @details If `X` is a random variable,
-#' then the transformations correspond to the following:
+#' @param distribution A probability distribution.
+#' @param constant A numeric value for shifting or scaling.
 #'
-#' - `shift()` provides the distribution of `X + constant`.
-#' - `multiply()` provides the distribution of `X * constant`.
-#' - `flip()` provides the distribution of `-X`.
+#' @section Functions vs Operators:
+#' These transformations can be applied using named functions or arithmetic
+#' operators:
+#' - `shift(d, a)` or `d + a` - Returns distribution of `X + a`
+#' - `multiply(d, a)` or `d * a` - Returns distribution of `X * a`
+#' - `flip(d)` or `-d` - Returns distribution of `-X`
+#' - `invert(d)` or `1 / d` - Returns distribution of `1 / X`
 #'
-#' Simplifications are made in some situations, and will improve with future
-#' versions of distplyr.
-#' @seealso [invert()] for division by a distribution.
+#' For complete documentation of operator usage, see [Ops.dst()].
+#'
+#' @section Special Cases:
+#' **Negation in multiplication**: When `multiply()` receives a negative
+#' constant, it internally calls `flip()` on the result of multiplying by
+#' the absolute value.
+#'
+#' **Inversion constraint**: `invert()` requires that the distribution has no
+#' mass at zero (i.e., `P(X = 0) = 0`). An error is returned if this
+#' condition is violated.
+#'
+#' @section Simplifications:
+#' These functions apply automatic simplifications when possible. For example:
+#' - Shifting a Normal distribution returns another Normal distribution
+#' - Multiplying a Uniform distribution returns another Uniform distribution
+#' - Flipping a symmetric distribution may preserve its form
+#'
+#' More simplifications will be added in future versions of distplyr.
+#'
+#' @return A transformed distribution.
+#'
 #' @examples
 #' d_pois <- distionary::dst_pois(1.1)
 #' d_norm <- distionary::dst_norm(4, 1)
 #' d_unif <- distionary::dst_unif(0, 1)
 #'
-#' # Shift a Poisson distribution by 1.
+#' # Shifting
 #' shift(d_pois, 1)
-#' d_pois + 1
+#' d_pois + 1           # Equivalent using operator
 #'
-#' # Multiply a Uniform distribution by 2: simplifies to a Uniform distribution.
+#' # Scaling
 #' multiply(d_unif, 2)
-#' d_unif * 2
+#' d_unif * 2           # Equivalent using operator
 #'
-#' # Flip a Normal distribution: simplifies to another Normal distribution.
+#' # Negation
 #' flip(d_norm)
-#' -d_norm
+#' -d_norm              # Equivalent using operator
 #'
-#' # Combine multiple operations:
+#' # Inversion
+#' d_positive <- distionary::dst_unif(1, 2)
+#' invert(d_positive)
+#' 1 / d_positive       # Equivalent using operator
+#'
+#' # Combine multiple operations
 #' 4 - 2 * d_pois
+#' multiply(flip(multiply(d_pois, 2)), -1) + 4  # Equivalent
+#'
+#' @seealso [Ops.dst()] for arithmetic operators including `+`, `-`, `*`, `/`.
 #' @rdname linear_transform
 #' @export
 shift <- function(distribution, constant) {

@@ -1,8 +1,8 @@
 #' Exponential Transformation of a Distribution
 #'
-#' Apply the exponential function to a distribution. Specifically, if `X`
-#' is a random variable coming from a distribution, `exp_distribution()`
-#' returns the distribution of `exp(X)`.
+#' Internal function. Users should use `exp()` instead.
+#' Returns the distribution of `exp(X)` where `X` is a random variable
+#' following the input distribution.
 #'
 #' @param distribution A probability distribution.
 #' @return A distribution transformed by the exponential function.
@@ -26,9 +26,15 @@ exp_distribution <- function(distribution) {
     return(distionary::dst_empirical(
       exp(p[["outcomes"]]), weights = p[["probs"]]
     ))
-  } else if (nm == "Degenerate") {
+  }
+  if (nm == "Degenerate") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_degenerate(exp(p[["location"]])))
+  }
+  if (nm == "Logarithmic") {
+    p <- distionary::parameters(distribution)
+    inner_dist <- p[["distribution"]]
+    return(inner_dist)
   }
   ## END special simplifications -----------------------------------------------
   d <- distionary::distribution(

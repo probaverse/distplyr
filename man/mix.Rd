@@ -12,30 +12,55 @@ mix(
 )
 }
 \arguments{
-\item{...}{Distribution objects, or lists of distributions.}
+\item{...}{Distribution objects, or list of distributions.}
 
 \item{weights}{Vector of weights corresponding to the distributions;
-or, single numeric for equal weights.}
+or, single numeric for equal weights. When normalized, they correspond to
+the probabilities of selecting each distribution.}
 
-\item{na.rm}{Remove \code{NA} distributions and \code{NA} weights? \code{TRUE} if yes;
-default is \code{FALSE}.}
+\item{na_action_dst, na_action_w}{What should be done with null
+distributions in \code{...} and \code{NA} in \code{weights}?
+Character vector of length 1:
+one of "fail", "null" (default), or "drop". See details.}
 }
 \value{
 A mixture distribution.
 }
 \description{
-Create a mixture distribution.
+Create a mixture distribution, which can be thought of as an average of
+multiple distributions (in terms of their CDF, density, PMF, or survival
+functions, for example).
+Data drawn from a mixture distribution involves
+two steps: first randomly selecting the distribution to draw from, followed
+by the random selection from that distribution.
+}
+\details{
+Distributions in \code{...} and the \code{weights} vector are recycled to have the
+same length, but only if one of them has length 1
+(via \code{vctrs::vec_recycle_common()}).
+
+\code{na_action_dst} and \code{na_action_w} specify the NA action for distributions
+and weights. "NA" here means either \code{NA} in the \code{weights} vector, or
+a Null distribution (\code{distionary::dst_null()}) in the distributions.
+Options are, in order of precedence:
+\itemize{
+\item \code{"fail"}: Throw an error in the presence of NAs.
+\item \code{"null"}: Return a Null distribution in the presence of NAs.
+\item \code{"drop"}: Remove distribution-weight pairs having an NA value
+}
 }
 \examples{
 library(distionary)
 a <- dst_norm(0, 1)
 b <- dst_norm(5, 2)
 m1 <- mix(a, b, weights = c(1, 4))
-#plot(m1)
-vtype(m1)
-
-c <- dst_pois(6)
-m2 <- mix(a, b, c, weights = c(0.2, 0.5, 0.3))
-#plot(m2, n = 1001)
-vtype(m2)
+plot(a, col = "red", lty = 2, from = -3, to = 11)
+plot(b, add = TRUE, col = "blue", lty = 2)
+plot(m1, add = TRUE)
+legend(
+  "topright",
+   legend = c("Mixture", "N(0,1)", "N(5,2)"),
+   col = c("black", "red", "blue"),
+   lty = c(1, 2, 2)
+)
 }

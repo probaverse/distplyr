@@ -1,12 +1,13 @@
 #' Mixture Distributions
 #'
-#' Create a mixture distribution.
-#' Obtained by averaging probabilities (e.g., CDF, density,
-#' PMF) from multiple distributions. Data drawn from these distributions involve
+#' Create a mixture distribution, which can be thought of as an average of
+#' multiple distributions (in terms of their CDF, density, PMF, or survival
+#' functions, for example).
+#' Data drawn from a mixture distribution involves
 #' two steps: first randomly selecting the distribution to draw from, followed
 #' by the random selection from that distribution.
 #'
-#' @inheritParams dots_to_dsts
+#' @param ... Distribution objects, or list of distributions.
 #' @param weights Vector of weights corresponding to the distributions;
 #' or, single numeric for equal weights. When normalized, they correspond to
 #' the probabilities of selecting each distribution.
@@ -34,13 +35,15 @@
 #' a <- dst_norm(0, 1)
 #' b <- dst_norm(5, 2)
 #' m1 <- mix(a, b, weights = c(1, 4))
-#' plot(m1)
-#' vtype(m1)
-#'
-#' c <- dst_pois(6)
-#' m2 <- mix(a, b, c, weights = c(0.2, 0.5, 0.3))
-#' plot(m2, "cdf", n = 1001)
-#' vtype(m2)
+#' plot(a, col = "red", lty = 2, from = -3, to = 11)
+#' plot(b, add = TRUE, col = "blue", lty = 2)
+#' plot(m1, add = TRUE)
+#' legend(
+#'   "topright",
+#'    legend = c("Mixture", "N(0,1)", "N(5,2)"),
+#'    col = c("black", "red", "blue"),
+#'    lty = c(1, 2, 2)
+#' )
 #' @export
 mix <- function(...,
                 weights = 1,

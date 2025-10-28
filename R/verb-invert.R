@@ -1,21 +1,4 @@
-#' Inverse Distribution
-#'
-#' Invert a distribution. Specifically, if `X` is a random
-#' variable, `invert()` returns the distribution of `1 / X`.
-#' The `/` operator can also be used to obtain the distribution.
-#'
-#' @param distribution A probability distribution of class `"dst"`.
-#' @return An inverse distribution.
-#' @seealso [flip()]
-#' @details
-#' Distributions must not have mass at 0, otherwise an error is returned
-#' (i.e., `eval_pmf(distribution, at = 0)` is non-zero).
-#'
-#' Simplifications are made in some situations, and will improve with future
-#' versions of distplyr.
-#' @examples
-#' invert(distionary::dst_norm(0, 1))
-#' 1 / (distionary::dst_pois(3.4) + 1)
+#' @rdname linear_transform
 #' @export
 invert <- function(distribution) {
   checkmate::assert_class(distribution, "dst")

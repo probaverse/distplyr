@@ -1,20 +1,14 @@
 #' Logarithmic Transformation of a Distribution
 #'
-#' Apply the logarithm function to a distribution. Specifically, if `X`
-#' is a random variable coming from a distribution, `log_distribution()`
-#' returns the distribution of `log(X)` with a specified base.
+#' Internal function. Users should use `log()` instead.
+#' Returns the distribution of `log(X)` where `X` is a random variable
+#' following the input distribution.
 #'
 #' @param distribution A probability distribution.
 #' @param base A positive numeric value specifying the base of the logarithm.
 #' Defaults to Euler's constant (natural logarithm).
 #' @return A distribution transformed by the logarithm function.
-#' Specifically, a distribution with subclass "logarithmic".
-#' @note An error is returned if the original distribution
-#' has non-positive values as possible outcomes.
-#' @examples
-#' log_distribution(distionary::dst_unif(1, 10)) # Natural log
-#' log_distribution(distionary::dst_unif(1, 10), base = 10) # Log base 10
-#' @export
+#' @noRd
 log_distribution <- function(distribution, base = exp(1)) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
@@ -34,11 +28,14 @@ log_distribution <- function(distribution, base = exp(1)) {
   if (base == 0) {
     return(distionary::dst_degenerate(0))
   }
+  if (base != exp(1)) {
+    return(log_distribution(distribution) / log(base))
+  }
   ## BEGIN special simplifications ---------------------------------------------
   if (nm == "Log Normal") {
     param <- distionary::parameters(distribution)
-    mu <- param[["meanlog"]] / log(base)
-    sigma <- param[["sdlog"]] / log(base)
+    mu <- param[["meanlog"]]
+    sigma <- param[["sdlog"]]
     return(distionary::dst_norm(mean = mu, sd = sigma))
   }
   if (nm == "Finite") {
@@ -46,49 +43,46 @@ log_distribution <- function(distribution, base = exp(1)) {
     outcomes <- p[["outcomes"]]
     probs <- p[["probs"]]
     return(distionary::dst_empirical(
-      log(outcomes, base = base), weights = probs
+      log(outcomes), weights = probs
     ))
-  } else if (nm == "Degenerate") {
+  }
+  if (nm == "Degenerate") {
     p <- distionary::parameters(distribution)
-    return(distionary::dst_degenerate(log(p[["location"]], base = base)))
+    return(distionary::dst_degenerate(log(p[["location"]])))
+  }
+  if (nm == "Exponentiated") {
+    p <- distionary::parameters(distribution)
+    inner_dist <- p[["distribution"]]
+    return(p[["distribution"]])
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
-  logbase <- log(base)
-  if (base == exp(1)) {
-    base_print <- "e"
-  } else {
-    base_print <- base
-  }
   d <- distionary::distribution(
     cdf = function(x) {
-      distionary::eval_cdf(distribution, at = exp(x * logbase))
+      distionary::eval_cdf(distribution, at = exp(x))
     },
     survival = function(x) {
-      distionary::eval_survival(distribution, at = exp(x * logbase))
+      distionary::eval_survival(distribution, at = exp(x))
     },
     density = function(x) {
-      exp_x <- exp(x * logbase)
-      distionary::eval_density(distribution, at = exp_x) * exp_x * logbase
+      exp_x <- exp(x)
+      distionary::eval_density(distribution, at = exp_x) * exp_x
     },
     pmf = function(x) {
-      distionary::eval_pmf(distribution, at = exp(x * logbase))
+      distionary::eval_pmf(distribution, at = exp(x))
     },
     quantile = function(p) {
-      log(distionary::eval_quantile(distribution, at = p)) / logbase
+      log(distionary::eval_quantile(distribution, at = p))
     },
     realize = function(n) {
-      log(distionary::realize(distribution, n = n)) / logbase
+      log(distionary::realize(distribution, n = n))
     },
     .vtype = distionary::vtype(distribution),
-    .name = paste0("Logarithmic (base ", base_print, ")"),
-    .parameters = list(
-      distribution = distribution,
-      base = base
-    )
+    .name = "Logarithmic",
+    .parameters = list(distribution = distribution)
   )
   if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- log(r, base = base)
+    d[["range"]] <- log(r)
   }
   distionary:::new_distribution(d, class = "logarithmic")
 }

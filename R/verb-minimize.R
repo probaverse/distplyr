@@ -1,18 +1,4 @@
-#' Min Value of Several Distributions
-#'
-#' For a collection of distributions, this function provides the
-#' distribution of the minimum value from independent draws of
-#' each component distribution.
-#'
-#' @inheritParams dots_to_dsts
-#' @param draws Number of draws from each distribution considered in the
-#' minimum. Either a single numeric applying to all distributions in `...`,
-#' or a vector matching the number of distributions in `...`.
-#' @return A distribution of class `"min"`.
-#' @details To use precise language, if `X1`, ..., `Xp` are
-#' `p` independent random variables corresponding to the distributions
-#' in `...`, then the distribution returned is of `min(X1, ..., Xp)`.
-#' @rdname minimum
+#' @rdname extremum
 #' @export
 minimize <- function(...,
                      draws = 1,
@@ -152,7 +138,18 @@ minimize_simplifications <- function(dsts, draws) {
   )
 }
 
-#' @rdname minimum
+#' @rdname extremum
+#' @usage NULL
 #' @export
-minimise <- function(..., draws = 1) minimize(..., draws = draws)
+minimise <- function(...,
+                     draws = 1,
+                     na_action_dst = c("null", "drop", "fail"),
+                     na_action_draws = c("null", "drop", "fail")) {
+  minimize(
+    ...,
+    draws = draws,
+    na_action_dst = na_action_dst,
+    na_action_draws = na_action_draws
+  )
+}
 

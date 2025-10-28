@@ -1,6 +1,6 @@
 library(distionary)
 
-test_that("log function works correctly", {
+test_that("log function dispatches correctly", {
   # Create test distributions
   unif_dist <- dst_unif(1, 10)
   exp_dist <- dst_exp(0.5)
@@ -24,7 +24,7 @@ test_that("log function works correctly", {
   )
 })
 
-test_that("exp function works correctly", {
+test_that("exp function dispatches correctly", {
   # Create test distributions
   gamma_dist <- dst_gamma(shape = 2, rate = 0.5)
 
@@ -35,12 +35,28 @@ test_that("exp function works correctly", {
   )
 })
 
-test_that("unsupported Math functions raise errors", {
-  # Create test distribution
-  gamma_dist <- dst_gamma(shape = 2, rate = 0.5)
+test_that("sqrt function dispatches correctly", {
+  # Create test distributions
+  chi_sq_dist <- dst_chisq(df = 4)
 
-  # Test an unsupported Math function
-  expect_error(sin(gamma_dist))
-  expect_error(sqrt(gamma_dist))
-  expect_error(log(gamma_dist - 5))
+  # Test sqrt
+  expect_equal(
+    sqrt(chi_sq_dist),
+    chi_sq_dist^0.5
+  )
+})
+
+test_that("Simplifications", {
+  # Test that log(exp(X)) simplifies to X
+  dist <- dst_beta(4, 3)
+  expect_equal(log(exp(dist)), dist)
+  expect_equal(exp(log(dist)), dist)
+
+  # Different bases
+  expect_equal(5^(log(dist, base = 5)), dist)
+  expect_equal(log(5^dist, base = 5), dist)
+
+  # Numeric powers simplification
+  expect_equal(sqrt(dist^2), dist)
+  expect_equal(sqrt(dist)^2, dist)
 })

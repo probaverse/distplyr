@@ -1,3 +1,81 @@
+#' Arithmetic Operations for Distributions
+#'
+#' Apply arithmetic operators to probability distributions. These operations
+#' transform distributions in intuitive ways, treating them similarly to
+#' numeric values.
+#'
+#' @details
+#' These S3 methods extend arithmetic operators to work with distributions.
+#'
+#' @param d A probability distribution.
+#' @param a A numeric value.
+#' @aliases +.dst -.dst *.dst /.dst ^.dst
+#' @usage
+#' ## S3 methods for class 'dst'
+#' d + a
+#' d - a
+#' -d
+#' d * a
+#' d / a
+#' a / d
+#' d ^ a
+#' a ^ d
+#' @section Supported Operators:
+#' \describe{
+#'   \item{`d + a` or `a + d`}{Shifts the distribution by adding constant `a`.
+#'     Equivalent to [shift()].}
+#'   \item{`d - a`}{Shifts the distribution by subtracting constant `a`.
+#'     Equivalent to `shift(d, -a)`.}
+#'   \item{`-d`}{Flips the distribution (negation). Equivalent to [flip()].}
+#'   \item{`d * a` or `a * d`}{Scales the distribution by multiplying by
+#'     constant `a`. Equivalent to [multiply()].}
+#'   \item{`d / a`}{Scales the distribution by dividing by constant `a`.
+#'     Equivalent to `multiply(d, 1/a)`.}
+#'   \item{`a / d`}{Returns the distribution of `a / X` (reciprocal scaling).
+#'     For `a = 1`, equivalent to [invert()].}
+#'   \item{`d ^ a`}{Raises the distribution to power `a`. For positive
+#'     distributions only, computed as `exp(a * log(d))`.}
+#'   \item{`a ^ d`}{Returns the distribution of `a^X`. Requires positive
+#'     base `a`.}
+#' }
+#'
+#' @section Power Operator Details:
+#' The power operator `^` deserves special attention:
+#' - When the **base is a distribution** (e.g., `dst_beta(1, 1)^2`),
+#'   it computes the distribution of `X^a` using the transformation
+#'   `exp(a * log(X))`. This requires all values in the distribution to be
+#'   positive.
+#' - When the **exponent is a distribution** (e.g., `2^dst_norm(0, 1)`),
+#'   it computes the distribution of `a^X` using `exp(X * log(a))`.
+#'   The base `a` must be positive.
+#'
+#' These implementations internally use both [Math.dst()] methods `log()`
+#' and `exp()`.
+#'
+#' @return A transformed distribution object.
+#'
+#' @examples
+#' d <- distionary::dst_beta(3, 2)
+#'
+#' # Shifting and scaling
+#' d + 10          # Shift right by 10
+#' d * 2           # Scale by 2
+#' 3 * d - 5       # Scale then shift
+#'
+#' # Power operations
+#' exp(d)          # e^X: exponential of Beta
+#' 2^d             # 2^X: base 2 raised to Beta
+#'
+#' # With positive distributions
+#' d_pos <- distionary::dst_unif(1, 2)
+#' d_pos^2         # X^2: uniform squared
+#' d_pos^0.5       # sqrt(X): square root
+#' sqrt(d_pos)     # Equivalent to d_pos^0.5
+#'
+#' @seealso
+#' - [shift()], [multiply()], [flip()], [invert()] for the underlying
+#'   transformation functions
+#' - [Math.dst()] for `log()`, `exp()`, and `sqrt()` functions
 #' @export
 Ops.dst <- function(e1, e2) {
   op <- .Generic[[1]]

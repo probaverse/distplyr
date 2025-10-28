@@ -10,6 +10,21 @@
 
 Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.
 }
+\details{
+The distplyr package provides tools for manipulating probability distributions
+using intuitive syntax. Key features include:
+
+\strong{Arithmetic operators}: Use \code{+}, \code{-}, \code{*}, \code{/}, and \code{^} with distributions.
+See \code{\link[=Ops.dst]{Ops.dst()}} for details.
+
+\strong{Mathematical functions}: Use \code{log()}, \code{exp()}, \code{log10()}, and \code{sqrt()} with
+distributions. See \code{\link[=Math.dst]{Math.dst()}} for details.
+
+\strong{Transformation functions}: Use \code{\link[=shift]{shift()}}, \code{\link[=multiply]{multiply()}}, \code{\link[=flip]{flip()}}, and \code{\link[=invert]{invert()}}
+to transform distributions. See \code{?linear_transform} for details.
+
+\strong{Mixing distributions}: Use \code{\link[=mix]{mix()}} to create mixture distributions.
+}
 \seealso{
 Useful links:
 \itemize{
