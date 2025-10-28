@@ -49,3 +49,9 @@ test_that("Flip - special cases - light testing", {
 test_that("Flip - bad parameters", {
   expect_error(flip(5))
 })
+
+test_that("Flip correctly executes right-inverse when flat CDF.", {
+  d <- mix(dst_unif(-2, -1), dst_unif(2, 4))
+  flipped <- flip(d)
+  expect_equal(eval_quantile(flipped, at = 0.5), -2)  # Not 1
+})

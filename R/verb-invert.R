@@ -40,8 +40,8 @@ invert <- function(distribution) {
       flip(distribution), at = 1 - F0
     )
     res <- 1 / base_quantiles
-    # p == 0 is a special case whenever base_quantiles = 0 and the range
-    # of the base distribution extends left of 0. This happens
+    # p == 0 is a special case whenever base_quantiles = 0 and there are
+    # negative values to the base distribution. This happens
     # when the cdf is increasing past x=0, because their
     # inverse should actually be -Inf, not Inf.
     if (r[1] < 0) {
