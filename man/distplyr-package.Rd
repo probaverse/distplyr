@@ -4,11 +4,11 @@
 \name{distplyr-package}
 \alias{distplyr}
 \alias{distplyr-package}
-\title{distplyr: Manipulation of Univariate Distributions}
+\title{distplyr: Manipulation of Probability Distributions}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.
+Manipulating probability distributions, using verbs such as `mix`, `shift`, `maximize`, `invert`, and others. This package builds on the distionary package and belongs in the wider probaverse suite of R packages to support statistical modeling and simulations.
 }
 \details{
 The distplyr package provides tools for manipulating probability distributions

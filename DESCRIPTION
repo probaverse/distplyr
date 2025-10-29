@@ -1,6 +1,6 @@
 Type: Package
 Package: distplyr
-Title: Manipulation of Univariate Distributions
+Title: Manipulation of Probability Distributions
 Version: 0.1.5.9000
 Authors@R: c(
     person("Vincenzo", "Coia", email = "vincenzo.coia@gmail.com", 
@@ -9,9 +9,10 @@ Authors@R: c(
     person("Shuyi", "Tan", role = "ctb"),
     person("Zhipeng", "Zhu", role = "ctb")
   )
-Description: Provides an interface for manipulating univariate probability
-    distributions, using verbs such as `graft`, `slice`, `mix`, `shift`,
-    and others.
+Description: Manipulating probability distributions, using verbs such as 
+    `mix`, `shift`, `maximize`, `invert`, and others. This package builds on
+    the distionary package and belongs in the wider probaverse suite of R
+    packages to support statistical modeling and simulations.
 License: MIT + file LICENSE
 Depends: 
     distionary,
