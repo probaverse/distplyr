@@ -2,28 +2,15 @@
 % Please edit documentation in R/Math.R
 \name{Math.dst}
 \alias{Math.dst}
-\alias{exp.dst}
-\alias{log.dst}
-\alias{log10.dst}
-\alias{sqrt.dst}
 \title{Mathematical Transformations for Distributions}
 \usage{
-## S3 method for class 'dst'
-log(x, base = exp(1))
-
-## S3 method for class 'dst'
-log10(x)
-
-## S3 method for class 'dst'
-exp(x)
-
-## S3 method for class 'dst'
-sqrt(x)
+\method{Math}{dst}(x, ...)
 }
 \arguments{
 \item{x}{A probability distribution object.}
 
-\item{...}{Additional arguments passed to specific methods.}
+\item{...}{Additional arguments passed to specific methods. For \code{log()},
+you can specify \code{base} (defaults to \code{exp(1)} for natural log).}
 }
 \value{
 A transformed distribution object.

@@ -8,20 +8,8 @@
 #' These S3 methods extend base R functions to work with distributions.
 #'
 #' @param x A probability distribution object.
-#' @param ... Additional arguments passed to specific methods.
-#' @aliases exp.dst log.dst log10.dst sqrt.dst
-#' @usage
-#' ## S3 method for class 'dst'
-#' log(x, base = exp(1))
-#'
-#' ## S3 method for class 'dst'
-#' log10(x)
-#'
-#' ## S3 method for class 'dst'
-#' exp(x)
-#'
-#' ## S3 method for class 'dst'
-#' sqrt(x)
+#' @param ... Additional arguments passed to specific methods. For `log()`, 
+#'   you can specify `base` (defaults to `exp(1)` for natural log).
 #'
 #' @section Supported Functions:
 #' \describe{
@@ -65,6 +53,7 @@
 #' - [Ops.dst()] for the `^` operator and other arithmetic operations
 #' - [shift()], [multiply()], [flip()], [invert()] for linear transformations
 #' @export
+#' @method Math dst
 Math.dst <- function(x, ...) {
   op <- .Generic[[1]]
   switch(op,

@@ -35,18 +35,30 @@ invert <- function(distribution) {
     # neighbourhood of 0. It should evaluate to the right-hand side of the
     # flat part, but the quantile algorithm evaluates to the left.
     # Flip `distribution` to solve the issue.
-    redo_1 <- p == 1 & base_quantiles < 0
-    base_quantiles[redo_1] <- -distionary::eval_quantile(
-      flip(distribution), at = 1 - F0
-    )
+    p_equals_1 <- p == 1# & base_quantiles < 0
+    if (any(p_equals_1) && r[2] > 0) {
+      from_right <- -distionary::eval_quantile(
+        flip(distribution), at = 1 - F0
+      )
+      if (from_right == 0) {
+        # Try this: 1 / (-0) is -Inf, yet identical(0, -0) is TRUE
+        # and identical(1 / 0, 1 / (-0)) is FALSE!
+        # Make `from_right` a "regular zero".
+        from_right <- 0
+      }
+      base_quantiles[p_equals_1] <- from_right
+    }
     res <- 1 / base_quantiles
-    # p == 0 is a special case whenever base_quantiles = 0 and there are
-    # negative values to the base distribution. This happens
+    # p == 0 is a special case whenever base_quantiles is not negative and
+    # there are negative values to the base distribution. This happens
     # when the cdf is increasing past x=0, because their
     # inverse should actually be -Inf, not Inf.
     if (r[1] < 0) {
-      redo_0 <- p == 0 & base_quantiles == 0
+      redo_0 <- p == 0 & base_quantiles >= 0
       res[redo_0] <- -Inf
+    }
+    if (any(p == 0) && r[1] >= 0) {
+      res[p == 0] <- 1 / r[2]
     }
     res
   }

@@ -7,19 +7,8 @@
 #' @details
 #' These S3 methods extend arithmetic operators to work with distributions.
 #'
-#' @param d A probability distribution.
-#' @param a A numeric value.
-#' @aliases +.dst -.dst *.dst /.dst ^.dst
-#' @usage
-#' ## S3 methods for class 'dst'
-#' d + a
-#' d - a
-#' -d
-#' d * a
-#' d / a
-#' a / d
-#' d ^ a
-#' a ^ d
+#' @param e1 A probability distribution or numeric value.
+#' @param e2 A probability distribution or numeric value.
 #' @section Supported Operators:
 #' \describe{
 #'   \item{`d + a` or `a + d`}{Shifts the distribution by adding constant `a`.
@@ -77,6 +66,7 @@
 #'   transformation functions
 #' - [Math.dst()] for `log()`, `exp()`, and `sqrt()` functions
 #' @export
+#' @method Ops dst
 Ops.dst <- function(e1, e2) {
   op <- .Generic[[1]]
   switch(op,

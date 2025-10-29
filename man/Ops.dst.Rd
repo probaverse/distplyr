@@ -2,27 +2,14 @@
 % Please edit documentation in R/Ops.R
 \name{Ops.dst}
 \alias{Ops.dst}
-\alias{+.dst}
-\alias{-.dst}
-\alias{*.dst}
-\alias{/.dst}
-\alias{^.dst}
 \title{Arithmetic Operations for Distributions}
 \usage{
-## S3 methods for class 'dst'
-d + a
-d - a
--d
-d * a
-d / a
-a / d
-d ^ a
-a ^ d
+\method{Ops}{dst}(e1, e2)
 }
 \arguments{
-\item{d}{A probability distribution.}
+\item{e1}{A probability distribution or numeric value.}
 
-\item{a}{A numeric value.}
+\item{e2}{A probability distribution or numeric value.}
 }
 \value{
 A transformed distribution object.

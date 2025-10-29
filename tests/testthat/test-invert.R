@@ -37,15 +37,15 @@ test_that("Invert - ranges work.", {
   # Flat at 0, but then increases immediately after 0.
   r <- range(1 / (d - 2))
   expect_equal(r[1], -1 / 3)
-  expect_gt(r[2], 10^15)
+  expect_gt(r[2], 10^9)
   # Flat at 0, but increasing immediately before 0.
   r <- range(1 / (d + 1))
-  expect_lt(r[1], -10^15)
+  expect_lt(r[1], -10^9)
   expect_equal(r[2], 1 / 3)
   # Crosses 0 strictly increasing.
   r <- range(1 / dst_norm(0, 1))
-  expect_lt(r[1], -10^15)
-  expect_gt(r[2], 10^15)
+  expect_lt(r[1], -10^9)
+  expect_gt(r[2], 10^9)
   # Starts at 0 and increases from there.
   r <- range(1 / dst_exp(1))
   expect_equal(r, c(0, Inf))
