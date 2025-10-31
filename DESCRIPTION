@@ -32,7 +32,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    probaverse/distionary@v0.1.0
+    probaverse/distionary@development
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
