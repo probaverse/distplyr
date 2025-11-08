@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Manipulating Distributions • distplyr</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -33,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">distplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,62 +75,298 @@
 
     
     
+<p>Load the packages to get started:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distplyr.probaverse.com/">distplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: distionary</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distionary.netlify.app/" class="external-link">distionary</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></code></pre></div>
-<p>distplyr provides a vocabulary of verbs for manipulating
-distributions.</p>
-<p><strong>Unary operations:</strong></p>
-<ul>
-<li>
-<code>+</code>/<code>-</code> or <code><a href="../reference/linear_transform.html">shift()</a></code>: Add a
-constant to a random variable.</li>
-<li>
-<code>*</code>/<code>/</code> or <code><a href="../reference/linear_transform.html">multiply()</a></code>: Multiply a
-constant to a random variable.</li>
-<li>
-<code><a href="../reference/invert.html">invert()</a></code>: Invert a distribution, i.e, the distribution
-of the reciprocal of a random variable.</li>
-<li>
-<code><a href="../reference/linear_transform.html">flip()</a></code>: Flip a distribution about 0, i.e., the negative
-of a random variable.</li>
-<li>
-<code><a href="../reference/slice.html">slice_left()</a></code> and <code><a href="../reference/slice.html">slice_right()</a></code>: Restrict
-the possible values that a random variable can take.</li>
-</ul>
-<p><strong>Binary operations:</strong></p>
-<ul>
-<li>
-<code><a href="../reference/graft.html">graft_left()</a></code> and <code><a href="../reference/graft.html">graft_right()</a></code>: Replace
-the upper or lower tail of a distribution with another
-distribution.</li>
-</ul>
-<p><strong>n-ary operations:</strong></p>
-<ul>
-<li>
-<code><a href="../reference/mix.html">mix()</a></code>: Make a mixture distribution from two or more
-distributions.</li>
-</ul>
-<p>Each of these take a distribution as its first argument(s), and
-return a distribution, making them pipeable.</p>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distionary.probaverse.com/" class="external-link">distionary</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p><code>distplyr</code> provides a grammar of verbs for manipulating
+probability distributions. Operations take distribution(s) as input,
+return a distribution as output, maintain mathematical correctness, and
+can be chained together.</p>
+<div class="section level3">
+<h3 id="development-status">Development Status<a class="anchor" aria-label="anchor" href="#development-status"></a>
+</h3>
+<p><strong>Note</strong>: <code>distplyr</code> is under active
+development and, while functional, is still young and will experience
+growing pains. For example, it currently struggles with manipulating
+some distributions that aren’t continuous. These limitations will be
+addressed as development continues. We appreciate your patience and
+welcome contributions! Please see the <a href="https://github.com/probaverse/distplyr/blob/main/.github/CONTRIBUTING.md" class="external-link">contributing
+guide</a> to get started.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="available-verbs">Available Verbs<a class="anchor" aria-label="anchor" href="#available-verbs"></a>
+</h2>
+<div class="section level3">
+<h3 id="linear-transformations">Linear Transformations<a class="anchor" aria-label="anchor" href="#linear-transformations"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Verb</th>
+<th>What it does</th>
+<th>Operator</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>shift(d, a)</code></td>
+<td>Add constant <code>a</code>
+</td>
+<td><code>d + a</code></td>
+</tr>
+<tr class="even">
+<td><code>multiply(d, a)</code></td>
+<td>Multiply by constant <code>a</code>
+</td>
+<td><code>d * a</code></td>
+</tr>
+<tr class="odd">
+<td><code>flip(d)</code></td>
+<td>Negate the random variable</td>
+<td><code>-d</code></td>
+</tr>
+<tr class="even">
+<td><code>invert(d)</code></td>
+<td>Take reciprocal</td>
+<td><code>1 / d</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="combinations">Combinations<a class="anchor" aria-label="anchor" href="#combinations"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Verb</th>
+<th>What it does</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>mix(...)</code></td>
+<td>Create mixture distribution</td>
+</tr>
+<tr class="even">
+<td><code>maximize(...)</code></td>
+<td>Distribution of maximum</td>
+</tr>
+<tr class="odd">
+<td><code>minimize(...)</code></td>
+<td>Distribution of minimum</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="mathematical-transformations">Mathematical Transformations<a class="anchor" aria-label="anchor" href="#mathematical-transformations"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Function</th>
+<th>What it does</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>exp(d)</code></td>
+<td>Exponentiate</td>
+</tr>
+<tr class="even">
+<td><code>log(d)</code></td>
+<td>Natural logarithm</td>
+</tr>
+<tr class="odd">
+<td><code>log10(d)</code></td>
+<td>Base-10 logarithm</td>
+</tr>
+<tr class="even">
+<td><code>sqrt(d)</code></td>
+<td>Square root</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
+<h2 id="using-operators">Using Operators<a class="anchor" aria-label="anchor" href="#using-operators"></a>
+</h2>
+<p>Some transformations can be achieved using operations like
+<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and
+<code>^</code>.</p>
+<p>Here’s the function form:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_exp.html" class="external-link">dst_exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/linear_transform.html">shift</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Shifted distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; $distribution</span></span>
+<span><span class="co">#&gt; Exponential distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; rate </span></span>
+<span><span class="co">#&gt;    1 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $shift</span></span>
+<span><span class="co">#&gt; [1] 5</span></span></code></pre></div>
+<p>And the equivalent operator form:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">+</span> <span class="fl">5</span></span>
+<span><span class="co">#&gt; Shifted distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; $distribution</span></span>
+<span><span class="co">#&gt; Exponential distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; rate </span></span>
+<span><span class="co">#&gt;    1 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $shift</span></span>
+<span><span class="co">#&gt; [1] 5</span></span></code></pre></div>
+<p>The verb form is most useful for chaining operations. Here’s the
+verbose version:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_norm.html" class="external-link">dst_norm</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/linear_transform.html">multiply</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/linear_transform.html">shift</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;   10    2</span></span></code></pre></div>
+<p>Or more concisely with operators:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fl">10</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_norm.html" class="external-link">dst_norm</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;   10    2</span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
+<p>Some examples of transformations. Start by shifting and scaling:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_exp.html" class="external-link">dst_exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">shifted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linear_transform.html">shift</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">scaled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linear_transform.html">multiply</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<p>Properties update correctly:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]   0 Inf</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">shifted</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  10 Inf</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">scaled</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]   0 Inf</span></span></code></pre></div>
+<p>An example of using <code><a href="../reference/mix.html">mix()</a></code> to make a zero-inflated model.
+(NOTE: because this is not a continuous distribution,
+<code>distplyr</code> struggles with some aspects; improvements to come
+soon.)</p>
+<p>Make the rainfall distribution:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dry</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_degenerate.html" class="external-link">dst_degenerate</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">rain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_gamma.html" class="external-link">dst_gamma</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">rainfall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mix.html">mix</a></span><span class="op">(</span><span class="va">dry</span>, <span class="va">rain</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>View a randomly generated rainfall series:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/realise.html" class="external-link">realize</a></span><span class="op">(</span><span class="va">rainfall</span>, n <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, ylab <span class="op">=</span> <span class="st">"Rainfall (mm)"</span>, xlab <span class="op">=</span> <span class="st">"Day"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+<p><img src="manipulating_files/figure-html/mixture-realize-1.png" class="r-plt" width="576"></p>
 </div>
-  </main>
+<div class="section level2">
+<h2 id="understanding-simplifications">Understanding Simplifications<a class="anchor" aria-label="anchor" href="#understanding-simplifications"></a>
+</h2>
+<p>When you apply <code>distplyr</code> operations to distributions, the
+package sometimes simplifies the result to a known distribution family.
+For example, the logarithm of a Log-Normal distribution is a Normal
+distribution—not a generic transformed distribution object.</p>
+<div class="section level3">
+<h3 id="what-are-simplifications">What Are Simplifications?<a class="anchor" aria-label="anchor" href="#what-are-simplifications"></a>
+</h3>
+<p>A simplification occurs when <code>distplyr</code> recognizes that a
+transformed or combined distribution belongs to a known distribution
+family and returns that simpler form.</p>
+<p>Here’s an example where simplification happens. Start with a
+Log-Normal distribution:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lognormal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_lnorm.html" class="external-link">dst_lnorm</a></span><span class="op">(</span>meanlog <span class="op">=</span> <span class="fl">2</span>, sdlog <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">lognormal</span></span>
+<span><span class="co">#&gt; Log Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; meanlog   sdlog </span></span>
+<span><span class="co">#&gt;     2.0     0.5</span></span></code></pre></div>
+<p>Take the logarithm, which simplifies to Normal:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">lognormal</span><span class="op">)</span></span>
+<span><span class="va">result</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;  2.0  0.5</span></span></code></pre></div>
+<p>Or, taking the maximum of two distributions where one is strictly
+greater than the other always takes the bigger one.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/extremum.html">maximize</a></span><span class="op">(</span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_unif.html" class="external-link">dst_unif</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_unif.html" class="external-link">dst_unif</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Uniform distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; min max </span></span>
+<span><span class="co">#&gt;   4  10</span></span></code></pre></div>
+<p>Without simplification, the results would be a generic transformed
+distribution object, like this output from <code><a href="../reference/extremum.html">maximize()</a></code>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/extremum.html">maximize</a></span><span class="op">(</span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_unif.html" class="external-link">dst_unif</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_unif.html" class="external-link">dst_unif</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Maximum distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; $distributions</span></span>
+<span><span class="co">#&gt; $distributions[[1]]</span></span>
+<span><span class="co">#&gt; Uniform distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; min max </span></span>
+<span><span class="co">#&gt;   0   7 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $distributions[[2]]</span></span>
+<span><span class="co">#&gt; Uniform distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; min max </span></span>
+<span><span class="co">#&gt;   4  10 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $draws</span></span>
+<span><span class="co">#&gt; [1] 1 1</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="why-simplifications-matter">Why Simplifications Matter<a class="anchor" aria-label="anchor" href="#why-simplifications-matter"></a>
+</h3>
+<p>Simplifications are useful for three main reasons:</p>
+<ul>
+<li>They align with our conceptual model of how some distribution
+families work.</li>
+<li>They (should) improve computational efficiency and reduce the
+potential for rounding error propagation.</li>
+<li>They keep the distribution objects simpler.</li>
+</ul>
+<p>The package does not include a comprehensive list of all possible
+simplifications, but sticks to some key cases that are thought to be
+important. To see what simplifications are implemented, check the
+documentation of each verb.</p>
+<p>The accuracy of simplifications is ensured by (1) testing each
+simplification case to the expected distribution parameters, and (2)
+verifying that the CDF of the generic (unsimplified) distribution
+matches the CDF of the simplified distribution at a grid of points.</p>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vincenzo Coia, Amogh Joshi, Shuyi Tan, Zhipeng Zhu.</p>
+  <p>Developed by Vincenzo Coia.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

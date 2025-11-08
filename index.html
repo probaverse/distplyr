@@ -5,20 +5,19 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Manipulation of Univariate Distributions • distplyr</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
+<title>Manipulate and Combine Probability Distributions • distplyr</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Manipulation of Univariate Distributions">
-<meta name="description" content="Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.">
-<meta property="og:description" content="Provides an interface for manipulating univariate probability distributions, using verbs such as `graft`, `slice`, `mix`, `shift`, and others.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Manipulate and Combine Probability Distributions">
+<meta name="description" content="Go beyond standard probability distributions such as the Normal or Exponential by combining, shifting, maximizing, and otherwise transforming distributions with simple, verb-based functions. Provides easy access to a broader space of distributions more representative of real-world systems such as river flows or insurance claims. Part of the probaverse framework of packages to support advanced statistical modeling and simulations with an intuitive workflow.">
+<meta property="og:description" content="Go beyond standard probability distributions such as the Normal or Exponential by combining, shifting, maximizing, and otherwise transforming distributions with simple, verb-based functions. Provides easy access to a broader space of distributions more representative of real-world systems such as river flows or insurance claims. Part of the probaverse framework of packages to support advanced statistical modeling and simulations with an intuitive workflow.">
 <meta property="og:image" content="https://distplyr.probaverse.com/logo.png">
 <!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-VRP7BMY266"></script><script>
   window.dataLayer = window.dataLayer || [];
@@ -36,7 +35,7 @@
 
     <a class="navbar-brand me-2" href="index.html">distplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,95 +66,173 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="distplyr-">distplyr 
-<a class="anchor" aria-label="anchor" href="#distplyr-"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="distplyr-">distplyr <a class="anchor" aria-label="anchor" href="#distplyr-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
-<p>distplyr breathes life into probability distributions by providing a grammar for their modification and reshaping. It works seamlessly with distribution objects from the <a href="https://distionary.probaverses.com" class="external-link">distionary</a> package.</p>
-<p>The distplyr package name is inspired by the <a href="https://dplyr.tidyverse.org/" class="external-link">dplyr</a> R package: whereas distplyr provides a grammar for manipulating <em>distributions</em>, dplyr provides a grammar for manipulating <em>data</em>.</p>
+<p><code>distplyr</code> breathes life into probability distributions by providing a grammar for their modification and reshaping. It works seamlessly with distribution objects from the <a href="https://distionary.probaverse.com" class="external-link">distionary</a> package, and builds on the <a href="https://probaverse.com" class="external-link"><code>probaverse</code> ecosystem</a> for making representative statistical models.</p>
+<p>With <code>distplyr</code>, you can manipulate probability distributions using an intuitive grammar of verbs. Apply transformations, combine distributions, and build complex probabilistic models from simple building blocks – all while maintaining mathematical correctness and internal consistency.</p>
+<p>The name “distplyr” is inspired by <a href="https://dplyr.tidyverse.org/" class="external-link">dplyr</a>: while dplyr provides a grammar for manipulating data, <code>distplyr</code> provides a grammar for manipulating <em>distributions</em>.</p>
+<div class="section level2">
+<h2 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a>
+</h2>
+<p>Real-world phenomena rarely follow simple textbook distributions. They arise from transformations, combinations, and compositions of simpler processes. The annual maximum flow in a river may be the larger of a snowmelt-related flow and a rainfall-related flow; a distribution of residuals can be moved over a regression equation to obtain a predictive distribution; marginal distributions can be estimated by averaging component distributions; a rainfall total might be a mixture of 70% dry days (zeros) and `30% Gamma-distributed amounts.</p>
+<p>While R has excellent support for standard distributions, it lacks a systematic way to <em>transform and combine</em> them. When you need to work with the distribution of a transformed or combined random variable, you’re often left deriving formulas by hand or resorting to simulation. <code>distplyr</code> fills this gap by providing a consistent grammar of verbs for distribution manipulation, built on top of the flexible <code>distionary</code> infrastructure. Define your distributions, apply transformations, and let the package handle the mathematical details.</p>
+</div>
+<div class="section level2">
+<h2 id="target-audience">Target Audience<a class="anchor" aria-label="anchor" href="#target-audience"></a>
+</h2>
+<p><code>distplyr</code> is designed for:</p>
+<ul>
+<li>
+<strong>Data scientists and statisticians</strong> who need to build custom probability models that go beyond standard parametric families.</li>
+<li>
+<strong>Researchers</strong> in fields like environmental science, finance, engineering, and insurance where complex distributions arise from combining and transforming simpler processes.</li>
+<li>
+<strong>Modelers</strong> who want to express their domain knowledge through distribution manipulations rather than being constrained by pre-packaged options.</li>
+<li>
+<strong>Students and educators</strong> learning about probability distributions, their transformations, and how random variables combine.</li>
+<li>
+<strong>Anyone</strong> who wants an intuitive, programmatic way to work with distributions rather than deriving formulas by hand or running simulations.</li>
+</ul>
+<p>If you work with probability distributions and find yourself wishing you could “just shift this,” “mix these together,” or “see what happens when I transform this,” then <code>distplyr</code> is for you.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>distplyr</code> is not on CRAN yet, so the best way to install it is:</p>
+<p><code>distplyr</code> is not on CRAN yet. You can download the development version from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"probaverse/distplyr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"probaverse/distplyr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
+<h2 id="development-status">Development Status<a class="anchor" aria-label="anchor" href="#development-status"></a>
+</h2>
+<p><code>distplyr</code> is under active development and, while functional, is still young and will experience growing pains. For example, it currently struggles with manipulating some distributions that aren’t continuous, and warnings or errors are provided in these cases. These limitations will be addressed as development continues. We appreciate your patience and welcome contributions! Please see the <a href="CONTRIBUTING.html">contributing guide</a> to get started.</p>
+</div>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distplyr.probaverse.com/">distplyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>Want to model a count variable that starts at 1, not 0? Consider shifting a Poisson distribution.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distionary.probaverse.com/" class="external-link">distionary</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distplyr.probaverse.com/">distplyr</a></span><span class="op">)</span></span></code></pre></div>
+<p>Transform distributions using functions or operators:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_pois.html" class="external-link">dst_pois</a></span><span class="op">(</span><span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "shift" "dst"  </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  components :</span></span>
-<span><span class="co">#&gt; $distribution</span></span>
-<span><span class="co">#&gt; [1] "pois"       "parametric" "dst"       </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  name :</span></span>
-<span><span class="co">#&gt; [1] "pois"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $shift</span></span>
-<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
-<p>Here’s its probability mass function:</p>
+<code class="sourceCode R"><span><span class="co"># Create a standard Normal distribution</span></span>
+<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_norm.html" class="external-link">dst_norm</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Transform using functions</span></span>
+<span><span class="fu"><a href="reference/linear_transform.html">shift</a></span><span class="op">(</span><span class="va">a</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;   10    1</span></span>
+<span><span class="fu"><a href="reference/linear_transform.html">multiply</a></span><span class="op">(</span><span class="va">a</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;    0    2</span></span>
+<span></span>
+<span><span class="co"># Or use operators</span></span>
+<span><span class="fl">10</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">a</span></span>
+<span><span class="co">#&gt; Normal distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; mean   sd </span></span>
+<span><span class="co">#&gt;   10    2</span></span></code></pre></div>
+<p>These all simplify to other Normal distributions, but that’s not always the case.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://distionary.probaverse.com/reference/pmf.html" class="external-link">enframe_pmf</a></span><span class="op">(</span><span class="va">d1</span>, at <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;"></p>
-<p>Or, maybe you have positive continuous data and you’d like its tail to continue as an exponential distribution:</p>
+<code class="sourceCode R"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_beta.html" class="external-link">dst_beta</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">b</span> <span class="op">*</span> <span class="fl">2</span></span>
+<span><span class="va">d</span></span>
+<span><span class="co">#&gt; Scaled distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; $distribution</span></span>
+<span><span class="co">#&gt; Beta distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; shape1 shape2 </span></span>
+<span><span class="co">#&gt;      3      2 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $constant</span></span>
+<span><span class="co">#&gt; [1] 2</span></span></code></pre></div>
+<p>Visualize this multiplication:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.6</span>, <span class="fl">0.9</span>, <span class="fl">0.2</span>, <span class="fl">1.4</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">1.5</span><span class="op">)</span></span>
-<span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="op">(</span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_empirical.html" class="external-link">dst_empirical</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/graft.html">graft_right</a></span><span class="op">(</span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_exp.html" class="external-link">dst_exp</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span>, breakpoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Mixture Distribution</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Components: </span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
-<span><span class="co">#&gt;   distributions probs breakpoint include</span></span>
-<span><span class="co">#&gt;   &lt;list&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;lgl&gt;  </span></span>
-<span><span class="co">#&gt; 1 &lt;finite&gt;        0.9        1.6 FALSE  </span></span>
-<span><span class="co">#&gt; 2 &lt;slic_lft&gt;      0.1        1.6 FALSE</span></span></code></pre></div>
-<p>Here’s the survival function:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">b</span>, to <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, add <span class="op">=</span> <span class="cn">TRUE</span>,  col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span></span>
+<span>  <span class="st">"topright"</span>,</span>
+<span>  legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Original"</span>, <span class="st">"Multiplied by 2"</span><span class="op">)</span>,</span>
+<span>  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>  lty <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>Apply mathematical transformations.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d2</span>, <span class="st">"survival"</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">5</span>, n <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;"></p>
-<p>Or maybe you’d like to mix the empirical and Exponential distributions:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_gamma.html" class="external-link">dst_gamma</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Logarithmic distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; $distribution</span></span>
+<span><span class="co">#&gt; Gamma distribution (continuous) </span></span>
+<span><span class="co">#&gt; --Parameters--</span></span>
+<span><span class="co">#&gt; shape  rate </span></span>
+<span><span class="co">#&gt;     4     2</span></span></code></pre></div>
+<p>Or combine distributions; in this case, by the maximum.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">d4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mix.html">mix</a></span><span class="op">(</span><span class="fu"><a href="https://distionary.probaverse.com/reference/dst_empirical.html" class="external-link">dst_empirical</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_exp.html" class="external-link">dst_exp</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Mixture Distribution</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Components: </span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
-<span><span class="co">#&gt;   distributions probs</span></span>
-<span><span class="co">#&gt;   &lt;list&gt;        &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 &lt;finite&gt;        0.5</span></span>
-<span><span class="co">#&gt; 2 &lt;exp&gt;           0.5</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d4</span>, <span class="st">"survival"</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">5</span>, n <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="co"># Maximum of three sites</span></span>
+<span><span class="va">site1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_norm.html" class="external-link">dst_norm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">site2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_norm.html" class="external-link">dst_norm</a></span><span class="op">(</span><span class="fl">22</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">site3</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://distionary.probaverse.com/reference/dst_t.html" class="external-link">dst_t</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="fl">19</span></span>
+<span></span>
+<span><span class="va">regional_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/extremum.html">maximize</a></span><span class="op">(</span><span class="va">site1</span>, <span class="va">site2</span>, <span class="va">site3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot these distributions</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">site1</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"red"</span>, from <span class="op">=</span> <span class="fl">10</span>, to <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">site2</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">site3</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"green"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">regional_max</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span></span>
+<span>  <span class="st">"topright"</span>,</span>
+<span>  legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Maximum"</span>, <span class="st">"Site 1"</span>, <span class="st">"Site 2"</span>, <span class="st">"Site 3"</span><span class="op">)</span>,</span>
+<span>  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"green"</span><span class="op">)</span>,</span>
+<span>  lty <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-extrema-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
-<h2 id="distplyr-in-context">distplyr in Context<a class="anchor" aria-label="anchor" href="#distplyr-in-context"></a>
+<h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h2>
-<p>There are a few other R packages that handle probability distributions. The key differentiator with distplyr is its grammar, and the flexibility of the package distionary, which distplyr sits on top of.</p>
-<p>Some examples:</p>
+<p>See <strong><code><a href="articles/manipulating.html">vignette("manipulating")</a></code></strong> for a comprehensive guide to all verbs, including operators (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>), math functions (<code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code>, <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code>, <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt()</a></code>), and understanding when operations simplify to known distributions.</p>
+</div>
+<div class="section level2">
+<h2 id="correctness-and-reliability">Correctness and Reliability<a class="anchor" aria-label="anchor" href="#correctness-and-reliability"></a>
+</h2>
+<p><code>distplyr</code> employs rigorous testing to ensure mathematical and computational correctness:</p>
+<p><strong>Internal Consistency</strong>: All distribution properties remain mathematically consistent with each other. For example, the density integrates to the CDF, the mean calculated from the density matches the specified mean, and quantile and CDF functions are proper inverses.</p>
+<p><strong>Simplification Correctness</strong>: When operations simplify to known distributions (e.g., exp of Normal becomes Log Normal), the package verifies that simplified and non-simplified versions produce equivalent distributions by comparing their CDFs over a fine grid of points. See <code><a href="articles/manipulating.html">vignette("manipulating")</a></code> for details on simplifications.</p>
+</div>
+<div class="section level2">
+<h2 id="distplyr-in-the-context-of-other-packages">
+<code>distplyr</code> in the Context of Other Packages<a class="anchor" aria-label="anchor" href="#distplyr-in-the-context-of-other-packages"></a>
+</h2>
+<p>The R ecosystem offers several packages for working with probability distributions:</p>
 <ul>
-<li>The distributional package also allows for distribution manipulation, but is less flexible, and builds vectorization into the package. distplyr (and distionary) deliberately leaves vectorization up to the user, since distributions can be evaluated to produce a variety of output types.
-<ul>
-<li>Development of distributional appears to have happened at the same time as distplyr, and distributional uses a similar family of functions – <code>dist_*()</code> – to make probability distributions.</li>
+<li><p><strong><code>stats</code> Package</strong>: Provides functions for standard distributions (<code>rnorm</code>, <code>pnorm</code>, etc.) but lacks tools for transformation and composition.</p></li>
+<li><p><strong><code>distr</code> Package</strong>: Offers an S4 object-oriented framework for distributions with transformation capabilities, but has a steeper learning curve and complex interface.</p></li>
+<li><p><strong><code>distributions3</code> Package</strong>: Provides an S3-based interface focused on simplicity, suitable for working with standard distributions but limited in transformation capabilities.</p></li>
+<li><p><strong><code>distributional</code> Package</strong>: Extends <code>distributions3</code> with vectorization support and some transformations, but less flexible for custom operations.</p></li>
 </ul>
-</li>
-<li>The <a href="https://cran.r-project.org/web/packages/distr/index.html" class="external-link">distr</a> package allows you to make distributions including empirical ones, and transform them, using S4 classes, but the interface is complex. distplyr aims to provide a human-centric interface by providing a grammar.</li>
-</ul>
+<p>In this landscape, <code>distplyr</code> addresses the need for a systematic approach to distribution manipulation through a grammar-based framework. Built on the flexible <code>distionary</code> infrastructure, operations maintain mathematical correctness through automatic simplifications and can be chained naturally to build arbitrarily complex distributions from simple building blocks. The extensible framework supports adding new transformation verbs and distribution families as needed, making it a key component to the <code>probaverse</code> ecosystem.</p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
 </h2>
-<p>The creation of distplyr would not have been possible without the support of the R Consortium, The Natural Science and Engineering Research Council of Canada (NSERC), The University of British Columbia, and BGC Engineering Inc.</p>
+<p>The creation of <code>distplyr</code> would not have been possible without the support of BGC Engineering Inc., the Politecnico di Milano, the European Space Agency, The University of British Columbia, and the Natural Science and Engineering Research Council of Canada (NSERC). The authors would also like to thank the reviewers from ROpenSci during the review process of the <code>distionary</code> package, as their insightful feedback also helped in the development of <code>distplyr</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>To cite package <code>distplyr</code> in publications use:</p>
+<p>Coia V (2025). <em>distplyr: Manipulation of Probability Distributions</em>. R package version 0.2.0, <a href="https://github.com/probaverse/distplyr" class="external-link uri">https://github.com/probaverse/distplyr</a>, <a href="https://distplyr.probaverse.com/" class="uri">https://distplyr.probaverse.com/</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
@@ -190,22 +267,19 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Vincenzo Coia <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Amogh Joshi <br><small class="roles"> Author </small>  </li>
-<li>Shuyi Tan <br><small class="roles"> Author </small>  </li>
-<li>Zhipeng Zhu <br><small class="roles"> Author </small>  </li>
+<li>Vincenzo Coia <br><small class="roles"> Author, maintainer, copyright holder </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.tidyverse.org/lifecycle/#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://www.repostatus.org/#wip" class="external-link"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
-<li><a href="https://codecov.io/gh/probaverse/distplyr" class="external-link"><img src="https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9" alt="codecov"></a></li>
-<li><a href="https://CRAN.R-project.org/package=distplyr" class="external-link"><img src="https://www.r-pkg.org/badges/version/distplyr" alt="CRAN status"></a></li>
 <li><a href="https://cran.r-project.org/web/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a></li>
 <li><a href="https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/probaverse/distplyr" class="external-link"><img src="https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9" alt="Codecov test coverage"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://app.codecov.io/gh/probaverse/distplyr" class="external-link"><img src="https://codecov.io/gh/probaverse/distplyr/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
@@ -214,11 +288,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vincenzo Coia, Amogh Joshi, Shuyi Tan, Zhipeng Zhu.</p>
+  <p>Developed by Vincenzo Coia.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
