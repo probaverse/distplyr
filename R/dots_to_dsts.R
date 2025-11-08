@@ -1,34 +1,42 @@
-#' Convert Distributions in Ellipsis to List
+#' Convert Distributions in Ellipsis to Flat List
 #'
-#' Flattens distributions placed in an ellipsis argument into a list,
-#' so that the ellipsis can include distributions themselves and lists
-#' of distributions.
+#' Flattens distributions and lists of distributions placed in `...`
+#' into a flat list. This is useful for dplyr-like workflows where distributions
+#' are stored in a list-column in a tibble.
 #'
-#' @param ... Distribution objects, or lists of distributions.
-#' @param na.rm Logical; remove NA entries? Note that NULL entries are
-#' always removed.
+#' @param ... Distribution objects, or list of distributions.
 #' @return A list of distributions contained in the `...`, with NULL
 #' entries discarded. If no distributions are present, returns `list()`.
-#' @details An error is thrown if, after discarding NULL entries,
-#' `...` contains non-distributions. This function is essentially a
-#' wrapper around `rlang::flatten()`.
-#' @examples
-#' d <- dst_norm(0, 1)
-#' distplyr:::dots_to_dsts(d, list(d, d), NULL)
-dots_to_dsts <- function(..., na.rm = FALSE) {
+#' @details An error is thrown if `...` contains non-distributions.
+#' This function is essentially a wrapper around `unlist()`.
+#'
+#' These work:
+#'
+#' dots_to_dsts(dst_exp(1), dst_norm(0, 1))
+#' dots_to_dsts(list(dst_exp(1), dst_norm(0, 1)))
+#' dots_to_dsts(dst_exp(1), list(dst_norm(0, 1), dst_pois(3)))
+#'
+#' This does not -- too many nested lists.
+#'
+#' dots_to_dsts(list(list(dst_exp(1), dst_norm(0, 1))))
+#' dots_to_dsts(list(list(dst_exp(1)), dst_norm(0, 1)))
+#' @noRd
+dots_to_dsts <- function(...) {
   dsts <- rlang::list2(...)
-  dsts <- purrr::list_flatten(dsts)
-  nulls <- vapply(dsts, is.null, FUN.VALUE = logical(1L))
-  is_na <- function(x) length(x) == 1L && is.na(x)
-  if (na.rm) {
-    nulls <- nulls | vapply(dsts, is_na, FUN.VALUE = logical(1L))
-    acceptable_entry <- is_distribution
-  } else {
-    acceptable_entry <- function(x) is_distribution(x) || is_na(x)
-  }
-  dsts <- dsts[!nulls]
+  # Flatten while preserving distribution structure (i.e., without untangling
+  # distributions that are lists themselves).
+  # Note that `unlist()` untangles a distribution object if it's at the top
+  # level, because it itself is a list. Wrap each distribution in a list
+  # to prevent untangling.
+  wrapped_dsts <- lapply(dsts, function(x) {
+    if (distionary::is_distribution(x)) {
+      x <- list(x)
+    }
+    x
+  })
+  dsts <- unlist(wrapped_dsts, recursive = FALSE)
   not_all_dsts <- !all(vapply(
-    dsts, acceptable_entry, FUN.VALUE = logical(1L)
+    dsts, is_distribution, FUN.VALUE = logical(1L)
   ))
   if (not_all_dsts) {
     stop("Ellipsis must contain distributions only.")

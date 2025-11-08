@@ -1,0 +1,76 @@
+# A list of distributions to be used for systematic testing
+#
+# This object defines a comprehensive set of distributions used for systematic
+# testing of distribution representations. The testing strategy is the same as
+# in distionary: compare the specified formulas against that recovered from
+# other properties.
+#
+# Should not contain combinations that trigger a simplification (e.g.,
+# exp of a Normal distribution) -- although not harmful, they will not
+# contribute much because they will only be testing that the simplified
+# distribution is correctly specified (e.g., that the LogNormal distribution
+# has been correctly coded), but this is the job of distionary, not distplyr.
+library(distionary)
+
+test_distributions <- list(
+  mix = list(
+    list(dst_unif(0, 1), dst_unif(3, 5)),
+    list(dst_exp(1), dst_exp(1)),
+    list(dst_norm(0, 1), dst_norm(5, 2), dst_norm(-5, 0.5), weights = 1:3),
+    list(dst_gamma(6, 2), dst_t(5), dst_exp(1.5), weights = c(2, 1, 3))
+  ),
+  minimize = list(
+    list(dst_exp(1), draws = 5),
+    list(dst_norm(0, 1), draws = 5.5),
+    list(dst_unif(0, 1), dst_unif(3, 5)),
+    list(dst_exp(1), dst_exp(1)),
+    list(dst_norm(0, 1), dst_norm(5, 2), dst_norm(-5, 0.5), draws = 1:3)
+  ),
+  maximize = list(
+    list(dst_exp(1), draws = 5),
+    list(dst_norm(0, 1), draws = 5.5),
+    list(dst_unif(0, 1), dst_unif(3, 5)),
+    list(dst_exp(1), dst_exp(1)),
+    list(dst_norm(0, 1), dst_norm(5, 2), dst_norm(-5, 0.5), draws = 1:3)
+  ),
+  shift = list(
+    list(dst_gamma(3, 4), 2),
+    list(dst_t(5), 1),
+    list(dst_exp(1), -0.5),
+    list(dst_exp(1.5), -2)
+  ),
+  multiply = list(
+    list(dst_exp(1.5), 2),
+    list(dst_gamma(2, 4), 0.5),
+    list(dst_weibull(2, 2), 5),
+    list(dst_beta(5, 2), -8)
+  ),
+  flip = list(
+    list(dst_exp(0.3)),
+    list(dst_beta(5, 0.4)),
+    list(dst_exp(4)),
+    list(dst_gp(2, 0.4))
+  ),
+  invert = list(
+    list(dst_exp(0.3) + 1),
+    list(dst_norm(1, 5)),
+    list(dst_unif(4, 5)),
+    list(dst_unif(-10, -4))
+  ),
+  exp = list(
+    list(dst_exp(1.5) - 1),
+    list(dst_beta(2, 4)),
+    list(dst_unif(3, 5)),
+    list(-dst_beta(5, 2)),
+    list(dst_exp(1))
+  ),
+  log = list(
+    list(dst_exp(1.5)),
+    list(dst_gamma(5, 3), base = 10),
+    list(dst_unif(3, 5), base = 5),
+    list(dst_unif(0, 4)),
+    list(dst_weibull(2, 1))
+  )
+)
+
+usethis::use_data(test_distributions, overwrite = TRUE, internal = TRUE)

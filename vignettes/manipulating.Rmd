@@ -10,36 +10,167 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
-```{r setup}
+Load the packages to get started:
+
+```{r setup, message = FALSE}
 library(distplyr)
 library(distionary)
-library(magrittr)
-library(tibble)
 ```
 
-distplyr provides a vocabulary of verbs for manipulating distributions.
+## Introduction
 
-**Unary operations:**
+`distplyr` provides a grammar of verbs for manipulating probability distributions. Operations take distribution(s) as input, return a distribution as output, maintain mathematical correctness, and can be chained together.
 
-- `+`/`-` or `shift()`: Add a constant to a random variable.
-- `*`/`/` or `multiply()`: Multiply a constant to a random variable.
-- `invert()`: Invert a distribution, i.e, the distribution of the reciprocal of a random variable.
-- `flip()`: Flip a distribution about 0, i.e., the negative of a random variable.
-- `slice_left()` and `slice_right()`: Restrict the possible values that a random variable can take.
+### Development Status
 
-**Binary operations:**
+**Note**: `distplyr` is under active development and, while functional, is still young and will experience growing pains. For example, it currently struggles with manipulating some distributions that aren't continuous. These limitations will be addressed as development continues. We appreciate your patience and welcome contributions! Please see the [contributing guide](https://github.com/probaverse/distplyr/blob/main/.github/CONTRIBUTING.md) to get started.
 
-- `graft_left()` and `graft_right()`: Replace the upper or lower tail of a distribution with another distribution.
+## Available Verbs
 
-**n-ary operations:**
+### Linear Transformations
 
-- `mix()`: Make a mixture distribution from two or more distributions. 
+| Verb | What it does | Operator |
+|------|--------------|----------|
+| `shift(d, a)` | Add constant `a` | `d + a` |
+| `multiply(d, a)` | Multiply by constant `a` | `d * a` |
+| `flip(d)` | Negate the random variable | `-d` |
+| `invert(d)` | Take reciprocal | `1 / d` |
 
-Each of these take a distribution as its first argument(s), and return a distribution, making them pipeable.
+### Combinations
+
+| Verb | What it does |
+|------|--------------|
+| `mix(...)` | Create mixture distribution |
+| `maximize(...)` | Distribution of maximum |
+| `minimize(...)` | Distribution of minimum |
+
+### Mathematical Transformations
+
+| Function | What it does |
+|----------|--------------|
+| `exp(d)` | Exponentiate |
+| `log(d)` | Natural logarithm |
+| `log10(d)` | Base-10 logarithm |
+| `sqrt(d)` | Square root |
+
+## Using Operators
+
+Some transformations can be achieved using operations like `+`, `-`, `*`, `/`, and `^`.
+
+Here's the function form:
+
+```{r operators-fn}
+d <- dst_exp(1)
+shift(d, 5)
+```
+
+And the equivalent operator form:
+
+```{r operators-op}
+d + 5
+```
+
+The verb form is most useful for chaining operations. Here's the verbose version:
+
+```{r chaining-verbose}
+dst_norm(0, 1) |> 
+  multiply(-2) |> 
+  shift(10)
+```
+
+Or more concisely with operators:
+
+```{r chaining-concise}
+10 - 2 * dst_norm(0, 1)
+```
 
 ## Examples
 
+Some examples of transformations. Start by shifting and scaling:
+
+```{r transform-ex}
+d <- dst_exp(1)
+shifted <- shift(d, 10)
+scaled <- multiply(d, 5)
+```
+
+Properties update correctly:
+
+```{r transform-properties}
+range(d)
+range(shifted)
+range(scaled)
+```
+
+
+An example of using `mix()` to make a zero-inflated model. (NOTE: because this is not a continuous distribution, `distplyr` struggles with some aspects; improvements to come soon.)
+
+Make the rainfall distribution:
+
+```{r mixture-create}
+dry <- dst_degenerate(0)
+rain <- dst_gamma(5, 0.5)
+rainfall <- mix(dry, rain, weights = c(0.7, 0.3))
+```
+
+View a randomly generated rainfall series:
+
+```{r mixture-realize}
+set.seed(1)
+x <- realize(rainfall, n = 30)
+plot(x, ylab = "Rainfall (mm)", xlab = "Day")
+lines(x)
+```
+
+## Understanding Simplifications
+
+When you apply `distplyr` operations to distributions, the package sometimes simplifies the result to a known distribution family. For example, the logarithm of a Log-Normal distribution is a Normal distribution—not a generic transformed distribution object.
+
+### What Are Simplifications?
+
+A simplification occurs when `distplyr` recognizes that a transformed or combined distribution belongs to a known distribution family and returns that simpler form.
+
+Here's an example where simplification happens. Start with a Log-Normal distribution:
+
+```{r simplification-start}
+lognormal <- dst_lnorm(meanlog = 2, sdlog = 0.5)
+lognormal
+```
+
+Take the logarithm, which simplifies to Normal:
+
+```{r simplification-log}
+result <- log(lognormal)
+result
+```
+
+Or, taking the maximum of two distributions where one is strictly greater than the other always takes the bigger one.
+
+```{r}
+maximize(dst_unif(0, 1), dst_unif(4, 10))
+```
+
+Without simplification, the results would be a generic transformed distribution object, like this output from `maximize()`:
+
+```{r}
+maximize(dst_unif(0, 7), dst_unif(4, 10))
+```
+
+
+### Why Simplifications Matter
+
+Simplifications are useful for three main reasons:
+
+- They align with our conceptual model of how some distribution families work.
+- They (should) improve computational efficiency and reduce the potential for rounding error propagation.
+- They keep the distribution objects simpler.
+
+The package does not include a comprehensive list of all possible simplifications, but sticks to some key cases that are thought to be important. To see what simplifications are implemented, check the documentation of each verb.
+
+The accuracy of simplifications is ensured by (1) testing each simplification case to the expected distribution parameters, and (2) verifying that the CDF of the generic (unsimplified) distribution matches the CDF of the simplified distribution at a grid of points.

@@ -1,27 +1,31 @@
 Type: Package
 Package: distplyr
-Title: Manipulation of Univariate Distributions
-Version: 0.1.5
+Title: Manipulate and Combine Probability Distributions
+Version: 0.1.5.9000
 Authors@R: c(
     person("Vincenzo", "Coia", email = "vincenzo.coia@gmail.com", 
-           role = c("aut", "cre")),
-    person("Amogh", "Joshi", role = "aut"),
-    person("Shuyi", "Tan", role = "aut"),
-    person("Zhipeng", "Zhu", role = "aut")
+           role = c("aut", "cre", "cph")),
+    person("Amogh", "Joshi", role = "ctb"),
+    person("Shuyi", "Tan", role = "ctb"),
+    person("Zhipeng", "Zhu", role = "ctb")
   )
-Description: Provides an interface for manipulating univariate probability
-    distributions, using verbs such as `graft`, `slice`, `mix`, `shift`,
-    and others.
+Description: Go beyond standard probability distributions such as the Normal
+    or Exponential by combining, shifting, maximizing, and otherwise
+    transforming distributions with simple, verb-based functions. Provides
+    easy access to a broader space of distributions more representative of 
+    real-world systems such as river flows or insurance claims. 
+    Part of the probaverse framework of packages to support advanced
+    statistical modeling and simulations with an intuitive workflow.
 License: MIT + file LICENSE
 Depends: 
-    distionary
+    distionary,
+    R (>= 3.5)
 Imports: 
     ellipsis,
-    magrittr,
     rlang,
     vctrs,
     stats,
-    purrr
+    checkmate
 Suggests: 
     covr,
     knitr,
@@ -31,10 +35,10 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    probaverse/distionary@v0.0.2
+    probaverse/distionary@development
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 URL: https://distplyr.probaverse.com/
