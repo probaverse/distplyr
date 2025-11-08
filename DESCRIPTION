@@ -17,9 +17,8 @@ Description: Go beyond standard probability distributions such as the Normal
     Part of the probaverse framework of packages to support advanced
     statistical modeling and simulations with an intuitive workflow.
 License: MIT + file LICENSE
-Depends: 
-    distionary,
-    R (>= 3.5)
+Depends:
+    R (>= 2.10)
 Imports: 
     ellipsis,
     rlang,

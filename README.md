@@ -8,8 +8,6 @@
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
 [![R-CMD-check](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9)](https://codecov.io/gh/probaverse/distplyr)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Codecov test
@@ -78,12 +76,10 @@ I transform this,” then `distplyr` is for you.
 
 ## Installation
 
-`distplyr` is not on CRAN yet. You can download the development version
-from GitHub with:
+To install `distplyr`, run the following code in R:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("probaverse/distplyr")
+install.packages("distplyr")
 ```
 
 ## Development Status
