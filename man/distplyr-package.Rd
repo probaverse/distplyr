@@ -29,6 +29,7 @@ to transform distributions. See \code{?linear_transform} for details.
 Useful links:
 \itemize{
   \item \url{https://distplyr.probaverse.com/}
+  \item \url{https://github.com/probaverse/distplyr}
 }
 
 }
