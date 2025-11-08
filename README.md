@@ -41,7 +41,7 @@ snowmelt-related flow and a rainfall-related flow; a distribution of
 residuals can be moved over a regression equation to obtain a predictive
 distribution; marginal distributions can be estimated by averaging
 component distributions; a rainfall total might be a mixture of 70% dry
-days (zeros) and \`30% Gamma-distributed amounts.
+days (zeros) and 30% Gamma-distributed amounts.
 
 While R has excellent support for standard distributions, it lacks a
 systematic way to *transform and combine* them. When you need to work

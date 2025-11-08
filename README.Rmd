@@ -33,7 +33,7 @@ The name "distplyr" is inspired by [dplyr](https://dplyr.tidyverse.org/): while 
 
 ## Statement of Need
 
-Real-world phenomena rarely follow simple textbook distributions. They arise from transformations, combinations, and compositions of simpler processes. The annual maximum flow in a river may be the larger of a snowmelt-related flow and a rainfall-related flow; a distribution of residuals can be moved over a regression equation to obtain a predictive distribution; marginal distributions can be estimated by averaging component distributions; a rainfall total might be a mixture of 70% dry days (zeros) and `30% Gamma-distributed amounts.
+Real-world phenomena rarely follow simple textbook distributions. They arise from transformations, combinations, and compositions of simpler processes. The annual maximum flow in a river may be the larger of a snowmelt-related flow and a rainfall-related flow; a distribution of residuals can be moved over a regression equation to obtain a predictive distribution; marginal distributions can be estimated by averaging component distributions; a rainfall total might be a mixture of 70% dry days (zeros) and 30% Gamma-distributed amounts.
 
 While R has excellent support for standard distributions, it lacks a systematic way to _transform and combine_ them. When you need to work with the distribution of a transformed or combined random variable, you're often left deriving formulas by hand or resorting to simulation. `distplyr` fills this gap by providing a consistent grammar of verbs for distribution manipulation, built on top of the flexible `distionary` infrastructure. Define your distributions, apply transformations, and let the package handle the mathematical details.
 

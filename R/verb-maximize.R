@@ -45,6 +45,7 @@
 #' - If the same distribution is input multiple times, their corresponding
 #'   draws are summed.
 #' @examples
+#' library(distionary)
 #' # One is always more extreme than the other in this case.
 #' d1 <- dst_unif(-1, 2)
 #' d2 <- dst_unif(5, 6)
