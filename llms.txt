@@ -62,12 +62,10 @@ I transform this,” then `distplyr` is for you.
 
 ## Installation
 
-`distplyr` is not on CRAN yet. You can download the development version
-from GitHub with:
+To install `distplyr`, run the following code in R:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("probaverse/distplyr")
+install.packages("distplyr")
 ```
 
 ## Development Status
@@ -276,7 +274,7 @@ By contributing to this project, you agree to abide by its terms.
   : Arithmetic Operations for Distributions
 - [`distplyr`](https://distplyr.probaverse.com/reference/distplyr-package.md)
   [`distplyr-package`](https://distplyr.probaverse.com/reference/distplyr-package.md)
-  : distplyr: Manipulation of Probability Distributions
+  : distplyr: Manipulate and Combine Probability Distributions
 - [`maximize()`](https://distplyr.probaverse.com/reference/extremum.md)
   [`minimize()`](https://distplyr.probaverse.com/reference/extremum.md)
   : Extremum of Several Distributions

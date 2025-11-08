@@ -62,12 +62,10 @@ I transform this,” then `distplyr` is for you.
 
 ## Installation
 
-`distplyr` is not on CRAN yet. You can download the development version
-from GitHub with:
+To install `distplyr`, run the following code in R:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("probaverse/distplyr")
+install.packages("distplyr")
 ```
 
 ## Development Status

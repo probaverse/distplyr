@@ -1,9 +1,12 @@
-# distplyr: Manipulation of Probability Distributions
+# distplyr: Manipulate and Combine Probability Distributions
 
-Manipulating probability distributions, using verbs such as \`mix\`,
-\`shift\`, \`maximize\`, \`invert\`, and others. This package builds on
-the distionary package and belongs in the wider probaverse suite of R
-packages to support statistical modeling and simulations.
+Go beyond standard probability distributions such as the Normal or
+Exponential by combining, shifting, maximizing, and otherwise
+transforming distributions with simple, verb-based functions. Provides
+easy access to a broader space of distributions more representative of
+real-world systems such as river flows or insurance claims. Part of the
+probaverse framework of packages to support advanced statistical
+modeling and simulations with an intuitive workflow.
 
 ## Details
 

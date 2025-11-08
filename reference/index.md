@@ -8,7 +8,7 @@
   : Arithmetic Operations for Distributions
 - [`distplyr`](https://distplyr.probaverse.com/reference/distplyr-package.md)
   [`distplyr-package`](https://distplyr.probaverse.com/reference/distplyr-package.md)
-  : distplyr: Manipulation of Probability Distributions
+  : distplyr: Manipulate and Combine Probability Distributions
 - [`maximize()`](https://distplyr.probaverse.com/reference/extremum.md)
   [`minimize()`](https://distplyr.probaverse.com/reference/extremum.md)
   : Extremum of Several Distributions
