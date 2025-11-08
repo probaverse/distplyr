@@ -16,7 +16,7 @@
 #' distributions in `...` and `NA` in `draws`?
 #' Character vector of length 1:
 #' one of "fail", "null" (default), or "drop". See details.
-#' @return A distribution of class `"max"`.
+#' @returns A distribution of class `"max"`.
 #' @details
 #' To give an example of what distribution is returned, if X1 and X2 are
 #' two random variables with distributions D1 and D2 respectively, then

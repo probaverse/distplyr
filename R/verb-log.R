@@ -7,7 +7,7 @@
 #' @param distribution A probability distribution.
 #' @param base A positive numeric value specifying the base of the logarithm.
 #' Defaults to Euler's constant (natural logarithm).
-#' @return A distribution transformed by the logarithm function.
+#' @returns A distribution transformed by the logarithm function.
 #' @noRd
 log_distribution <- function(distribution, base = exp(1)) {
   checkmate::assert_class(distribution, "dst")

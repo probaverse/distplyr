@@ -8,7 +8,7 @@
 #' These S3 methods extend base R functions to work with distributions.
 #'
 #' @param x A probability distribution object.
-#' @param ... Additional arguments passed to specific methods. For `log()`, 
+#' @param ... Additional arguments passed to specific methods. For `log()`,
 #'   you can specify `base` (defaults to `exp(1)` for natural log).
 #'
 #' @section Supported Functions:
@@ -29,7 +29,7 @@
 #' the relationship `X^a = exp(a * log(X))`, combining both exponential and
 #' logarithmic transformations.
 #'
-#' @return A transformed distribution object.
+#' @returns A transformed distribution object.
 #'
 #' @examples
 #' # Logarithmic transformations

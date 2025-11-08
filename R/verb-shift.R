@@ -34,7 +34,7 @@
 #'
 #' More simplifications will be added in future versions of distplyr.
 #'
-#' @return A transformed distribution.
+#' @returns A transformed distribution.
 #'
 #' @examples
 #' d_pois <- distionary::dst_pois(1.1)

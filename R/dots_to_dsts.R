@@ -5,7 +5,7 @@
 #' are stored in a list-column in a tibble.
 #'
 #' @param ... Distribution objects, or list of distributions.
-#' @return A list of distributions contained in the `...`, with NULL
+#' @returns A list of distributions contained in the `...`, with NULL
 #' entries discarded. If no distributions are present, returns `list()`.
 #' @details An error is thrown if `...` contains non-distributions.
 #' This function is essentially a wrapper around `unlist()`.

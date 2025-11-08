@@ -41,7 +41,7 @@
 #' These implementations internally use both [Math.dst()] methods `log()`
 #' and `exp()`.
 #'
-#' @return A transformed distribution object.
+#' @returns A transformed distribution object.
 #'
 #' @examples
 #' d <- distionary::dst_beta(3, 2)

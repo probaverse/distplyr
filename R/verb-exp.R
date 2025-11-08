@@ -5,7 +5,7 @@
 #' following the input distribution.
 #'
 #' @param distribution A probability distribution.
-#' @return A distribution transformed by the exponential function.
+#' @returns A distribution transformed by the exponential function.
 #' Specifically, a distribution with subclass "exponential".
 #' @noRd
 exp_distribution <- function(distribution) {

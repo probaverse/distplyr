@@ -29,7 +29,7 @@
 #' - `"null"`: Return a Null distribution in the presence of NAs.
 #' - `"drop"`: Remove distribution-weight pairs having an NA value
 #'
-#' @return A mixture distribution.
+#' @returns A mixture distribution.
 #' @examples
 #' library(distionary)
 #' a <- dst_norm(0, 1)

@@ -11,17 +11,18 @@
 Go beyond standard probability distributions such as the Normal or Exponential by combining, shifting, maximizing, and otherwise transforming distributions with simple, verb-based functions. Provides easy access to a broader space of distributions more representative of real-world systems such as river flows or insurance claims. Part of the probaverse framework of packages to support advanced statistical modeling and simulations with an intuitive workflow.
 }
 \details{
-The distplyr package provides tools for manipulating probability distributions
-using intuitive syntax. Key features include:
+The distplyr package provides tools for manipulating probability
+distributions using intuitive syntax. Key features include:
 
 \strong{Arithmetic operators}: Use \code{+}, \code{-}, \code{*}, \code{/}, and \code{^} with distributions.
 See \code{\link[=Ops.dst]{Ops.dst()}} for details.
 
-\strong{Mathematical functions}: Use \code{log()}, \code{exp()}, \code{log10()}, and \code{sqrt()} with
-distributions. See \code{\link[=Math.dst]{Math.dst()}} for details.
+\strong{Mathematical functions}: Use \code{log()}, \code{exp()}, \code{log10()}, and \code{sqrt()}
+with distributions. See \code{\link[=Math.dst]{Math.dst()}} for details.
 
-\strong{Transformation functions}: Use \code{\link[=shift]{shift()}}, \code{\link[=multiply]{multiply()}}, \code{\link[=flip]{flip()}}, and \code{\link[=invert]{invert()}}
-to transform distributions. See \code{?linear_transform} for details.
+\strong{Transformation functions}: Use \code{\link[=shift]{shift()}}, \code{\link[=multiply]{multiply()}}, \code{\link[=flip]{flip()}},
+and \code{\link[=invert]{invert()}} to transform distributions. See \code{?linear_transform} for
+details.
 
 \strong{Mixing distributions}: Use \code{\link[=mix]{mix()}} to create mixture distributions.
 }
