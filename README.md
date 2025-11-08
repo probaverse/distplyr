@@ -5,18 +5,15 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/distplyr)](https://CRAN.R-project.org/package=distplyr)
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
 [![R-CMD-check](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/probaverse/distplyr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg?token=O7DN2RBUQ9)](https://codecov.io/gh/probaverse/distplyr)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Codecov test
+coverage](https://codecov.io/gh/probaverse/distplyr/graph/badge.svg)](https://app.codecov.io/gh/probaverse/distplyr)
 <!-- badges: end -->
 
 `distplyr` breathes life into probability distributions by providing a
@@ -93,10 +90,11 @@ remotes::install_github("probaverse/distplyr")
 
 `distplyr` is under active development and, while functional, is still
 young and will experience growing pains. For example, it currently
-struggles with manipulating some distributions that aren’t continuous.
-These limitations will be addressed as development continues. We
-appreciate your patience and welcome contributions! Please see the
-[contributing guide](.github/CONTRIBUTING.md) to get started.
+struggles with manipulating some distributions that aren’t continuous,
+and warnings or errors are provided in these cases. These limitations
+will be addressed as development continues. We appreciate your patience
+and welcome contributions! Please see the [contributing
+guide](.github/CONTRIBUTING.md) to get started.
 
 ## Quick Start
 
@@ -259,12 +257,12 @@ key component to the `probaverse` ecosystem.
 ## Acknowledgements
 
 The creation of `distplyr` would not have been possible without the
-support of BGC Engineering Inc., Politecnico di Milano, the European
+support of BGC Engineering Inc., the Politecnico di Milano, the European
 Space Agency, The University of British Columbia, and the Natural
 Science and Engineering Research Council of Canada (NSERC). The authors
-would also like to thank the reviewers from ROpenSci for their
-insightful feedback in the `distionary` package, which also helped in
-the development of `distplyr` by extension.
+would also like to thank the reviewers from ROpenSci during the review
+process of the `distionary` package, as their insightful feedback also
+helped in the development of `distplyr`.
 
 ## Citation
 

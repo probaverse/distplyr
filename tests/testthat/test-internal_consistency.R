@@ -22,11 +22,7 @@ test_that("Internal consistency of the distributions arising from verbs.", {
   for (i in seq_along(test_distributions)) {
     param_list <- test_distributions[[i]]
     verb <- names(test_distributions)[i]
-    # cat(verb, "-----\n")
-    # j <- 0
     for (params in param_list) {
-      # j <- j + 1
-      # print(j)
       d <- rlang::exec(verb, !!!params)
       expect_s3_class(d, "dst")
       x <- eval_quantile(d, at = p)
