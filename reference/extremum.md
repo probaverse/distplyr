@@ -84,54 +84,49 @@ Simplifications made in these functions include the following:
 ## Examples
 
 ``` r
+library(distionary)
 # One is always more extreme than the other in this case.
 d1 <- dst_unif(-1, 2)
-#> Error in dst_unif(-1, 2): could not find function "dst_unif"
 d2 <- dst_unif(5, 6)
-#> Error in dst_unif(5, 6): could not find function "dst_unif"
 maximize(d1, d2) # d2
-#> Error: object 'd1' not found
+#> Uniform distribution (continuous) 
+#> --Parameters--
+#> min max 
+#>   5   6 
 minimize(d1, d2) # d1
-#> Error: object 'd1' not found
+#> Uniform distribution (continuous) 
+#> --Parameters--
+#> min max 
+#>  -1   2 
 
 # Visualizing the maximum and minimum
 d3 <- dst_norm(4, 1)
-#> Error in dst_norm(4, 1): could not find function "dst_norm"
 d4 <- dst_exp(0.3)
-#> Error in dst_exp(0.3): could not find function "dst_exp"
 
 dmax <- maximize(d3, d4, draws = 1:2)
-#> Error: object 'd3' not found
 dmin <- minimize(d3, d4, draws = 1:2)
-#> Error: object 'd3' not found
 
 # Maximum
 plot(d3, col = "blue", lty = 2, from = 0, to = 14)
-#> Error: object 'd3' not found
 plot(d4, col = "red", lty = 2, add = TRUE)
-#> Error: object 'd4' not found
 plot(dmax, add = TRUE, n = 1000)
-#> Error: object 'dmax' not found
 legend(
  "topright",
  legend = c("Maximum", "N(4,1)", "Exp(0.3)"),
  col = c("black", "blue", "red"),
  lty = c(1, 2, 2)
 )
-#> Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL,     ...) {    if (!is.null(vfont))         vfont <- c(typeface = pmatch(vfont[1L], Hershey$typeface),             fontindex = pmatch(vfont[2L], Hershey$fontindex))    .External.graphics(C_strWidth, as.graphicsAnnot(s), pmatch(units,         c("user", "figure", "inches")), cex, font, vfont, ...)})(dots[[1L]][[1L]], cex = dots[[2L]][[1L]], font = dots[[3L]][[1L]],     units = "user"): plot.new has not been called yet
+
 
 # Minimum
 plot(d3, col = "blue", lty = 2, from = 0, to = 10)
-#> Error: object 'd3' not found
 plot(d4, col = "red", lty = 2, add = TRUE)
-#> Error: object 'd4' not found
 plot(dmin, add = TRUE, n = 1000)
-#> Error: object 'dmin' not found
 legend(
   "topright",
   legend = c("Minimum", "N(4,1)", "Exp(0.3)"),
   col = c("black", "blue", "red"),
   lty = c(1, 2, 2)
 )
-#> Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL,     ...) {    if (!is.null(vfont))         vfont <- c(typeface = pmatch(vfont[1L], Hershey$typeface),             fontindex = pmatch(vfont[2L], Hershey$fontindex))    .External.graphics(C_strWidth, as.graphicsAnnot(s), pmatch(units,         c("user", "figure", "inches")), cex, font, vfont, ...)})(dots[[1L]][[1L]], cex = dots[[2L]][[1L]], font = dots[[3L]][[1L]],     units = "user"): plot.new has not been called yet
+
 ```

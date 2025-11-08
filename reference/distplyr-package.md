@@ -44,6 +44,8 @@ Useful links:
 
 - <https://distplyr.probaverse.com/>
 
+- <https://github.com/probaverse/distplyr>
+
 ## Author
 
 **Maintainer**: Vincenzo Coia <vincenzo.coia@gmail.com> \[copyright
