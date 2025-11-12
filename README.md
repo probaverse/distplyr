@@ -82,17 +82,28 @@ To install `distplyr`, run the following code in R:
 install.packages("distplyr")
 ```
 
-## Development Status
+## Future Goals
 
-`distplyr` is under active development and, while functional, is still
-young and will experience growing pains. For example, it currently
-struggles with manipulating some distributions that aren’t continuous,
-and warnings or errors are provided in these cases. These limitations
-will be addressed as development continues. We appreciate your patience
-and welcome contributions! Please see the [contributing
-guide](.github/CONTRIBUTING.md) to get started.
+The current version of `distplyr` is limited in scope compared to its
+bigger long-term goals. Some bigger goals include:
 
-## Quick Start
+- Broad support for discrete distributions or distributions with
+  discrete components (currently this is limited).
+- More transformation verbs, such as convolution, truncation, and
+  grafting.
+- Transformations on multivariate distributions.
+
+Additional features will be added as development continues. We
+appreciate your patience and welcome contributions! Please see the
+[contributing guide](.github/CONTRIBUTING.md) to get started.
+
+## Example: Basic Usage
+
+In practice, you will most likely just load the whole probaverse with
+`library(probaverse)`; but in this minimal example, we’ll only load
+`distplyr`, and the core probaverse package, `distionary`.
+
+In addition to loading `distplyr` (but in practice, )
 
 ``` r
 library(distionary)
@@ -270,6 +281,6 @@ package version 0.2.0, <https://github.com/probaverse/distplyr>,
 
 ## Code of Conduct
 
-Please note that the distplyr project is released with a [Contributor
-Code of Conduct](https://distplyr.probaverse.com/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
+Please note that the `distplyr` project is released with a [Code of
+Conduct](https://distplyr.probaverse.com/CODE_OF_CONDUCT.html). By
+contributing to this project, you agree to abide by its terms.
