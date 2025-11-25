@@ -186,7 +186,7 @@ maximize_simplifications <- function(dsts, draws) {
     leading_dsts <- dsts[mins == new_min]
     leading_degen <- vapply(
       leading_dsts,
-      \(d) distionary::eval_pmf(d, at = new_min) == 1,
+      function(d) distionary::eval_pmf(d, at = new_min) == 1,
       FUN.VALUE = logical(1L)
     )
     if (all(leading_degen)) {
@@ -201,10 +201,12 @@ maximize_simplifications <- function(dsts, draws) {
   }
   ## Simplification based on distribution type
   all_finite <- all(vapply(
-    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+    dsts,
+    function(d) distionary::pretty_name(d) == "Finite",
+    FUN.VALUE = logical(1L)
   ))
   if (all_finite) {
-    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
+    x <- lapply(dsts, function(d) distionary::parameters(d)[["outcomes"]])
     x <- unique(unlist(x))
     upper <- lapply(dsts, distionary::prob_left, of = x, inclusive = TRUE)
     lower <- lapply(dsts, distionary::prob_left, of = x, inclusive = FALSE)

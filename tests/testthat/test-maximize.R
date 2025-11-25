@@ -307,7 +307,7 @@ test_that("Maximize - Edge cases", {
     expect_equal(d1, d2)
 
     # Test bypassing simplification with range hack
-    components_modified <- lapply(tc$components, \(d) {
+    components_modified <- lapply(tc$components, function(d) {
       d$range <- c(-Inf, Inf)
       d
     })

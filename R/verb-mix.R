@@ -66,11 +66,13 @@ mix <- function(...,
   probs <- weights / sum(weights, na.rm = TRUE)
   ## BEGIN special simplifications ---------------------------------------------
   all_finite <- all(vapply(
-    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+    dsts,
+    function(d) distionary::pretty_name(d) == "Finite",
+    FUN.VALUE = logical(1L)
   ))
   if (all_finite) {
-    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
-    p <- lapply(dsts, \(d) distionary::parameters(d)[["probs"]])
+    x <- lapply(dsts, function(d) distionary::parameters(d)[["outcomes"]])
+    p <- lapply(dsts, function(d) distionary::parameters(d)[["probs"]])
     pnew <- Map(`*`, probs, p)
     l <- distionary:::aggregate_weights(unlist(x), unlist(pnew))
     return(distionary::dst_empirical(l[["y"]], weights = l[["weight"]]))
@@ -78,8 +80,8 @@ mix <- function(...,
   ## END special simplifications -----------------------------------------------
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
   r <- lapply(dsts, range)
-  r1 <- min(vapply(r, \(x) x[1], FUN.VALUE = numeric(1L)))
-  r2 <- max(vapply(r, \(x) x[2], FUN.VALUE = numeric(1L)))
+  r1 <- min(vapply(r, function(x) x[1], FUN.VALUE = numeric(1L)))
+  r2 <- max(vapply(r, function(x) x[2], FUN.VALUE = numeric(1L)))
   var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
   var_unique <- unique(var_type)
   if (length(var_unique) == 1) {
@@ -119,7 +121,7 @@ mix <- function(...,
       id <- sample(1:k, size = n, replace = TRUE, prob = probs)
       vapply(
         id,
-        \(i) distionary::realise(dsts[[i]], n = 1),
+        function(i) distionary::realise(dsts[[i]], n = 1),
         FUN.VALUE = numeric(1L)
       )
     },

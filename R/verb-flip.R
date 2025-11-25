@@ -97,7 +97,7 @@ flip <- function(distribution) {
   }
   ## Quantile function simplifications:
   ## Problem: eval_quantile(-dst_bern(0.5), at = 0.5) Should be -1, but will be
-  ## 0 if calculated as \(p) -eval_quantile(distribution, at = 1 - p)
+  ## 0 if calculated as function(p) -eval_quantile(distribution, at = 1 - p)
   ## because what we should actually be calculating is the right inverse of
   ## `distribution`'s cdf.
   ## For distributions with increasing CDF (no flat parts), this simplification

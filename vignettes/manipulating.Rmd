@@ -76,15 +76,7 @@ And the equivalent operator form:
 d + 5
 ```
 
-The verb form is most useful for chaining operations. Here's the verbose version:
-
-```{r chaining-verbose}
-dst_norm(0, 1) |> 
-  multiply(-2) |> 
-  shift(10)
-```
-
-Or more concisely with operators:
+The verb form is most useful for chaining operations (try `multiply()` and `shift()` together with a pipe operator like `|>` or `%>%`). Or more concisely with operators:
 
 ```{r chaining-concise}
 10 - 2 * dst_norm(0, 1)

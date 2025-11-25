@@ -41,7 +41,7 @@ minimize <- function(...,
     Reduce(`*`, contributions)
   }
   d <- distionary::distribution(
-    cdf = \(x) 1 - survival(x),
+    cdf = function(x) 1 - survival(x),
     survival = survival,
     density = function(x) {
       # formula: survival * (sum draws_j f_j / surv_j)
@@ -103,7 +103,7 @@ minimize_simplifications <- function(dsts, draws) {
     leading_dsts <- dsts[maxs == new_max]
     leading_degen <- vapply(
       leading_dsts,
-      \(d) distionary::eval_pmf(d, at = new_max) == 1,
+      function(d) distionary::eval_pmf(d, at = new_max) == 1,
       FUN.VALUE = logical(1L)
     )
     if (all(leading_degen)) {
@@ -118,10 +118,12 @@ minimize_simplifications <- function(dsts, draws) {
   }
   ## Simplification based on distribution type
   all_finite <- all(vapply(
-    dsts, \(d) distionary::pretty_name(d) == "Finite", FUN.VALUE = logical(1L)
+    dsts,
+    function(d) distionary::pretty_name(d) == "Finite",
+    FUN.VALUE = logical(1L)
   ))
   if (all_finite) {
-    x <- lapply(dsts, \(d) distionary::parameters(d)[["outcomes"]])
+    x <- lapply(dsts, function(d) distionary::parameters(d)[["outcomes"]])
     x <- unique(unlist(x))
     upper <- lapply(dsts, distionary::prob_right, of = x, inclusive = TRUE)
     lower <- lapply(dsts, distionary::prob_right, of = x, inclusive = FALSE)

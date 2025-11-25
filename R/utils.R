@@ -21,7 +21,9 @@ pair_dots_num <- function(...,
   num <- l[[2L]]
   ## NA handling
   na_dsts <- vapply(
-    dsts, \(d) distionary::pretty_name(d) == "Null", FUN.VALUE = logical(1L)
+    dsts,
+    function(d) distionary::pretty_name(d) == "Null",
+    FUN.VALUE = logical(1L)
   )
   na_num <- is.na(num)
   has_na_dst <- any(na_dsts)
