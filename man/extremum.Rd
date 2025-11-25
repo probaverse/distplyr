@@ -35,7 +35,7 @@ Character vector of length 1:
 one of "fail", "null" (default), or "drop". See details.}
 }
 \value{
-A distribution of class \code{"max"}.
+A distribution corresponding to the maximum or minimum.
 }
 \description{
 For a collection of distributions, obtain the distributions of the
