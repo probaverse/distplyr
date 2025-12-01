@@ -81,7 +81,7 @@ bigger long-term goals. Some bigger goals include:
 
 Additional features will be added as development continues. We
 appreciate your patience and welcome contributions! Please see the
-[contributing guide](https://distplyr.probaverse.com/CONTRIBUTING.md) to
+[contributing guide](https://distplyr.probaverse.com/contributing) to
 get started.
 
 ## Example: Basic Usage
