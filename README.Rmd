@@ -65,7 +65,7 @@ The current version of `distplyr` is limited in scope compared to its bigger lon
 - More transformation verbs, such as convolution, truncation, and grafting.
 - Transformations on multivariate distributions.
 
-Additional features will be added as development continues. We appreciate your patience and welcome contributions! Please see the [contributing guide](.github/CONTRIBUTING.md) to get started.
+Additional features will be added as development continues. We appreciate your patience and welcome contributions! Please see the [contributing guide](https://distplyr.probaverse.com/contributing) to get started.
 
 ## Example: Basic Usage
 
