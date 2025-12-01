@@ -107,13 +107,21 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"distplyr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="development-status">Development Status<a class="anchor" aria-label="anchor" href="#development-status"></a>
+<h2 id="future-goals">Future Goals<a class="anchor" aria-label="anchor" href="#future-goals"></a>
 </h2>
-<p><code>distplyr</code> is under active development and, while functional, is still young and will experience growing pains. For example, it currently struggles with manipulating some distributions that aren’t continuous, and warnings or errors are provided in these cases. These limitations will be addressed as development continues. We appreciate your patience and welcome contributions! Please see the <a href="CONTRIBUTING.html">contributing guide</a> to get started.</p>
+<p>The current version of <code>distplyr</code> is limited in scope compared to its bigger long-term goals. Some bigger goals include:</p>
+<ul>
+<li>Broad support for discrete distributions or distributions with discrete components (currently this is limited).</li>
+<li>More transformation verbs, such as convolution, truncation, and grafting.</li>
+<li>Transformations on multivariate distributions.</li>
+</ul>
+<p>Additional features will be added as development continues. We appreciate your patience and welcome contributions! Please see the <a href="CONTRIBUTING.html">contributing guide</a> to get started.</p>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="example-basic-usage">Example: Basic Usage<a class="anchor" aria-label="anchor" href="#example-basic-usage"></a>
 </h2>
+<p>In practice, you will most likely just load the whole probaverse with <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(probaverse)</a></code>; but in this minimal example, we’ll only load <code>distplyr</code>, and the core probaverse package, <code>distionary</code>.</p>
+<p>In addition to loading <code>distplyr</code> (but in practice, )</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distionary.probaverse.com/" class="external-link">distionary</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://distplyr.probaverse.com/">distplyr</a></span><span class="op">)</span></span></code></pre></div>
@@ -237,7 +245,7 @@
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
 </h2>
-<p>Please note that the distplyr project is released with a <a href="https://distplyr.probaverse.com/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>Please note that the <code>distplyr</code> project is released with a <a href="https://distplyr.probaverse.com/CODE_OF_CONDUCT.html">Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

@@ -91,20 +91,12 @@ d + 5
 #> [1] 5
 ```
 
-The verb form is most useful for chaining operations. Here’s the verbose
-version:
-
-``` r
-dst_norm(0, 1) |> 
-  multiply(-2) |> 
-  shift(10)
-#> Normal distribution (continuous) 
-#> --Parameters--
-#> mean   sd 
-#>   10    2
-```
-
-Or more concisely with operators:
+The verb form is most useful for chaining operations (try
+[`multiply()`](https://distplyr.probaverse.com/reference/linear_transform.md)
+and
+[`shift()`](https://distplyr.probaverse.com/reference/linear_transform.md)
+together with a pipe operator like `|>` or `%>%`). Or more concisely
+with operators:
 
 ``` r
 10 - 2 * dst_norm(0, 1)

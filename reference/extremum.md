@@ -45,7 +45,7 @@ minimize(
 
 ## Value
 
-A distribution of class `"max"`.
+A distribution corresponding to the maximum or minimum.
 
 ## Details
 
