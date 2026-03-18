@@ -61,15 +61,15 @@ Math.dst <- function(x, ...) {
       log_distribution(x, ...)
     },
     `log10` = {
-      ellipsis::check_dots_empty()
+      rlang::check_dots_empty()
       log_distribution(x, base = 10)
     },
     `exp` = {
-      ellipsis::check_dots_empty()
+      rlang::check_dots_empty()
       exp_distribution(x)
     },
     `sqrt` = {
-      ellipsis::check_dots_empty()
+      rlang::check_dots_empty()
       x^0.5
     },
     stop("Operation currently not supported.")
