@@ -1,6 +1,5 @@
 # distplyr 0.2.0
 
-
 # distplyr 0.1.5
 
 - Updates to package infrastructure in the process of migrating to a new GitHub Organization.
