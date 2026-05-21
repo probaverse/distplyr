@@ -52,7 +52,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     }
     return(do.call(mix, c(trimmed_components, list(weights = new_mix_weights))))
   }
-  if (distionary::pretty_name(distribution) == "Empirical") {
+  if (distionary::pretty_name(distribution) == "Finite") {
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
@@ -161,7 +161,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     }
     return(do.call(mix, c(trimmed_components, list(weights = new_mix_weights))))
   }
-  if (distionary::pretty_name(distribution) == "Empirical") {
+  if (distionary::pretty_name(distribution) == "Finite") {
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
