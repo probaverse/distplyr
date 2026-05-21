@@ -1,9 +1,12 @@
-# distplyr 0.2.0
+# distplyr (development version)
 
 - Fix `mix()`, `maximize()`, and `minimize()` sometimes treating different
   distributions as the same component. You may see different results if you
   combine transformed distributions (for example after `flip()` or experimental
   `trim_*()`).
+
+# distplyr 0.2.0
+
 
 # distplyr 0.1.5
 
