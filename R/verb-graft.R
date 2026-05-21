@@ -28,7 +28,7 @@ graft_right <- function(distribution, graft, of, ..., include = FALSE) {
   p_connect <- distionary::prob_right(
     distribution,
     of = of,
-    inclusive = include
+    inclusive = !include
   )
   if (p_connect == 0) {
     return(distribution)
@@ -64,7 +64,7 @@ graft_left <- function(distribution, graft, of, ..., include = FALSE) {
   p_connect <- distionary::prob_left(
     distribution,
     of = of,
-    inclusive = include
+    inclusive = !include
   )
   if (p_connect == 0) {
     return(distribution)
