@@ -15,3 +15,6 @@
 ^cran-comments\.md$
 ^codemeta\.json$
 ^data-raw$
+^experimental$
+^[.]?air[.]toml$
+^\.vscode$

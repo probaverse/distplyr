@@ -1,0 +1,34 @@
+---
+title: "Inverse Distributions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Inverse Distributions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(distplyr)
+```
+
+An _inverse distribution_ is defined as follows: if $X$ is a random variable with cumulative distribution function (CDF) $F_X$ and $P(X = 0) = 0$, then $Y = 1 / X$ follows an inverse distribution with CDF
+$$F_Y(y) = F_X(0) - F_X\left(\frac{1}{y}\right) + P\left(X = \frac{1}{y}\right) + I(y \geq 0).$$
+
+Special cases:
+
+- If $X$ is discrete, then this reduces to $$F_Y(y) = F_X(0) - F_X\left(\frac{1}{y}\right) + f_X\left(\frac{1}{y}\right) + I(y \geq 0),$$ where $f_y$ is the probability mass function. 
+
+- If $X$ is discrete and positive, then this reduces to $$F_Y(y) = 1 - F_X\left(\frac{1}{y}\right) + f_X\left(\frac{1}{y}\right).$$
+
+- If $X$ is continuous, then $$F_Y(y) = F_X(0) - F_X\left(\frac{1}{y}\right) + I(y \geq 0).$$
+
+- If $X$ is continuous and positive, then $$F_Y(y) = 1 - F_X\left(\frac{1}{y}\right).$$
+
+The quantile function is the left inverse of the CDF. Since the $P\left(X = \frac{1}{y}\right)$ portion only applies to a countable set, it does not modify the left inverse. 
