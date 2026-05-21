@@ -66,8 +66,8 @@ pair_dots_num <- function(...,
   if (n_dsts == 0) {
     return(distionary::dst_null())
   }
-  ## Aggregate Weights
-  grps <- match(dsts, dsts)
+  ## Aggregate weights for identical distributions.
+  grps <- group_dsts(dsts)
   num <- tapply(num, grps, FUN = sum, simplify = FALSE)
   dsts <- tapply(dsts, grps, FUN = unique, simplify = TRUE)
   num <- unlist(unname(num))
@@ -76,4 +76,29 @@ pair_dots_num <- function(...,
     dsts = dsts,
     num = num
   )
+}
+
+#' @noRd
+dst_equal <- function(a, b) {
+  identical(a, b) ||
+    (identical(class(a), class(b)) &&
+      distionary::pretty_name(a) == distionary::pretty_name(b) &&
+      identical(distionary::parameters(a), distionary::parameters(b)))
+}
+
+#' @noRd
+group_dsts <- function(dsts) {
+  n <- length(dsts)
+  grps <- seq_len(n)
+  if (n < 2L) {
+    return(grps)
+  }
+  for (i in seq_len(n - 1L)) {
+    for (j in (i + 1L):n) {
+      if (dst_equal(dsts[[i]], dsts[[j]])) {
+        grps[j] <- grps[i]
+      }
+    }
+  }
+  as.integer(as.factor(grps))
 }
