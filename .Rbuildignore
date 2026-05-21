@@ -14,3 +14,4 @@
 ^distplyr\.Rproj$
 ^cran-comments\.md$
 ^codemeta\.json$
+^data-raw$

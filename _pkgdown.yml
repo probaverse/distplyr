@@ -12,3 +12,9 @@ template:
 
         gtag('config', 'G-VRP7BMY266');
       </script>
+
+articles:
+- title: User Guides
+  navbar: ~
+  contents:
+  - manipulating
