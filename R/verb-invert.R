@@ -25,6 +25,13 @@ invert <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in) && prod(sign(r)) %in% 0:1) {
+    dom <- if (r[1] >= 0) c(0, Inf) else c(-Inf, 0)
+    transform_support(support_in, function(x) 1 / x, function(x) 1 / x, increasing = FALSE, domain = dom, range = dom)
+  } else {
+    NULL
+  }
   qf <- function(p) {
     F0 <- distionary::eval_cdf(distribution, at = 0)
     res <- rep(NA_real_, length(p))
@@ -79,6 +86,7 @@ invert <- function(distribution) {
     realize = function(n) {
       1 / distionary::realize(distribution, n = n)
     },
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Inverse",
     .parameters = list(

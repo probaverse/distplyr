@@ -1,5 +1,15 @@
 # distplyr (development version)
 
+- Verbs now propagate a structured support (the `.support` feature from
+  distionary) to their results, so `support()`, the atoms, and discrete/mixed
+  moments work on transformed distributions. The support is computed exactly:
+  monotonic transforms (`shift()`, `multiply()`, `flip()`, `exp()`, `log()`,
+  `invert()`) map the support; `mix()` unions the components' supports;
+  `trim_*()`/`graft_*()` restrict it; and `maximize()`/`minimize()` take the
+  union restricted to the new range, deciding the boundary atom by its exact
+  mass. When an input lacks a structured support, the verb falls back to its
+  previous behaviour.
+
 - Fix `mix()`, `maximize()`, and `minimize()` sometimes treating different
   distributions as the same component. You may see different results if you
   combine transformed distributions (for example after `flip()` or experimental

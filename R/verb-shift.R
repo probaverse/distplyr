@@ -118,6 +118,8 @@ shift <- function(distribution, constant) {
     return(shift(base_dist, constant + prev_const))
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in)) transform_support(support_in, function(x) x + constant, function(x) x - constant, increasing = TRUE) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x - constant)
@@ -137,6 +139,8 @@ shift <- function(distribution, constant) {
     realize = function(n) {
       distionary::realize(distribution, n = n) + constant
     },
+    range = range(distribution) + constant,
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Shifted",
     .parameters = list(

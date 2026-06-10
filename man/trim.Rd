@@ -30,16 +30,12 @@ conditioning the random variable to be bigger than that value.
 conditioning to be smaller than that value.
 }
 \examples{
-distionary::dst_norm(0, 1) |>
-  trim_left(-2) |>
-  trim_right(2) |>
-  distionary::enframe_cdf(at = -3:3)
+d <- distionary::dst_norm(0, 1)
+d <- trim_left(d, -2)
+d <- trim_right(d, 2)
+distionary::enframe_cdf(d, at = -3:3)
 
 d <- distionary::dst_pois(3)
-d |>
-  trim_left(5) |>
-  distionary::eval_pmf(at = 5)
-d |>
-  trim_left(5, include = FALSE) |>
-  distionary::eval_pmf(at = 5)
+distionary::eval_pmf(trim_left(d, 5), at = 5)
+distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
 }

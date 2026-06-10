@@ -64,6 +64,8 @@ multiply <- function(distribution, constant) {
     return(multiply(p[["distribution"]], constant * p[["constant"]]))
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in)) transform_support(support_in, function(x) x * constant, function(x) x / constant, increasing = TRUE) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x / constant)
@@ -83,6 +85,8 @@ multiply <- function(distribution, constant) {
     realize = function(n) {
       distionary::realise(distribution, n = n) * constant
     },
+    range = range(distribution) * constant,
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Scaled",
     .parameters = list(

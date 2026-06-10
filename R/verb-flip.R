@@ -46,6 +46,8 @@ flip <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   ## (Except for quantile function)
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in)) transform_support(support_in, function(x) -x, function(x) -x, increasing = FALSE) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_pmf(distribution, at = -x) +
@@ -64,6 +66,8 @@ flip <- function(distribution) {
     realize = function(n) {
       -distionary::realize(distribution, n = n)
     },
+    range = -rev(range(distribution)),
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Negated",
     .parameters = list(
