@@ -127,7 +127,10 @@ restrict_support <- function(
   if (nrow(intervals) > 0) {
     lo <- pmax(intervals[, "lower"], from)
     hi <- pmin(intervals[, "upper"], to)
-    keep <- lo <= hi
+    # Strict: a clipped interval [a, a] has measure zero (no continuous mass),
+    # so drop it. This also discards intervals that fall entirely outside
+    # [from, to] (where lo > hi).
+    keep <- lo < hi
     intervals <- cbind(lower = lo[keep], upper = hi[keep])
     if (nrow(intervals) == 0) {
       intervals <- no_intervals()
