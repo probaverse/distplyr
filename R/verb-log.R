@@ -57,6 +57,8 @@ log_distribution <- function(distribution, base = exp(1)) {
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in)) transform_support(support_in, log, exp, increasing = TRUE, domain = c(0, Inf), range = c(-Inf, Inf)) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = exp(x))
@@ -77,6 +79,8 @@ log_distribution <- function(distribution, base = exp(1)) {
     realize = function(n) {
       log(distionary::realize(distribution, n = n))
     },
+    range = log(range(distribution)),
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Logarithmic",
     .parameters = list(distribution = distribution)

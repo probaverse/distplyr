@@ -335,9 +335,9 @@ test_that("Minimize - vtype", {
   expect_equal(vtype(minimize(dst_gamma(2, 3), dst_exp(3))), "continuous")
   expect_equal(vtype(minimize(dst_pois(3), dst_nbinom(3, 0.4))), "discrete")
   expect_equal(vtype(minimize(dst_pois(3), -dst_exp(1))), "continuous")
-  # Here's one that should be continuous but don't have the capability
-  # currently to know this.
+  # Structured supports make this knowable: the extreme is bounded on one
+  # side, trimming away the binomial atoms and leaving a continuous result.
   m <- mix(-dst_binom(5, 0.5), -dst_gp(10, 1))
   d <- minimize(m, -dst_exp(1) - 6)
-  expect_equal(vtype(d), "unknown")
+  expect_equal(vtype(d), "continuous")
 })

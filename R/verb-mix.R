@@ -92,6 +92,8 @@ mix <- function(...,
     v <- "mixed"
   }
   ## Make distribution object
+  support_list <- input_supports(dsts)
+  support_out <- if (!is.null(support_list)) union_support(support_list) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       cdf_vals <- lapply(dsts, distionary::eval_cdf, at = x)
@@ -126,6 +128,7 @@ mix <- function(...,
       )
     },
     range = c(r1, r2),
+    .support = support_out,
     .vtype = v,
     .name = "Mixture",
     .parameters = list(

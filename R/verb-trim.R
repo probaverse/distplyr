@@ -13,18 +13,14 @@
 #' @param ... Currently unused.
 #' @return A conditional distribution.
 #' @examples
-#' distionary::dst_norm(0, 1) |>
-#'   trim_left(-2) |>
-#'   trim_right(2) |>
-#'   distionary::enframe_cdf(at = -3:3)
+#' d <- distionary::dst_norm(0, 1)
+#' d <- trim_left(d, -2)
+#' d <- trim_right(d, 2)
+#' distionary::enframe_cdf(d, at = -3:3)
 #'
 #' d <- distionary::dst_pois(3)
-#' d |>
-#'   trim_left(5) |>
-#'   distionary::eval_pmf(at = 5)
-#' d |>
-#'   trim_left(5, include = FALSE) |>
-#'   distionary::eval_pmf(at = 5)
+#' distionary::eval_pmf(trim_left(d, 5), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
 #' @rdname trim
 #' @export
 trim_left <- function(distribution, of, ..., include = TRUE) {
@@ -82,16 +78,26 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   if (v == "mixed") {
     v <- "unknown" # For now.
   }
-  ## If `of` is on a flat part of the CDF, this will inaccurately
-  ## specify the left endpoint of the distribution (and the 0-quantile).
-  ## If this is the case, do not specify range, and adjust quantile function
-  ## to calculate 0-quantile using the quantile algorithm.
-  dens_at_break <- distionary::eval_density(distribution, at = of)
-  if (dens_at_break == 0) {
-    ## Trim occurs on flat part
+  ## If `of` falls on a flat part of the CDF (a gap in the support), the trimmed
+  ## left endpoint would be specified inaccurately. Detect this from the support
+  ## rather than the density: a density can be 0 at an isolated point of an
+  ## otherwise continuous region (e.g. f(x) = x^2 at x = 0) and look "flat" when
+  ## it is not. Fall back to the density only for support-less distributions.
+  support_in <- distionary::support(distribution)
+  on_flat <- if (!is.null(support_in)) {
+    !support_contains(support_in, of)
+  } else {
+    distionary::eval_density(distribution, at = of) == 0
+  }
+  if (on_flat) {
     stop("Trim occurs on flat part. This is not supported.")
   }
-
+  support_out <- if (!is.null(support_in)) {
+    # `include = TRUE` means `of` is removed, so the kept support excludes it.
+    restrict_support(support_in, from = of, to = Inf, include_from = !include)
+  } else {
+    NULL
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- 1 - distionary::eval_survival(distribution, at = x) / p_kept
@@ -123,6 +129,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
       distionary::eval_quantile(distribution, at = (1 - p_kept) + p * p_kept)
     },
     range = c(of, right),
+    .support = support_out,
     .vtype = v,
     .name = "Left-Trimmed",
     .parameters = list(
@@ -191,16 +198,26 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   if (v == "mixed") {
     v <- "unknown" # For now.
   }
-  ## If `of` is on a flat part of the CDF, this will inaccurately
-  ## specify the left endpoint of the distribution (and the 0-quantile).
-  ## If this is the case, do not specify range, and adjust quantile function
-  ## to calculate 0-quantile using the quantile algorithm.
-  dens_at_break <- distionary::eval_density(distribution, at = of)
-  if (dens_at_break == 0) {
-    ## Trim occurs on flat part
+  ## If `of` falls on a flat part of the CDF (a gap in the support), the trimmed
+  ## right endpoint would be specified inaccurately. Detect this from the support
+  ## rather than the density: a density can be 0 at an isolated point of an
+  ## otherwise continuous region (e.g. f(x) = x^2 at x = 0) and look "flat" when
+  ## it is not. Fall back to the density only for support-less distributions.
+  support_in <- distionary::support(distribution)
+  on_flat <- if (!is.null(support_in)) {
+    !support_contains(support_in, of)
+  } else {
+    distionary::eval_density(distribution, at = of) == 0
+  }
+  if (on_flat) {
     stop("Trim occurs on flat part. This is not supported.")
   }
-  
+  support_out <- if (!is.null(support_in)) {
+    # `include = TRUE` means `of` is removed, so the kept support excludes it.
+    restrict_support(support_in, from = -Inf, to = of, include_to = !include)
+  } else {
+    NULL
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- distionary::eval_cdf(distribution, at = x) / p_kept
@@ -228,6 +245,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
       distionary::eval_quantile(distribution, at = p * p_kept)
     },
     range = c(left, of),
+    .support = support_out,
     .vtype = v,
     .name = "Right-Trimmed",
     .parameters = list(

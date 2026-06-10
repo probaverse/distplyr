@@ -37,6 +37,8 @@ exp_distribution <- function(distribution) {
     return(inner_dist)
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- if (!is.null(support_in)) transform_support(support_in, exp, log, increasing = TRUE, domain = c(-Inf, Inf), range = c(0, Inf)) else NULL
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))
@@ -62,6 +64,7 @@ exp_distribution <- function(distribution) {
       exp(distionary::realize(distribution, n = n))
     },
     range = exp(range(distribution)),
+    .support = support_out,
     .vtype = distionary::vtype(distribution),
     .name = "Exponentiated",
     .parameters = list(
