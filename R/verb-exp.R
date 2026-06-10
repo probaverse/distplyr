@@ -24,7 +24,8 @@ exp_distribution <- function(distribution) {
   if (nm == "Finite") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_empirical(
-      exp(p[["outcomes"]]), weights = p[["probs"]]
+      exp(p[["outcomes"]]),
+      weights = p[["probs"]]
     ))
   }
   if (nm == "Degenerate") {
@@ -38,7 +39,18 @@ exp_distribution <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) transform_support(support_in, exp, log, increasing = TRUE, domain = c(-Inf, Inf), range = c(0, Inf)) else NULL
+  support_out <- if (!is.null(support_in)) {
+    transform_support(
+      support_in,
+      exp,
+      log,
+      increasing = TRUE,
+      domain = c(-Inf, Inf),
+      range = c(0, Inf)
+    )
+  } else {
+    NULL
+  }
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))
@@ -48,8 +60,10 @@ exp_distribution <- function(distribution) {
     density = function(x) {
       res <- rep(0, length(x))
       res[x > 0] <- distionary::eval_density(
-        distribution, at = log(x[x > 0])
-      ) / x[x > 0]
+        distribution,
+        at = log(x[x > 0])
+      ) /
+        x[x > 0]
       res
     },
     pmf = function(x) {
