@@ -26,9 +26,8 @@ invert <- function(distribution) {
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in) && prod(sign(r)) %in% 0:1) {
-    dom <- if (r[1] >= 0) c(0, Inf) else c(-Inf, 0)
-    transform_support(support_in, function(x) 1 / x, function(x) 1 / x, increasing = FALSE, domain = dom, range = dom)
+  support_out <- if (!is.null(support_in)) {
+    invert_support(support_in)
   } else {
     NULL
   }
@@ -87,14 +86,10 @@ invert <- function(distribution) {
       1 / distionary::realize(distribution, n = n)
     },
     .support = support_out,
-    .vtype = distionary::vtype(distribution),
     .name = "Inverse",
     .parameters = list(
       distribution = distribution
     )
   )
-  if (prod(sign(r)) %in% 0:1) { # Distribution is nonnegative or nonpositive
-    d[["range"]] <- rev(1 / r)
-  }
   distionary:::new_distribution(d, class = "inverse")
 }

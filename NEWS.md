@@ -6,11 +6,30 @@ Major updates:
   distionary) following the new distionary implementation, so `support()`, 
   the atoms, and discrete/mixed moments work on transformed distributions.
 
+- Verbs no longer specify `range` or `.vtype` (both deprecated in
+  distionary); the range and variable type are derived from the support.
+  A verb applied to a distribution without a structured support yields a
+  distribution of unknown variable type.
+
+- `trim_left()` and `trim_right()` now shift a trim point that lands on a
+  flat region (a gap in the support) to where the support resumes, instead
+  of erroring. For example, trimming a distribution supported on
+  [1, 2] U [4, 5] to the left of 3 yields a distribution on [4, 5]. The
+  general trimming method now requires the distribution to carry a
+  structured support.
+
+- `invert()` now derives the support of `1 / X` for distributions spanning
+  zero, by mapping the negative and positive parts separately.
+
 Bug fixes:
 
 - Fix `mix()`, `maximize()`, and `minimize()` sometimes treating different
   distributions as the same component. You may see different results if you
   combine transformed distributions (for example after `flip()`).
+
+- Fix `trim_left()` and `trim_right()` on a mixture returning the Null
+  distribution whenever the trim removed an entire component; dead
+  components are now dropped from the mixture instead.
 
 # distplyr 0.2.0
 

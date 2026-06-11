@@ -66,18 +66,12 @@ flip <- function(distribution) {
     realize = function(n) {
       -distionary::realize(distribution, n = n)
     },
-    range = -rev(range(distribution)),
     .support = support_out,
-    .vtype = distionary::vtype(distribution),
     .name = "Negated",
     .parameters = list(
       distribution = distribution
     ),
   )
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    r <- range(distribution)
-    d[["range"]] <- -rev(r)
-  }
   if (distionary:::is_intrinsic(distribution, "mean")) {
     d[["mean"]] <- -mean(distribution)
   }

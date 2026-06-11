@@ -1,17 +1,23 @@
 # Support propagation through distplyr's verbs.
 
 vt <- function(d) distionary::vtype(d)
-atoms_of <- function(d) as.double(distionary::atoms(distionary::support(d)))
+atoms_of <- function(d, n = NULL) {
+  a <- distionary::atoms(distionary::support(d))
+  if (!is.null(n)) {
+    a <- a[seq_len(n)]
+  }
+  as.double(a)
+}
 cont_of <- function(d) unname(distionary::continuous_part(distionary::support(d)))
 
 test_that("Monotonic transforms carry the support.", {
   # shift: atoms translate.
   d <- shift(distionary::dst_pois(3), 2.5)
   expect_equal(vt(d), "discrete")
-  expect_equal(atoms_of(d)[1:3], c(2.5, 3.5, 4.5))
+  expect_equal(atoms_of(d, 3), c(2.5, 3.5, 4.5))
   # multiply by a positive constant: atoms scale.
   d <- multiply(distionary::dst_pois(3), 2)
-  expect_equal(atoms_of(d)[1:3], c(0, 2, 4))
+  expect_equal(atoms_of(d, 3), c(0, 2, 4))
   # flip: continuous [0, Inf) -> (-Inf, 0].
   d <- flip(distionary::dst_gamma(2, 1))
   expect_equal(vt(d), "continuous")
@@ -21,13 +27,15 @@ test_that("Monotonic transforms carry the support.", {
   expect_equal(cont_of(d), matrix(c(-Inf, Inf), nrow = 1))
 })
 
-test_that("invert carries the support only when it does not span zero.", {
+test_that("invert carries the support, including across zero.", {
   d <- invert(distionary::dst_gamma(2, 1))
   expect_equal(vt(d), "continuous")
-  expect_false(is.null(distionary::support(d)))
-  # Spanning zero: support is not set (falls back).
+  expect_equal(cont_of(d), matrix(c(0, Inf), nrow = 1))
+  # Spanning zero: each side is mapped separately and the results unioned;
+  # the touching closed intervals merge to the whole line.
   d0 <- invert(distionary::dst_norm(0, 1))
-  expect_null(distionary::support(d0))
+  expect_equal(vt(d0), "continuous")
+  expect_equal(cont_of(d0), matrix(c(-Inf, Inf), nrow = 1))
 })
 
 test_that("mix unions the component supports.", {
@@ -37,7 +45,7 @@ test_that("mix unions the component supports.", {
   # discrete + continuous -> mixed.
   d <- mix(distionary::dst_pois(3), distionary::dst_unif(0, 10), weights = c(1, 1))
   expect_equal(vt(d), "mixed")
-  expect_equal(atoms_of(d)[1:3], c(0, 1, 2))
+  expect_equal(atoms_of(d, 3), c(0, 1, 2))
   expect_equal(cont_of(d), matrix(c(0, 10), nrow = 1))
 })
 
@@ -86,5 +94,30 @@ test_that("A verb on a support-less (legacy) input falls back gracefully.", {
   expect_null(distionary::support(legacy))
   d <- shift(legacy, 3)
   expect_null(distionary::support(d)) # no structured support to propagate
-  expect_equal(vt(d), "continuous") # but still works
+  # Verbs no longer pass .vtype, so the type is unknown without a support.
+  expect_equal(vt(d), "unknown")
+  expect_equal(distionary::eval_cdf(d, at = 3), 0.5) # but still works
+  # Trimming, however, requires a support.
+  expect_error(trim_left(legacy, 0), "requires the distribution.s support")
+})
+
+test_that("Trimming on a flat region shifts the boundary to the support.", {
+  # Support [1, 2] U [4, 5]: trimming left of 3 starts the result at 4.
+  m <- mix(
+    distionary::dst_unif(1, 2), distionary::dst_unif(4, 5),
+    weights = c(1, 1)
+  )
+  tl <- trim_left(m, 3)
+  expect_equal(range(tl), c(4, 5))
+  expect_equal(distionary::eval_quantile(tl, c(0, 0.5)), c(4, 4.5))
+  # Trimming exactly at an interval endpoint also lands on the next piece.
+  expect_equal(distionary::eval_quantile(trim_left(m, 2), 0), 4)
+  # Mirror image.
+  tr <- trim_right(m, 3)
+  expect_equal(range(tr), c(1, 2))
+  expect_equal(distionary::eval_quantile(tr, 1), 2)
+  # Discrete: a trim point between atoms shifts to the next atom.
+  tp <- trim_left(distionary::dst_pois(5), 5.5)
+  expect_equal(distionary::eval_quantile(tp, 0), 6)
+  expect_equal(range(tp), c(6, Inf))
 })
