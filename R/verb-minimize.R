@@ -23,18 +23,6 @@ minimize <- function(...,
   }
   dsts <- simplification$dsts
   draws <- simplification$draws
-  # Variable type determination
-  vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (length(vars) == 1) {
-    v <- vars
-  } else if (identical(sort(vars), c("continuous", "discrete"))) {
-    v <- "mixed"
-  } else {
-    # Would need to dig more to know for sure.
-    v <- "unknown"
-  }
-  r <- lapply(dsts, range)
-  r <- Reduce(pmin, r)
   survival <- function(x) {
     prob_rights <- lapply(dsts, distionary::eval_survival, at = x)
     contributions <- Map(`^`, prob_rights, draws)
@@ -76,10 +64,8 @@ minimize <- function(...,
       lower <- Reduce(`*`, Map(`^`, survs, draws))
       upper - lower
     },
-    range = r,
     .name = "Minumum",
     .support = support_out,
-    .vtype = v,
     .parameters = list(
       distributions = dsts,
       draws = draws

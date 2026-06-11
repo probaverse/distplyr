@@ -139,9 +139,7 @@ shift <- function(distribution, constant) {
     realize = function(n) {
       distionary::realize(distribution, n = n) + constant
     },
-    range = range(distribution) + constant,
     .support = support_out,
-    .vtype = distionary::vtype(distribution),
     .name = "Shifted",
     .parameters = list(
       distribution = distribution,
@@ -156,9 +154,6 @@ shift <- function(distribution, constant) {
   }
   if (distionary:::is_intrinsic(distribution, "stdev")) {
     d[["stdev"]] <- distionary::stdev(distribution)
-  }
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- range(distribution) + constant
   }
   if (distionary:::is_intrinsic(distribution, "variance")) {
     d[["variance"]] <- distionary::variance(distribution)

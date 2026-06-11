@@ -150,6 +150,63 @@ drop_atom <- function(support, value) {
   build_support(atoms, intervals)
 }
 
+#' Support of `1 / X` from the support of `X`.
+#'
+#' The reciprocal is monotone on each side of zero but not across it, so the
+#' negative and positive parts of the support are mapped separately and the
+#' results unioned. Assumes `X` places no mass at zero (the caller guarantees
+#' this). Returns `NULL` if the support is empty.
+#' @noRd
+invert_support <- function(support) {
+  halves <- list(
+    invert_support_half(support, negative = TRUE),
+    invert_support_half(support, negative = FALSE)
+  )
+  halves <- Filter(Negate(is.null), halves)
+  if (length(halves) == 0) {
+    return(NULL)
+  }
+  if (length(halves) == 1) {
+    return(halves[[1L]])
+  }
+  union_support(halves)
+}
+
+#' One side of `invert_support()`: restrict the support to the negative or
+#' positive half-line, then map it through `1 / x` (decreasing on each side).
+#' @noRd
+invert_support_half <- function(support, negative) {
+  s <- if (negative) {
+    restrict_support(support, from = -Inf, to = 0, include_to = FALSE)
+  } else {
+    restrict_support(support, from = 0, to = Inf, include_from = FALSE)
+  }
+  if (is.null(s)) {
+    return(NULL)
+  }
+  atoms <- distionary::atoms(s)
+  intervals <- distionary::continuous_part(s)
+  if (discretes::num_discretes(atoms) > 0) {
+    side <- if (negative) c(-Inf, 0) else c(0, Inf)
+    atoms <- discretes::dsct_transform(
+      atoms,
+      fun = function(x) 1 / x,
+      inv = function(x) 1 / x,
+      domain = side,
+      range = side,
+      dir = "decreasing"
+    )
+  }
+  if (nrow(intervals) > 0) {
+    # 1 / x is decreasing on each side, so [l, u] maps to [1 / u, 1 / l]; an
+    # endpoint at zero maps to the signed infinity of its side.
+    lo <- ifelse(intervals[, "upper"] == 0, -Inf, 1 / intervals[, "upper"])
+    hi <- ifelse(intervals[, "lower"] == 0, Inf, 1 / intervals[, "lower"])
+    intervals <- cbind(lower = lo, upper = hi)
+  }
+  build_support(atoms, intervals)
+}
+
 #' The structured supports of a list of distributions, or `NULL` if any is
 #' missing one.
 #' @noRd
@@ -171,14 +228,33 @@ atom_present <- function(support, value) {
   isTRUE(discretes::has_discretes(atoms, value))
 }
 
-#' Does `support` place mass at `value` --- is `value` an atom or inside a
-#' continuous interval (as opposed to a gap of the support)?
+#' The smallest and largest values in a support (the ends of its hull).
 #' @noRd
-support_contains <- function(support, value) {
+support_min <- function(support) {
+  lo <- Inf
   intervals <- distionary::continuous_part(support)
-  in_interval <- nrow(intervals) > 0 &&
-    any(value >= intervals[, "lower"] & value <= intervals[, "upper"])
-  in_interval || atom_present(support, value)
+  if (nrow(intervals) > 0) {
+    lo <- min(intervals[, "lower"])
+  }
+  atoms <- distionary::atoms(support)
+  if (discretes::num_discretes(atoms) > 0) {
+    lo <- min(lo, range(atoms)[1L])
+  }
+  lo
+}
+
+#' @noRd
+support_max <- function(support) {
+  hi <- -Inf
+  intervals <- distionary::continuous_part(support)
+  if (nrow(intervals) > 0) {
+    hi <- max(intervals[, "upper"])
+  }
+  atoms <- distionary::atoms(support)
+  if (discretes::num_discretes(atoms) > 0) {
+    hi <- max(hi, range(atoms)[2L])
+  }
+  hi
 }
 
 #' Support of `max` (or `min`) of independent distributions.

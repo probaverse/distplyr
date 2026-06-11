@@ -79,18 +79,6 @@ mix <- function(...,
   }
   ## END special simplifications -----------------------------------------------
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
-  r <- lapply(dsts, range)
-  r1 <- min(vapply(r, function(x) x[1], FUN.VALUE = numeric(1L)))
-  r2 <- max(vapply(r, function(x) x[2], FUN.VALUE = numeric(1L)))
-  var_type <- vapply(dsts, distionary::vtype, FUN.VALUE = character(1L))
-  var_unique <- unique(var_type)
-  if (length(var_unique) == 1) {
-    v <- var_unique
-  } else if ("unknown" %in% var_type) {
-    v <- "unknown"
-  } else {
-    v <- "mixed"
-  }
   ## Make distribution object
   support_list <- input_supports(dsts)
   support_out <- if (!is.null(support_list)) union_support(support_list) else NULL
@@ -127,9 +115,7 @@ mix <- function(...,
         FUN.VALUE = numeric(1L)
       )
     },
-    range = c(r1, r2),
     .support = support_out,
-    .vtype = v,
     .name = "Mixture",
     .parameters = list(
       distributions = dsts,

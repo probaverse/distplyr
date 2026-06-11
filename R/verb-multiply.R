@@ -85,9 +85,7 @@ multiply <- function(distribution, constant) {
     realize = function(n) {
       distionary::realise(distribution, n = n) * constant
     },
-    range = range(distribution) * constant,
     .support = support_out,
-    .vtype = distionary::vtype(distribution),
     .name = "Scaled",
     .parameters = list(
       distribution = distribution,
@@ -114,9 +112,6 @@ multiply <- function(distribution, constant) {
   }
   if (distionary:::is_intrinsic(distribution, "kurtosis_exc")) {
     d[["kurtosis"]] <- distionary::kurtosis(distribution)
-  }
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- range(distribution) * constant
   }
   distionary:::new_distribution(d, class = "scaled")
 }

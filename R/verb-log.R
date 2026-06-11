@@ -79,14 +79,9 @@ log_distribution <- function(distribution, base = exp(1)) {
     realize = function(n) {
       log(distionary::realize(distribution, n = n))
     },
-    range = log(range(distribution)),
     .support = support_out,
-    .vtype = distionary::vtype(distribution),
     .name = "Logarithmic",
     .parameters = list(distribution = distribution)
   )
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- log(r)
-  }
   distionary:::new_distribution(d, class = "logarithmic")
 }

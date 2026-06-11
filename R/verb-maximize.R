@@ -106,18 +106,6 @@ maximize <- function(...,
   }
   dsts <- simplification$dsts
   draws <- simplification$draws
-  ## Variable type determination
-  vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (length(vars) == 1) {
-    v <- vars
-  } else if (identical(sort(vars), c("continuous", "discrete"))) {
-    v <- "mixed"
-  } else {
-    # Would need to dig more to know for sure.
-    v <- "unknown"
-  }
-  r <- lapply(dsts, range)
-  r <- Reduce(pmax, r)
   cdf <- function(x) {
     prob_lefts <- lapply(dsts, distionary::eval_cdf, at = x)
     contributions <- Map(`^`, prob_lefts, draws)
@@ -157,9 +145,7 @@ maximize <- function(...,
       lower <- Reduce(`*`, Map(`^`, lefts, draws))
       upper - lower
     },
-    range = r,
     .support = support_out,
-    .vtype = v,
     .name = "Maximum",
     .parameters = list(
       distributions = dsts,
