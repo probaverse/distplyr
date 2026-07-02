@@ -19,12 +19,13 @@ Description: Go beyond standard probability distributions such as the Normal
 License: MIT + file LICENSE
 Depends:
     R (>= 3.5.0)
-Imports: 
+Imports:
     ellipsis,
     rlang,
     vctrs,
     stats,
     checkmate,
+    discretes,
     distionary
 Suggests: 
     covr,
