@@ -170,6 +170,66 @@ test_that("a finite threshold reproduces the body above it for a left graft", {
   expect_equal(eval_cdf(g, -1e5), 0, tolerance = 1e-6)
 })
 
+test_that("NA inputs propagate as NA in both modes", {
+  body <- dst_norm(0, 1)
+  q <- eval_quantile(body, at = 0.9)
+  tail <- q + dst_gp(scale = 1, shape = 0.3)
+  w <- function(x) stats::plogis(x, location = q + 1, scale = 0.4)
+  for (g in list(
+    smooth_graft_right(body, tail, weight = w),
+    smooth_graft_right(body, tail, weight = w, threshold = q)
+  )) {
+    at <- c(0, NA, 2)
+    expect_identical(is.na(eval_cdf(g, at)), c(FALSE, TRUE, FALSE))
+    expect_identical(is.na(eval_survival(g, at)), c(FALSE, TRUE, FALSE))
+    expect_identical(is.na(eval_density(g, at)), c(FALSE, TRUE, FALSE))
+  }
+})
+
+test_that("an atom exactly at the threshold stays with the body", {
+  set.seed(3)
+  dat <- round(rnorm(100), 1) # rounding creates repeated atoms
+  hs <- dst_empirical(dat)
+  uu <- sort(unique(dat))
+  u <- uu[floor(0.85 * length(uu))] # an actual atom in the upper range
+  expect_gt(eval_pmf(hs, u), 0)
+  tail <- u + dst_gp(scale = 0.5, shape = 0.2)
+  w <- function(x) stats::plogis(x, location = u, scale = 0.3)
+  g <- smooth_graft_right(hs, tail, weight = w, threshold = u)
+  # The threshold atom keeps its full body mass; survival at u is P(X > u).
+  expect_equal(eval_pmf(g, u), eval_pmf(hs, u))
+  expect_equal(eval_survival(g, u), eval_survival(hs, u))
+  expect_equal(eval_cdf(g, u - 1e-9), eval_cdf(hs, u - 1e-9))
+  expect_equal(eval_cdf(g, 1e4) - eval_cdf(g, -1e4), 1, tolerance = 1e-6)
+})
+
+test_that("whole-range left graft handles an empirical body", {
+  set.seed(4)
+  dat <- round(rnorm(80), 1)
+  hs <- dst_empirical(dat)
+  ltail <- min(dat) - dst_gp(scale = 0.5, shape = 0.2)
+  q10 <- quantile(dat, 0.1, names = FALSE)
+  w <- function(x) stats::plogis(-(x - q10), location = 0, scale = 0.3)
+  g <- smooth_graft_left(hs, ltail, weight = w)
+  a <- sort(unique(dat))
+  jump <- eval_cdf(g, a) - eval_cdf(g, a - 1e-9)
+  expect_lt(max(abs(eval_pmf(g, a) - jump)), 1e-7)
+  expect_equal(eval_cdf(g, 1e4) - eval_cdf(g, -1e4), 1, tolerance = 1e-6)
+  expect_equal(eval_cdf(g, -1e5), 0, tolerance = 1e-6)
+})
+
+test_that("supplying the analytic weight derivative matches the numeric one", {
+  body <- dst_norm(0, 1)
+  q <- eval_quantile(body, at = 0.9)
+  tail <- q + dst_gp(scale = 1, shape = 0.3)
+  w <- function(x) stats::plogis(x, location = q + 1, scale = 0.4)
+  wp <- function(x) stats::dlogis(x, location = q + 1, scale = 0.4)
+  g_num <- smooth_graft_right(body, tail, weight = w)
+  g_ana <- smooth_graft_right(body, tail, weight = w, weight_deriv = wp)
+  xs <- seq(-2, 6, by = 0.5)
+  expect_equal(eval_cdf(g_ana, xs), eval_cdf(g_num, xs), tolerance = 1e-6)
+})
+
 test_that("dots must be empty", {
   body <- dst_norm(0, 1)
   tail <- 1 + dst_gp(scale = 1, shape = 0.3)

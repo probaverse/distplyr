@@ -24,6 +24,7 @@ Imports:
     vctrs,
     stats,
     checkmate,
+    discretes,
     distionary (>= 0.2.0)
 Suggests: 
     knitr,

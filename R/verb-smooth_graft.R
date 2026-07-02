@@ -70,10 +70,15 @@
 #' body <- dst_norm(0, 1)
 #' q <- eval_quantile(body, at = 0.9)
 #' tail <- q + dst_gp(scale = 1, shape = 0.3)
-#' # Logistic handover centred at q.
-#' w <- function(x) stats::plogis(x, location = q, scale = 0.3)
+#' # Logistic handover centred above q, so the weight is near zero at the
+#' # tail's location and the density stays smooth there (see Details).
+#' w <- function(x) stats::plogis(x, location = q + 1, scale = 0.4)
 #' g <- smooth_graft_right(body, tail, weight = w)
 #' enframe_cdf(g, at = seq(-2, 5, by = 0.5))
+#'
+#' # With a threshold: exactly the body below q, transitioning above it.
+#' g2 <- smooth_graft_right(body, tail, weight = w, threshold = q)
+#' enframe_cdf(g2, at = seq(-2, 5, by = 0.5))
 #' @rdname smooth_graft
 #' @export
 smooth_graft_right <- function(distribution, tail, weight, ...,
@@ -215,7 +220,8 @@ smooth_graft_core <- function(body, tail, w, wp, side) {
   jfun <- make_jfun(integrand, anchor, body_atoms, side)
   scale_by_corr <- function(value, j) {
     out <- numeric(length(value))
-    pos <- is.finite(value) & value > 0
+    out[is.na(value) | is.na(j)] <- NA_real_
+    pos <- !is.na(value) & !is.na(j) & is.finite(value) & value > 0
     out[pos] <- exp(log(value[pos]) - j[pos])
     out
   }
@@ -267,10 +273,12 @@ reinstate_body <- function(body, core_reps, threshold, mass, side) {
   # matching right-continuity.
   blend <- function(body_fun, core_fun, in_body, core_scale = mass) {
     function(x) {
-      out <- numeric(length(x))
-      b <- in_body(x)
-      if (any(b)) out[b] <- body_fun(x[b])
-      if (any(!b)) out[!b] <- core_scale * core_fun(x[!b])
+      out <- rep(NA_real_, length(x))
+      b <- in_body(x) # NA inputs stay NA in the output
+      is_body <- !is.na(b) & b
+      is_core <- !is.na(b) & !b
+      if (any(is_body)) out[is_body] <- body_fun(x[is_body])
+      if (any(is_core)) out[is_core] <- core_scale * core_fun(x[is_core])
       out
     }
   }
@@ -510,7 +518,11 @@ make_jfun <- function(g, anchor, atoms, side) {
   }
 }
 
-#' Integrate the correction integrand over one segment, returning 0 on failure.
+#' Integrate the correction integrand over one segment
+#'
+#' On quadrature failure, warns and returns 0 (a neutral segment: the
+#' correction factor is treated as constant across it) rather than poisoning
+#' every downstream evaluation with NA.
 #' @noRd
 segment_integral <- function(g, lower, upper) {
   if (isTRUE(lower == upper)) {
@@ -518,7 +530,24 @@ segment_integral <- function(g, lower, upper) {
   }
   val <- tryCatch(
     stats::integrate(g, lower = lower, upper = upper, rel.tol = 1e-8)$value,
-    error = function(e) NA_real_
+    error = function(e) {
+      warning(
+        "Correction-factor integration failed on (", format(lower), ", ",
+        format(upper), "): ", conditionMessage(e),
+        ". Treating the correction as constant across this segment.",
+        call. = FALSE
+      )
+      0
+    }
   )
-  if (is.na(val)) 0 else val
+  if (is.na(val)) {
+    warning(
+      "Correction-factor integration returned NA on (", format(lower), ", ",
+      format(upper), "). Treating the correction as constant across this ",
+      "segment.",
+      call. = FALSE
+    )
+    return(0)
+  }
+  val
 }

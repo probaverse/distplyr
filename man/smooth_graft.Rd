@@ -104,8 +104,13 @@ library(distionary)
 body <- dst_norm(0, 1)
 q <- eval_quantile(body, at = 0.9)
 tail <- q + dst_gp(scale = 1, shape = 0.3)
-# Logistic handover centred at q.
-w <- function(x) stats::plogis(x, location = q, scale = 0.3)
+# Logistic handover centred above q, so the weight is near zero at the
+# tail's location and the density stays smooth there (see Details).
+w <- function(x) stats::plogis(x, location = q + 1, scale = 0.4)
 g <- smooth_graft_right(body, tail, weight = w)
 enframe_cdf(g, at = seq(-2, 5, by = 0.5))
+
+# With a threshold: exactly the body below q, transitioning above it.
+g2 <- smooth_graft_right(body, tail, weight = w, threshold = q)
+enframe_cdf(g2, at = seq(-2, 5, by = 0.5))
 }
