@@ -5,37 +5,39 @@
 \alias{graft_left}
 \title{Graft Distribution}
 \usage{
-graft_right(distribution, graft, of, ..., include = FALSE)
+graft_right(distribution, tail, threshold, ..., include = FALSE)
 
-graft_left(distribution, graft, of, ..., include = FALSE)
+graft_left(distribution, tail, threshold, ..., include = FALSE)
 }
 \arguments{
-\item{distribution}{Base distribution}
+\item{distribution}{Base (body) distribution.}
 
-\item{graft}{The distribution being grafted.}
+\item{tail}{The tail distribution being grafted on.}
 
-\item{of}{Value on the real line where the graft is attached.}
+\item{threshold}{Value on the real line where the tail is attached.}
 
 \item{...}{Currently unused; must be empty.}
 
-\item{include}{Logical; include \code{of} in the base distribution?}
+\item{include}{Logical; include \code{threshold} in the base distribution?}
 }
 \value{
 Graft distribution object, which is a special type of mixture
 distribution.
 }
 \description{
-Replace a distribution's tail.
-\code{graft_left()} takes a base distribution and grafts a distribution
-to the left of some value; \code{graft_right()} grafts a distribution
-to the right. The distribution being grafted is trimmed at \code{of}
+Replace a distribution's tail with a hard cut at a threshold. For a
+continuous transition instead, see \code{\link[=smooth_graft_right]{smooth_graft_right()}} and
+\code{\link[=smooth_graft_left]{smooth_graft_left()}}.
+\code{graft_left()} takes a base distribution and grafts a tail
+to the left of the threshold; \code{graft_right()} grafts a tail
+to the right. The tail being grafted is trimmed at \code{threshold}
 and fit to the base distribution also at that value.
 }
 \examples{
 base <- distionary::dst_norm(0, 1)
 q <- distionary::eval_quantile(base, at = 0.9)
 right <- q + distionary::dst_gp(1, 0.3)
-g <- graft_right(base, right, of = q)
+g <- graft_right(base, right, threshold = q)
 # plot(g, "cdf", n = 1001)
 # plot(base, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)
 }

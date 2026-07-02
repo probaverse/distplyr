@@ -1,0 +1,178 @@
+library(distionary)
+
+# A light (Normal) body grafted to a heavier GPD right tail, with a logistic
+# handover that is essentially zero at the GPD's location (so the density is
+# smooth there).
+make_right <- function(scale = 0.4, shape = 0.3) {
+  body <- dst_norm(0, 1)
+  q <- eval_quantile(body, at = 0.9)
+  tail <- q + dst_gp(scale = 1, shape = shape)
+  w <- function(x) stats::plogis(x, location = q + 1, scale = scale)
+  smooth_graft_right(body, tail, weight = w)
+}
+
+# Integrate a density that may step at `break_at` (the tail's location) and has
+# a heavy upper tail, splitting there so adaptive quadrature stays well-behaved.
+total_density <- function(g, break_at) {
+  lower <- integrate(function(x) eval_density(g, x), -Inf, break_at,
+    rel.tol = 1e-6
+  )$value
+  upper <- integrate(function(x) eval_density(g, x), break_at, Inf,
+    rel.tol = 1e-6
+  )$value
+  lower + upper
+}
+
+test_that("smooth_graft_right is a proper distribution", {
+  g <- make_right()
+  expect_s3_class(g, "smooth_graft")
+  expect_equal(pretty_name(g), "Smooth Graft")
+  # Survival decreases from 1 to 0; cdf and survival are complementary.
+  xs <- seq(-4, 8, by = 0.5)
+  expect_equal(eval_cdf(g, xs) + eval_survival(g, xs), rep(1, length(xs)))
+  expect_true(!is.unsorted(eval_cdf(g, xs)))
+  expect_equal(eval_cdf(g, -50), 0, tolerance = 1e-6)
+  expect_equal(eval_cdf(g, 1e6), 1, tolerance = 1e-4)
+  # Density integrates to one (split at the tail's location, q).
+  q <- eval_quantile(dst_norm(0, 1), at = 0.9)
+  expect_equal(total_density(g, q), 1, tolerance = 1e-5)
+})
+
+test_that("density equals the numerical derivative of the CDF", {
+  g <- make_right()
+  # Away from the GPD's own density jump at its location, f = F'.
+  xs <- c(-1, 0, 0.5, 1, 3, 4, 5)
+  h <- 1e-5
+  num_d <- (eval_cdf(g, xs + h) - eval_cdf(g, xs - h)) / (2 * h)
+  expect_equal(num_d, eval_density(g, xs), tolerance = 1e-4)
+})
+
+test_that("closed-form survival M*C matches exp(-integral of hazard)", {
+  g <- make_right()
+  hz <- function(x) eval_hazard(g, x) # m / M, independent of the correction
+  xs <- c(0, 1, 2, 3, 5)
+  s_haz <- vapply(xs, function(xi) {
+    exp(-integrate(hz, -Inf, xi, rel.tol = 1e-8)$value)
+  }, numeric(1L))
+  expect_equal(eval_survival(g, xs), s_haz, tolerance = 1e-6)
+})
+
+test_that("quantiles invert the CDF", {
+  g <- make_right()
+  ps <- c(0.05, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)
+  expect_equal(eval_cdf(g, eval_quantile(g, ps)), ps, tolerance = 1e-6)
+})
+
+test_that("a constant weight reduces to the static mixture", {
+  body <- dst_norm(0, 1)
+  q <- eval_quantile(body, at = 0.9)
+  tail <- q + dst_gp(scale = 1, shape = 0.3)
+  wc <- function(x) rep(0.3, length(x))
+  wp <- function(x) rep(0, length(x))
+  g <- smooth_graft_right(body, tail, weight = wc, weight_deriv = wp)
+  xs <- seq(-3, 6, by = 0.5)
+  static <- 0.7 * eval_survival(body, xs) + 0.3 * eval_survival(tail, xs)
+  expect_equal(eval_survival(g, xs), static, tolerance = 1e-9)
+})
+
+test_that("an empirical (Historical Simulation) body is admissible", {
+  set.seed(1)
+  dat <- rnorm(200)
+  hs <- dst_empirical(dat)
+  u <- quantile(dat, 0.9, names = FALSE)
+  tail <- u + dst_gp(scale = 0.5, shape = 0.2)
+  w <- function(x) stats::plogis(x, location = u, scale = 0.3)
+  g <- smooth_graft_right(hs, tail, weight = w)
+  expect_equal(vtype(g), "mixed")
+  # Atom masses follow wbar(a) * C(a) * B({a}), equivalently the CDF jump.
+  a <- sort(unique(dat))[c(50, 120, 195)]
+  jump <- eval_cdf(g, a) - eval_cdf(g, a - 1e-9)
+  expect_equal(eval_pmf(g, a), jump, tolerance = 1e-8)
+  # Total mass (atoms + continuous tail) is one.
+  patoms <- sum(eval_pmf(g, sort(unique(dat))))
+  pcont <- integrate(function(x) eval_density(g, x), u, Inf,
+    rel.tol = 1e-6
+  )$value
+  expect_equal(patoms + pcont, 1, tolerance = 1e-4)
+})
+
+test_that("smooth_graft_left is the mirror image and proper", {
+  body <- dst_norm(0, 1)
+  ltail <- -2 - dst_gp(scale = 1, shape = 0.2)
+  w <- function(x) stats::plogis(x, location = -3.5, scale = 0.4)
+  g <- smooth_graft_left(body, ltail, weight = w)
+  expect_s3_class(g, "smooth_graft")
+  xs <- seq(-8, 4, by = 0.5)
+  expect_equal(eval_cdf(g, xs) + eval_survival(g, xs), rep(1, length(xs)))
+  expect_equal(eval_cdf(g, -1e6), 0, tolerance = 1e-6)
+  expect_equal(eval_cdf(g, 1e6), 1, tolerance = 1e-6)
+  # Density integrates to one (split at the left tail's location, -2).
+  expect_equal(total_density(g, -2), 1, tolerance = 1e-5)
+})
+
+test_that("a finite threshold reproduces the body below it and stays proper", {
+  body <- dst_norm(0, 1)
+  q <- eval_quantile(body, at = 0.9)
+  tail <- q + dst_gp(scale = 1, shape = 0.3)
+  w <- function(x) stats::plogis(x, location = q + 0.5, scale = 0.4)
+  g <- smooth_graft_right(body, tail, weight = w, threshold = q)
+  # Exactly the body below the threshold.
+  below <- c(-2, -1, 0, 1, q - 0.05)
+  expect_equal(eval_cdf(g, below), eval_cdf(body, below))
+  expect_equal(eval_density(g, below), eval_density(body, below))
+  # Survival is continuous across the threshold.
+  expect_equal(
+    eval_survival(g, q - 1e-6), eval_survival(g, q + 1e-6),
+    tolerance = 1e-5
+  )
+  # Proper distribution.
+  expect_equal(eval_cdf(g, xs <- seq(-4, 8, 0.5)) + eval_survival(g, xs),
+    rep(1, length(xs))
+  )
+  expect_equal(eval_cdf(g, 1e6) - eval_cdf(g, -1e6), 1, tolerance = 1e-4)
+  # Hazard below the threshold is the body's; overall it is f / S.
+  expect_equal(eval_hazard(g, below), eval_hazard(body, below))
+  expect_equal(
+    eval_hazard(g, c(q, 2, 4)),
+    eval_density(g, c(q, 2, 4)) / eval_survival(g, c(q, 2, 4))
+  )
+})
+
+test_that("a finite threshold keeps an empirical body exactly below it", {
+  set.seed(1)
+  dat <- rnorm(200)
+  hs <- dst_empirical(dat)
+  u <- quantile(dat, 0.9, names = FALSE)
+  tail <- u + dst_gp(scale = 0.5, shape = 0.2)
+  w <- function(x) stats::plogis(x, location = u, scale = 0.3)
+  g <- smooth_graft_right(hs, tail, weight = w, threshold = u)
+  expect_equal(vtype(g), "mixed")
+  below <- sort(unique(dat))[sort(unique(dat)) < u]
+  expect_equal(eval_pmf(g, below), eval_pmf(hs, below))
+  expect_equal(eval_cdf(g, below), eval_cdf(hs, below))
+  # Atoms above the threshold are reweighted; pmf equals the CDF jump. The jump
+  # is a finite difference, so compare on an absolute scale (its noise swamps a
+  # relative tolerance for the tiniest atoms).
+  above <- sort(unique(dat))[sort(unique(dat)) > u]
+  jump <- eval_cdf(g, above) - eval_cdf(g, above - 1e-9)
+  expect_lt(max(abs(eval_pmf(g, above) - jump)), 1e-7)
+  expect_equal(eval_cdf(g, 1e4) - eval_cdf(g, -1e4), 1, tolerance = 1e-6)
+})
+
+test_that("a finite threshold reproduces the body above it for a left graft", {
+  body <- dst_norm(0, 1)
+  ltail <- -2 - dst_gp(scale = 1, shape = 0.2)
+  w <- function(x) stats::plogis(x, location = -2, scale = 0.4)
+  g <- smooth_graft_left(body, ltail, weight = w, threshold = -2)
+  above <- c(-1, 0, 1, 2)
+  expect_equal(eval_cdf(g, above), eval_cdf(body, above))
+  expect_equal(eval_cdf(g, 1e4) - eval_cdf(g, -1e4), 1, tolerance = 1e-6)
+  expect_equal(eval_cdf(g, -1e5), 0, tolerance = 1e-6)
+})
+
+test_that("dots must be empty", {
+  body <- dst_norm(0, 1)
+  tail <- 1 + dst_gp(scale = 1, shape = 0.3)
+  w <- function(x) stats::plogis(x, 2, 0.5)
+  expect_error(smooth_graft_right(body, tail, w, include = TRUE))
+})
