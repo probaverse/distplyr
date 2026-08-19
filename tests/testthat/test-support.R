@@ -121,3 +121,59 @@ test_that("Trimming on a flat region shifts the boundary to the support.", {
   expect_equal(distionary::eval_quantile(tp, 0), 6)
   expect_equal(range(tp), c(6, Inf))
 })
+
+test_that("Trimming everything away gives a Null distribution.", {
+  # Nothing survives the trim, so there is no distribution left to describe.
+  expect_equal(
+    distionary::pretty_name(trim_left(distionary::dst_unif(0, 1), 5)),
+    "Null"
+  )
+  expect_equal(
+    distionary::pretty_name(trim_right(distionary::dst_unif(0, 1), -5)),
+    "Null"
+  )
+  # Discrete: `include = TRUE` removes `of` itself, taking the last atom.
+  expect_equal(
+    distionary::pretty_name(trim_right(distionary::dst_pois(3), 0)),
+    "Null"
+  )
+  # Contrast: a trim that leaves something behind is not Null.
+  expect_equal(
+    distionary::pretty_name(trim_left(distionary::dst_pois(3), 0)),
+    "Left-Trimmed"
+  )
+})
+
+test_that("An empty restricted support also gives a Null distribution.", {
+  # `trim_*()` checks the retained probability before it looks at the support,
+  # so a trim that removes everything is normally caught there. The support
+  # check behind it is reachable only when a distribution's `.support`
+  # disagrees with its cdf, which `distribution()` does not verify.
+  lo_liar <- distionary::distribution(
+    cdf = function(x) stats::punif(x, 0, 10),
+    density = function(x) stats::dunif(x, 0, 10),
+    .support = distionary::continuous(c(0, 1))
+  )
+  # Half the cdf's mass sits above 5, so the probability check passes, but
+  # the support restricted to [5, Inf) is empty.
+  expect_equal(distionary::pretty_name(trim_left(lo_liar, 5)), "Null")
+  hi_liar <- distionary::distribution(
+    cdf = function(x) stats::punif(x, 0, 10),
+    density = function(x) stats::dunif(x, 0, 10),
+    .support = distionary::continuous(c(9, 10))
+  )
+  expect_equal(distionary::pretty_name(trim_right(hi_liar, 5)), "Null")
+})
+
+test_that("Reinstating a body across a threshold drops an empty side.", {
+  core <- distionary::continuous(c(5, 10))
+  body <- distionary::dst_unif(0, 1)
+  # The body reaches below the threshold, so both pieces are kept.
+  both <- reinstate_support(body, core, 5, "right")
+  expect_equal(
+    distionary::continuous_part(both),
+    distionary::continuous_part(distionary::continuous(c(0, 1), c(5, 10)))
+  )
+  # The body lies entirely above the threshold, leaving nothing to reinstate.
+  expect_equal(reinstate_support(body, core, -5, "right"), core)
+})
