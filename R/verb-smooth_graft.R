@@ -12,8 +12,7 @@
 #' constant to compute.
 #'
 #' @param distribution The body distribution. May be continuous, discrete, or
-#' mixed; in particular it may be an empirical distribution
-#' ([distionary::dst_empirical()]), which a density mixture cannot use.
+#' mixed.
 #' @param tail The tail distribution to graft on. Taken continuous (typically a
 #' generalised Pareto distribution, [distionary::dst_gp()], shifted to its
 #' location).
@@ -179,12 +178,14 @@ smooth_graft_core <- function(body, tail, w, wp, side) {
   } else {
     if (side == "right") -Inf else Inf
   }
+  # The atomic part of the support, as a `discretes` series (kept symbolic --
+  # not materialised to a vector -- so a body with infinitely many atoms, such
+  # as a Poisson or geometric body whose support accumulates at +Inf, is handled
+  # rather than erroring).
   body_atoms <- if (!is.null(support_out)) {
-    discretes::get_discretes_in(
-      distionary::atoms(support_out), from = -Inf, to = Inf
-    )
+    distionary::atoms(support_out)
   } else {
-    numeric(0)
+    NULL
   }
 
   # The running mixtures. For "right" we mix survivals (P0 = survival); for
@@ -416,34 +417,104 @@ safe_pmf <- function(distribution, x) {
   )
 }
 
-#' Build a cached evaluator for the correction-factor integral
+#' Build an evaluator for the correction-factor integral
 #'
 #' Returns a function `jfun(x)` giving \eqn{J(x) = \int_{x_0}^x g(s)\, ds}, where
 #' `x0` is the `anchor` and `g` the integrand. \eqn{J} is what the correction
 #' factor exponentiates: \eqn{C = \exp(-J)}.
 #'
 #' The integrand steps at each atom of a discrete or mixed body but is smooth
-#' between atoms, so the atoms are integration breakpoints. To keep repeated
-#' evaluation cheap---quantile inversion calls the CDF, hence \eqn{J}, hundreds
-#' of times---the cumulative integral up to each atom is computed once, lazily,
-#' and cached. A query for arbitrary `x` then costs a single integration from
-#' the nearest cached atom (no atom lies strictly between them) out to `x`. With
-#' a continuous body (no atoms) each query is a single integration from the
-#' anchor.
+#' between atoms, so the atoms are integration breakpoints. Three cases:
+#'
+#' - No atoms (continuous body): each query is a single integration, accumulated
+#'   in one sweep over the sorted query points ([jfun_continuous()]).
+#' - Finitely many atoms (empirical or finite body): the cumulative integral up
+#'   to each atom is cached, so repeated evaluation---quantile inversion calls
+#'   the CDF, hence \eqn{J}, hundreds of times---is cheap ([make_jfun_cached()]).
+#' - Infinitely many atoms (a `discretes` sink, e.g. a Poisson or geometric body
+#'   whose support accumulates at \eqn{+\infty}): the atoms cannot be listed, so
+#'   each query enumerates only the atoms inside its own bounded interval and
+#'   integrates across any stretch that still holds infinitely many. Near a sink
+#'   the atom masses vanish, so the integrand is near-continuous there and
+#'   quadrature copes without per-atom breakpoints.
 #'
 #' @param g The integrand, a vectorised function.
 #' @param anchor The reference point \eqn{x_0} (possibly infinite).
-#' @param atoms Numeric vector of body atom locations (breakpoints).
+#' @param atoms The body's atoms as a `discretes` series (or `NULL`).
 #' @param side `"right"` (anchor is the lower limit) or `"left"` (upper limit).
 #' @returns A function of a numeric vector `x` returning \eqn{J(x)}.
 #' @noRd
 make_jfun <- function(g, anchor, atoms, side) {
-  atoms <- sort(unique(atoms))
+  n_total <- if (is.null(atoms)) {
+    0
+  } else {
+    discretes::num_discretes(atoms, from = -Inf, to = Inf)
+  }
+  if (n_total == 0) {
+    return(function(x) jfun_continuous(g, anchor, x, side))
+  }
+  if (is.finite(n_total)) {
+    breaks <- discretes::get_discretes_in(atoms, from = -Inf, to = Inf)
+    return(make_jfun_cached(g, anchor, breaks, side))
+  }
+  # Infinitely many atoms: enumerate per bounded query interval.
+  function(x) {
+    out <- numeric(length(x))
+    out[is.na(x)] <- NA_real_
+    for (i in which(!is.na(x))) {
+      xi <- x[i]
+      if (isTRUE(xi == anchor)) {
+        out[i] <- 0
+        next
+      }
+      seg <- integrate_with_atoms(g, min(anchor, xi), max(anchor, xi), atoms)
+      # J(x) = integral from the anchor to x, signed by which side x is on.
+      out[i] <- if (xi >= anchor) seg else -seg
+    }
+    out
+  }
+}
+
+#' Correction-factor integral for a continuous body (no atoms)
+#'
+#' Accumulates over the sorted query points in one sweep away from the anchor,
+#' so each point adds a small smooth segment to a running total rather than
+#' re-integrating from the anchor.
+#' @noRd
+jfun_continuous <- function(g, anchor, x, side) {
+  out <- numeric(length(x))
+  out[is.na(x)] <- NA_real_
+  idx <- which(!is.na(x))
+  if (length(idx) == 0L) {
+    return(out)
+  }
+  ord <- idx[order(x[idx], decreasing = (side == "left"))]
+  prev <- anchor
+  acc <- 0
+  for (i in ord) {
+    xi <- x[i]
+    if (!isTRUE(xi == prev)) {
+      seg <- segment_integral(g, min(prev, xi), max(prev, xi))
+      acc <- if (side == "right") acc + seg else acc - seg
+      prev <- xi
+    }
+    out[i] <- acc
+  }
+  out
+}
+
+#' Correction-factor integral for finitely many atoms, with a cache
+#'
+#' Caches the cumulative integral up to each atom (built once, lazily), so a
+#' query costs a single integration from the nearest cached atom---no atom lies
+#' strictly between them---out to `x`.
+#' @param breaks Numeric vector of atom locations.
+#' @noRd
+make_jfun_cached <- function(g, anchor, breaks, side) {
+  atoms <- sort(unique(breaks))
   n <- length(atoms)
   cache <- new.env(parent = emptyenv())
   cache$built <- FALSE
-  # J at each atom, accumulated outward from the anchor (the segment between two
-  # consecutive breakpoints holds no atom, so each is a smooth integration).
   build <- function() {
     j <- numeric(n)
     if (side == "right") {
@@ -473,24 +544,6 @@ make_jfun <- function(g, anchor, atoms, side) {
     if (length(idx) == 0L) {
       return(out)
     }
-    if (n == 0L) {
-      # Continuous body: accumulate over the sorted query points in one sweep
-      # away from the anchor, so each point adds a small smooth segment to a
-      # running total rather than re-integrating from the anchor.
-      ord <- idx[order(x[idx], decreasing = (side == "left"))]
-      prev <- anchor
-      acc <- 0
-      for (i in ord) {
-        xi <- x[i]
-        if (!isTRUE(xi == prev)) {
-          seg <- segment_integral(g, min(prev, xi), max(prev, xi))
-          acc <- if (side == "right") acc + seg else acc - seg
-          prev <- xi
-        }
-        out[i] <- acc
-      }
-      return(out)
-    }
     if (!cache$built) {
       build()
     }
@@ -516,6 +569,49 @@ make_jfun <- function(g, anchor, atoms, side) {
     }
     out
   }
+}
+
+#' Integrate the integrand over `[lo, hi]`, breaking at interior atoms
+#'
+#' Subdivides at the body atoms strictly inside `(lo, hi)` when finitely many
+#' lie there; otherwise (a sink inside, or an infinite endpoint) integrates the
+#' stretch in one call, relying on the vanishing atom masses near a sink.
+#' @noRd
+integrate_with_atoms <- function(g, lo, hi, atoms) {
+  bps <- interior_atoms(atoms, lo, hi)
+  if (is.null(bps)) {
+    return(segment_integral(g, lo, hi))
+  }
+  pts <- c(lo, bps, hi)
+  total <- 0
+  for (k in seq_len(length(pts) - 1L)) {
+    total <- total + segment_integral(g, pts[k], pts[k + 1L])
+  }
+  total
+}
+
+#' Atoms strictly inside `(lo, hi)`, or `NULL` if infinitely many
+#'
+#' Returns the interior atom locations when the count is finite (so they can be
+#' used as integration breakpoints), and `NULL` when the interval is unbounded
+#' or holds a sink -- the caller then integrates across it in one piece.
+#' @noRd
+interior_atoms <- function(atoms, lo, hi) {
+  if (!is.finite(lo) || !is.finite(hi)) {
+    return(NULL)
+  }
+  n <- discretes::num_discretes(
+    atoms, from = lo, to = hi, include_from = FALSE, include_to = FALSE
+  )
+  if (!is.finite(n)) {
+    return(NULL)
+  }
+  if (n == 0) {
+    return(numeric(0))
+  }
+  discretes::get_discretes_in(
+    atoms, from = lo, to = hi, include_from = FALSE, include_to = FALSE
+  )
 }
 
 #' Integrate the correction integrand over one segment

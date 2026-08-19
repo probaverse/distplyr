@@ -218,6 +218,49 @@ test_that("whole-range left graft handles an empirical body", {
   expect_equal(eval_cdf(g, -1e5), 0, tolerance = 1e-6)
 })
 
+test_that("a body with infinitely many atoms (Poisson) is admissible", {
+  # The body's support accumulates at +Inf, so its atoms cannot be listed as a
+  # vector; the correction integral must enumerate them per query interval.
+  body <- dst_pois(5)
+  tail <- 12 + dst_gp(scale = 3, shape = 0.25)
+  w <- function(x) stats::plogis(x, location = 12, scale = 1)
+  g <- smooth_graft_right(body, tail, weight = w)
+  expect_s3_class(g, "smooth_graft")
+  expect_equal(vtype(g), "mixed")
+  xs <- c(0, 2, 5, 8, 12, 20, 50)
+  expect_equal(eval_cdf(g, xs) + eval_survival(g, xs), rep(1, length(xs)))
+  expect_true(!is.unsorted(eval_cdf(g, xs)))
+  expect_equal(eval_cdf(g, 1e5), 1, tolerance = 1e-6)
+  # Atom masses equal the CDF jumps. The offset is 1e-6 rather than 1e-9: the
+  # body's atoms are integers, and a smaller offset is snapped back to the atom.
+  a <- 0:15
+  jump <- eval_cdf(g, a) - eval_cdf(g, a - 1e-6)
+  expect_equal(eval_pmf(g, a), jump, tolerance = 1e-6)
+  # Total mass (atoms + the continuous part above the tail's location) is one.
+  patoms <- sum(eval_pmf(g, 0:300))
+  pcont <- integrate(function(x) eval_density(g, x), 12, Inf,
+    rel.tol = 1e-6
+  )$value
+  expect_equal(patoms + pcont, 1, tolerance = 1e-6)
+})
+
+test_that("a finite threshold keeps a Poisson body exactly below it", {
+  body <- dst_pois(5)
+  u <- 10
+  tail <- u + dst_gp(scale = 3, shape = 0.25)
+  w <- function(x) stats::plogis(x, location = u, scale = 1)
+  g <- smooth_graft_right(body, tail, weight = w, threshold = u)
+  expect_equal(vtype(g), "mixed")
+  below <- 0:9
+  expect_equal(eval_pmf(g, below), eval_pmf(body, below))
+  expect_equal(eval_cdf(g, below), eval_cdf(body, below))
+  patoms <- sum(eval_pmf(g, 0:300))
+  pcont <- integrate(function(x) eval_density(g, x), u, Inf,
+    rel.tol = 1e-6
+  )$value
+  expect_equal(patoms + pcont, 1, tolerance = 1e-6)
+})
+
 test_that("supplying the analytic weight derivative matches the numeric one", {
   body <- dst_norm(0, 1)
   q <- eval_quantile(body, at = 0.9)
