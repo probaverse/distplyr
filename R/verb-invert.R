@@ -27,7 +27,7 @@ invert <- function(distribution) {
   r <- range(distribution)
   support_in <- distionary::support(distribution)
   support_out <- if (!is.null(support_in)) {
-    invert_support(support_in)
+    distionary::support_reciprocal(support_in)
   } else {
     NULL
   }

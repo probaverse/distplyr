@@ -89,13 +89,13 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   # `include = TRUE` means `of` is removed, so the kept support excludes it.
   # If `of` falls on a flat region (a gap in the support), the restriction
   # shifts the lower endpoint to where the support resumes.
-  support_out <- restrict_support(
+  support_out <- distionary::support_restrict(
     support_in, from = of, to = Inf, include_from = !include
   )
-  if (is.null(support_out)) {
+  if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
   }
-  lower_endpoint <- support_min(support_out)
+  lower_endpoint <- range(support_out)[[1L]]
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- 1 - distionary::eval_survival(distribution, at = x) / p_kept
@@ -212,13 +212,13 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   # `include = TRUE` means `of` is removed, so the kept support excludes it.
   # If `of` falls on a flat region (a gap in the support), the restriction
   # shifts the upper endpoint to where the support leaves off.
-  support_out <- restrict_support(
+  support_out <- distionary::support_restrict(
     support_in, from = -Inf, to = of, include_to = !include
   )
-  if (is.null(support_out)) {
+  if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
   }
-  upper_endpoint <- support_max(support_out)
+  upper_endpoint <- range(support_out)[[2L]]
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- distionary::eval_cdf(distribution, at = x) / p_kept

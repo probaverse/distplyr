@@ -172,9 +172,17 @@ smooth_graft_core <- function(body, tail, w, wp, side) {
   # The right graft anchors at the lower end of the support, the left at the
   # upper end.
   supports <- input_supports(list(body, tail))
-  support_out <- if (!is.null(supports)) union_support(supports) else NULL
+  support_out <- if (!is.null(supports)) {
+    distionary::support_union(supports)
+  } else {
+    NULL
+  }
   anchor <- if (!is.null(support_out)) {
-    if (side == "right") support_min(support_out) else support_max(support_out)
+    if (side == "right") {
+      range(support_out)[[1L]]
+    } else {
+      range(support_out)[[2L]]
+    }
   } else {
     if (side == "right") -Inf else Inf
   }
@@ -329,14 +337,18 @@ reinstate_support <- function(body, core_support, threshold, side) {
     return(NULL)
   }
   body_side <- if (side == "right") {
-    restrict_support(body_support, to = threshold, include_to = TRUE)
+    distionary::support_restrict(
+      body_support, to = threshold, include_to = TRUE
+    )
   } else {
-    restrict_support(body_support, from = threshold, include_from = TRUE)
+    distionary::support_restrict(
+      body_support, from = threshold, include_from = TRUE
+    )
   }
-  if (is.null(body_side)) {
+  if (distionary::is_empty_support(body_side)) {
     return(core_support)
   }
-  union_support(list(body_side, core_support))
+  distionary::support_union(list(body_side, core_support))
 }
 
 #' Assemble a smooth graft distribution object from its representations

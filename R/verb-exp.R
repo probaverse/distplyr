@@ -40,11 +40,10 @@ exp_distribution <- function(distribution) {
   ## END special simplifications -----------------------------------------------
   support_in <- distionary::support(distribution)
   support_out <- if (!is.null(support_in)) {
-    transform_support(
+    distionary::support_transform(
       support_in,
       exp,
       log,
-      increasing = TRUE,
       domain = c(-Inf, Inf),
       range = c(0, Inf)
     )
