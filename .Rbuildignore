@@ -19,3 +19,4 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^CODE_STANDARDS\.md$
+^figure$
