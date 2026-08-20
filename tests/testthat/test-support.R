@@ -111,10 +111,16 @@ test_that("A distribution cannot be built without a support.", {
   # distionary requires one, so a verb never meets an input lacking a support
   # (bar the Null distribution, handled above).
   expect_error(
-    suppressWarnings(distionary::distribution(
-      cdf = stats::pnorm, density = stats::dnorm, .vtype = "continuous"
-    )),
+    distionary::distribution(cdf = stats::pnorm, density = stats::dnorm),
     "needs a support"
+  )
+  # The old way of declaring a variable type is defunct rather than a
+  # substitute for one.
+  expect_error(
+    distionary::distribution(
+      cdf = stats::pnorm, density = stats::dnorm, .vtype = "continuous"
+    ),
+    class = "lifecycle_error_deprecated"
   )
 })
 
