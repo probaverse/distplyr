@@ -87,18 +87,35 @@ test_that("maximize drops a boundary atom with zero mass.", {
   expect_equal(cont_of(d), matrix(c(0, 3), nrow = 1))
 })
 
-test_that("A verb on a support-less (legacy) input falls back gracefully.", {
-  legacy <- suppressWarnings(distionary::distribution(
-    cdf = stats::pnorm, density = stats::dnorm, .vtype = "continuous"
-  ))
-  expect_null(distionary::support(legacy))
-  d <- shift(legacy, 3)
-  expect_null(distionary::support(d)) # no structured support to propagate
-  # Verbs no longer pass .vtype, so the type is unknown without a support.
-  expect_equal(vt(d), "unknown")
-  expect_equal(distionary::eval_cdf(d, at = 3), 0.5) # but still works
-  # Trimming, however, requires a support.
-  expect_error(trim_left(legacy, 0), "requires the distribution.s support")
+test_that("Every verb propagates a Null distribution.", {
+  # The Null distribution is the missing value of the distribution world, and
+  # it is the only one without a support. A verb handed one must hand one back
+  # rather than trying to compute with it -- this is what makes it safe to
+  # carry a failed fit through a pipeline.
+  n <- distionary::dst_null()
+  d <- distionary::dst_norm(0, 1)
+  is_null_dst <- function(x) distionary::pretty_name(x) == "Null"
+  expect_true(is_null_dst(shift(n, 3)))
+  expect_true(is_null_dst(multiply(n, 2)))
+  expect_true(is_null_dst(flip(n)))
+  expect_true(is_null_dst(exp(n)))
+  expect_true(is_null_dst(invert(n)))
+  expect_true(is_null_dst(mix(n, d)))
+  expect_true(is_null_dst(maximise(n, d)))
+  expect_true(is_null_dst(minimise(n, d)))
+  expect_true(is_null_dst(trim_left(n, 0)))
+  expect_true(is_null_dst(trim_right(n, 0)))
+})
+
+test_that("A distribution cannot be built without a support.", {
+  # distionary requires one, so a verb never meets an input lacking a support
+  # (bar the Null distribution, handled above).
+  expect_error(
+    suppressWarnings(distionary::distribution(
+      cdf = stats::pnorm, density = stats::dnorm, .vtype = "continuous"
+    )),
+    "needs a support"
+  )
 })
 
 test_that("Trimming on a flat region shifts the boundary to the support.", {

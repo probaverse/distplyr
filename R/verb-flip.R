@@ -47,11 +47,7 @@ flip <- function(distribution) {
   ## END special simplifications -----------------------------------------------
   ## (Except for quantile function)
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) {
-    distionary::support_scale(support_in, -1)
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_scale(support_in, -1)
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_pmf(distribution, at = -x) +

@@ -119,11 +119,7 @@ shift <- function(distribution, constant) {
   }
   ## END special simplifications -----------------------------------------------
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) {
-    distionary::support_shift(support_in, constant)
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_shift(support_in, constant)
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x - constant)

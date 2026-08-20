@@ -39,17 +39,13 @@ exp_distribution <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) {
-    distionary::support_transform(
-      support_in,
-      exp,
-      log,
-      domain = c(-Inf, Inf),
-      range = c(0, Inf)
-    )
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_transform(
+    support_in,
+    exp,
+    log,
+    domain = c(-Inf, Inf),
+    range = c(0, Inf)
+  )
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))

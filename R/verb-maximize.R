@@ -112,7 +112,7 @@ maximize <- function(...,
     Reduce(`*`, contributions)
   }
   support_list <- input_supports(dsts)
-  support_out <- if (!is.null(support_list)) extreme_support(dsts, support_list, "max") else NULL
+  support_out <- extreme_support(dsts, support_list, "max")
   d <- distionary::distribution(
     cdf = cdf,
     density = function(x) {
