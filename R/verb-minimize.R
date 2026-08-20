@@ -29,7 +29,7 @@ minimize <- function(...,
     Reduce(`*`, contributions)
   }
   support_list <- input_supports(dsts)
-  support_out <- if (!is.null(support_list)) extreme_support(dsts, support_list, "min") else NULL
+  support_out <- extreme_support(dsts, support_list, "min")
   d <- distionary::distribution(
     cdf = function(x) 1 - survival(x),
     survival = survival,

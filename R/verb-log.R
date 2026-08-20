@@ -58,14 +58,10 @@ log_distribution <- function(distribution, base = exp(1)) {
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) {
-    distionary::support_transform(
-      support_in, log, exp,
-      domain = c(0, Inf), range = c(-Inf, Inf)
-    )
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_transform(
+    support_in, log, exp,
+    domain = c(0, Inf), range = c(-Inf, Inf)
+  )
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = exp(x))

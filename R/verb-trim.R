@@ -28,6 +28,11 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
   ellipsis::check_dots_empty()
+  # A Null distribution has no probability to keep or discard; trimming it
+  # leaves it Null, as every other verb does.
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
+  }
   if (distionary::pretty_name(distribution) == "Mixture") {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]
@@ -151,6 +156,11 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
   ellipsis::check_dots_empty()
+  # A Null distribution has no probability to keep or discard; trimming it
+  # leaves it Null, as every other verb does.
+  if (distionary::pretty_name(distribution) == "Null") {
+    return(distribution)
+  }
   if (distionary::pretty_name(distribution) == "Mixture") {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]

@@ -26,11 +26,7 @@ invert <- function(distribution) {
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
   support_in <- distionary::support(distribution)
-  support_out <- if (!is.null(support_in)) {
-    distionary::support_reciprocal(support_in)
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_reciprocal(support_in)
   qf <- function(p) {
     F0 <- distionary::eval_cdf(distribution, at = 0)
     res <- rep(NA_real_, length(p))

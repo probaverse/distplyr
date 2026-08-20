@@ -172,11 +172,7 @@ smooth_graft_core <- function(body, tail, w, wp, side) {
   # The right graft anchors at the lower end of the support, the left at the
   # upper end.
   supports <- input_supports(list(body, tail))
-  support_out <- if (!is.null(supports)) {
-    distionary::support_union(supports)
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_union(supports)
   anchor <- if (!is.null(support_out)) {
     if (side == "right") {
       range(support_out)[[1L]]

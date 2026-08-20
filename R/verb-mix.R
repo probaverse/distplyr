@@ -81,11 +81,7 @@ mix <- function(...,
   rm("weights", "preprocess") # Encl. env. makes it difficult to test equality
   ## Make distribution object
   support_list <- input_supports(dsts)
-  support_out <- if (!is.null(support_list)) {
-    distionary::support_union(support_list)
-  } else {
-    NULL
-  }
+  support_out <- distionary::support_union(support_list)
   d <- distionary::distribution(
     cdf = function(x) {
       cdf_vals <- lapply(dsts, distionary::eval_cdf, at = x)
