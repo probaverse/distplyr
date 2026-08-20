@@ -306,9 +306,14 @@ test_that("Minimize - Edge cases", {
     d2 <- tc$expected
     expect_equal(d1, d2)
 
-    # Test bypassing simplification with range hack
+    # Bypass the simplifications, which cull components on their range, by
+    # widening each support to the whole line. The atoms are kept, since the
+    # simplifications also ask where the mass is; only the reach changes.
     components_modified <- lapply(tc$components, function(d) {
-      d$range <- c(-Inf, Inf)
+      attr(d, "support") <- distionary::support_union(
+        distionary::support(d),
+        distionary::continuous(c(-Inf, Inf))
+      )
       d
     })
     d3 <- minimize(components_modified, draws = tc$draws)
