@@ -8,7 +8,7 @@ atoms_of <- function(d, n = NULL) {
   }
   as.double(a)
 }
-cont_of <- function(d) unname(distionary::continuous_part(distionary::support(d)))
+cont_of <- function(d) unname(distionary::regions(distionary::support(d)))
 
 test_that("Monotonic transforms carry the support.", {
   # shift: atoms translate.
@@ -194,8 +194,8 @@ test_that("Reinstating a body across a threshold drops an empty side.", {
   # The body reaches below the threshold, so both pieces are kept.
   both <- reinstate_support(body, core, 5, "right")
   expect_equal(
-    distionary::continuous_part(both),
-    distionary::continuous_part(distionary::continuous(c(0, 1), c(5, 10)))
+    distionary::regions(both),
+    distionary::regions(distionary::continuous(c(0, 1), c(5, 10)))
   )
   # The body lies entirely above the threshold, leaving nothing to reinstate.
   expect_equal(reinstate_support(body, core, -5, "right"), core)
