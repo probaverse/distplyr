@@ -10,17 +10,27 @@
 # removes everything returns `distionary::empty_support()`, not `NULL`. `NULL`
 # here means only "this distribution has no structured support".
 #
-# The guiding principle in the verbs is unchanged: only set `.support` when it
-# can be computed exactly from the inputs' supports; otherwise leave it `NULL`
-# and let the distribution fall back.
+# There is no longer a fallback to leave a support out of. distionary requires
+# every distribution to declare one, so a verb never meets an input without a
+# support (the Null distribution aside, which every verb short-circuits on
+# before it gets here) and never has a `NULL` to hand back to `distribution()`.
+# The guards below say so rather than returning a `NULL` that would surface
+# further down as a puzzling error from `distribution()`.
 
-#' The structured supports of a list of distributions, or `NULL` if any is
-#' missing one.
+#' The structured supports of a list of distributions.
+#'
+#' Every distribution carries a support, so a missing one means a Null
+#' distribution reached a verb that should have short-circuited on it.
 #' @noRd
 input_supports <- function(dsts) {
   supports <- lapply(dsts, distionary::support)
   if (any(vapply(supports, is.null, logical(1L)))) {
-    return(NULL)
+    stop(
+      "Internal error: a distribution reached the support\n",
+      "inference without a support.\n",
+      "Please report this at\n",
+      "https://github.com/probaverse/distplyr/issues."
+    )
   }
   supports
 }
@@ -63,7 +73,16 @@ extreme_support <- function(dsts, supports, type = c("max", "min")) {
     to = new_hi
   )
   if (distionary::is_empty_support(s)) {
-    return(NULL)
+    # `new_lo` is a left endpoint of one of the inputs and `new_hi` a right
+    # endpoint, with `new_lo <= new_hi`, so the restriction keeps at least
+    # the binding endpoint. An empty result means the inputs disagree with
+    # their own ranges.
+    stop(
+      "Internal error: the support of a maximum or minimum\n",
+      "came out empty.\n",
+      "Please report this at\n",
+      "https://github.com/probaverse/distplyr/issues."
+    )
   }
   keep_boundary <- all(vapply(
     touching,

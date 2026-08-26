@@ -55,8 +55,7 @@ log_distribution <- function(distribution, base = exp(1)) {
     inner_dist <- p[["distribution"]]
     return(p[["distribution"]])
   }
-  ## END special simplifications -----------------------------------------------
-  r <- range(distribution)
+  ## END special simplifications --------------------------------------
   support_in <- distionary::support(distribution)
   support_out <- distionary::support_transform(
     support_in, log, exp,
