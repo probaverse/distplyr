@@ -75,7 +75,7 @@ shift <- function(distribution, constant) {
     return(distribution)
   }
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------

@@ -16,7 +16,7 @@ multiply <- function(distribution, constant) {
     stop("Cannot multiply a distribution by infinity.")
   }
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------

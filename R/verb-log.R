@@ -13,7 +13,7 @@ log_distribution <- function(distribution, base = exp(1)) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   if (is.na(base)) {

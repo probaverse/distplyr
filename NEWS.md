@@ -6,10 +6,11 @@ Major updates:
   distionary) following the new distionary implementation, so `support()`, 
   the atoms, and discrete/mixed moments work on transformed distributions.
 
-- Verbs no longer specify `range` or `.vtype` (both deprecated in
-  distionary); the range and variable type are derived from the support.
-  A verb applied to a distribution without a structured support yields a
-  distribution of unknown variable type.
+- Verbs no longer specify `range` or `.vtype`; the range and variable type
+  are derived from the support. `.vtype` is defunct in distionary, and a
+  distribution can no longer be built without a support, so a verb never
+  meets an input lacking one --- the fallbacks that guessed at a variable
+  type are gone.
 
 - `trim_left()` and `trim_right()` now shift a trim point that lands on a
   flat region (a gap in the support) to where the support resumes, instead
@@ -30,6 +31,15 @@ Bug fixes:
 - Fix `trim_left()` and `trim_right()` on a mixture returning the Null
   distribution whenever the trim removed an entire component; dead
   components are now dropped from the mixture instead.
+
+- Fix every verb discarding a distribution that merely carries the name
+  `"Null"`. Null-ness is now read from the distribution's class, via
+  `is.na()`, rather than by comparing its pretty name, so a distribution
+  built with `.name = "Null"` is transformed like any other.
+
+- Fix `trim_left()` and `trim_right()` on the Null distribution raising
+  "missing value where TRUE/FALSE needed" instead of returning Null. Both
+  now short-circuit on a Null input, as the other verbs already did.
 
 # distplyr 0.2.0
 

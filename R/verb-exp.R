@@ -11,7 +11,7 @@
 exp_distribution <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------

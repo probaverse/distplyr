@@ -94,7 +94,7 @@ test_that("Every verb propagates a Null distribution.", {
   # carry a failed fit through a pipeline.
   n <- distionary::dst_null()
   d <- distionary::dst_norm(0, 1)
-  is_null_dst <- function(x) distionary::pretty_name(x) == "Null"
+  is_null_dst <- function(x) is.na(x)
   expect_true(is_null_dst(shift(n, 3)))
   expect_true(is_null_dst(multiply(n, 2)))
   expect_true(is_null_dst(flip(n)))
@@ -105,6 +105,23 @@ test_that("Every verb propagates a Null distribution.", {
   expect_true(is_null_dst(minimise(n, d)))
   expect_true(is_null_dst(trim_left(n, 0)))
   expect_true(is_null_dst(trim_right(n, 0)))
+})
+
+test_that("A distribution merely named Null is not treated as one.", {
+  # distionary marks the Null distribution with a `null_dst` class, which is
+  # what `is.na()` reads. Testing the pretty name instead would report TRUE
+  # here and make every verb discard a perfectly good distribution.
+  impostor <- distionary::distribution(
+    cdf = function(x) stats::punif(x, 0, 1),
+    density = function(x) stats::dunif(x, 0, 1),
+    .name = "Null",
+    .support = distionary::continuous(c(0, 1))
+  )
+  expect_false(is.na(impostor))
+  expect_equal(distionary::eval_cdf(shift(impostor, 1), 1.5), 0.5)
+  expect_equal(distionary::eval_cdf(multiply(impostor, 2), 1), 0.5)
+  expect_equal(distionary::eval_cdf(flip(impostor), -0.5), 0.5)
+  expect_false(is.na(trim_left(impostor, 0.25)))
 })
 
 test_that("A distribution cannot be built without a support.", {

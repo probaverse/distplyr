@@ -30,7 +30,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   ellipsis::check_dots_empty()
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
-  if (distionary::pretty_name(distribution) == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   if (distionary::pretty_name(distribution) == "Mixture") {
@@ -158,7 +158,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   ellipsis::check_dots_empty()
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
-  if (distionary::pretty_name(distribution) == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   if (distionary::pretty_name(distribution) == "Mixture") {
