@@ -24,7 +24,7 @@ Imports:
     vctrs,
     stats,
     checkmate,
-    distionary
+    distionary (>= 0.2.0)
 Suggests: 
     knitr,
     rmarkdown,

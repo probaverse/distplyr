@@ -2,6 +2,10 @@
 
 Major updates:
 
+- Requires distionary 0.2.0 or later, the release that introduces support
+  objects. Every verb below is built on them, so an older distionary
+  cannot satisfy this package.
+
 - Verbs now propagate a structured support (the `.support` feature from
   distionary) following the new distionary implementation, so `support()`, 
   the atoms, and discrete/mixed moments work on transformed distributions.
