@@ -20,14 +20,12 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.5.0)
 Imports: 
-    ellipsis,
     rlang,
     vctrs,
     stats,
     checkmate,
     distionary
 Suggests: 
-    covr,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
