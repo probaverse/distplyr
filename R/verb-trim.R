@@ -27,7 +27,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
   if (is.na(distribution)) {
@@ -155,7 +155,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
   if (is.na(distribution)) {
