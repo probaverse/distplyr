@@ -204,3 +204,16 @@ test_that("An empty restricted support also gives a Null distribution.", {
   )
   expect_equal(distionary::pretty_name(trim_right(hi_liar, 5)), "Null")
 })
+
+test_that("Reinstating a body across a threshold drops an empty side.", {
+  core <- distionary::continuous(c(5, 10))
+  body <- distionary::dst_unif(0, 1)
+  # The body reaches below the threshold, so both pieces are kept.
+  both <- reinstate_support(body, core, 5, "right")
+  expect_equal(
+    distionary::regions(both),
+    distionary::regions(distionary::continuous(c(0, 1), c(5, 10)))
+  )
+  # The body lies entirely above the threshold, leaving nothing to reinstate.
+  expect_equal(reinstate_support(body, core, -5, "right"), core)
+})
