@@ -1,4 +1,4 @@
-# distplyr (development version)
+# distplyr 0.3.0
 
 Major updates:
 
