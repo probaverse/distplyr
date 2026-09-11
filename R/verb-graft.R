@@ -8,6 +8,7 @@
 #' @param distribution Base distribution
 #' @param graft The distribution being grafted.
 #' @param of Value on the real line where the graft is attached.
+#' @param ... Currently unused; must be empty.
 #' @param include Logical; include `of` in the base distribution?
 #' @return Graft distribution object, which is a special type of mixture
 #' distribution.
@@ -24,7 +25,7 @@ graft_right <- function(distribution, graft, of, ..., include = FALSE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_class(graft, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
   p_connect <- distionary::prob_right(
     distribution,
     of = of,
@@ -60,7 +61,7 @@ graft_left <- function(distribution, graft, of, ..., include = FALSE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_class(graft, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
   p_connect <- distionary::prob_left(
     distribution,
     of = of,

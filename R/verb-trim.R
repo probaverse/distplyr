@@ -13,25 +13,26 @@
 #' @param ... Currently unused.
 #' @return A conditional distribution.
 #' @examples
-#' distionary::dst_norm(0, 1) |>
-#'   trim_left(-2) |>
-#'   trim_right(2) |>
-#'   distionary::enframe_cdf(at = -3:3)
+#' d <- distionary::dst_norm(0, 1)
+#' d <- trim_left(d, -2)
+#' d <- trim_right(d, 2)
+#' distionary::enframe_cdf(d, at = -3:3)
 #'
 #' d <- distionary::dst_pois(3)
-#' d |>
-#'   trim_left(5) |>
-#'   distionary::eval_pmf(at = 5)
-#' d |>
-#'   trim_left(5, include = FALSE) |>
-#'   distionary::eval_pmf(at = 5)
+#' distionary::eval_pmf(trim_left(d, 5), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
 #' @rdname trim
 #' @export
 trim_left <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
+  # A Null distribution has no probability to keep or discard; trimming it
+  # leaves it Null, as every other verb does.
+  if (is.na(distribution)) {
+    return(distribution)
+  }
   if (distionary::pretty_name(distribution) == "Mixture") {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]
@@ -44,13 +45,19 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
       FUN.VALUE = numeric(1L)
     )
     new_mix_weights <- probs_kept * mix_probs
-    trimmed_components <- lapply(components, function(d) {
-      suppressWarnings(trim_left(d, of = of, include = include))
-    })
     if (all(new_mix_weights == 0)) {
       return(distionary::dst_null())
     }
-    return(do.call(mix, c(trimmed_components, list(weights = new_mix_weights))))
+    # A component entirely trimmed away becomes a Null distribution, which
+    # would null the whole mixture; drop dead components instead.
+    keep <- new_mix_weights > 0
+    trimmed_components <- lapply(components[keep], function(d) {
+      suppressWarnings(trim_left(d, of = of, include = include))
+    })
+    return(do.call(
+      mix,
+      c(trimmed_components, list(weights = new_mix_weights[keep]))
+    ))
   }
   if (distionary::pretty_name(distribution) == "Finite") {
     parms <- distionary::parameters(distribution)
@@ -68,7 +75,6 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  right <- range(distribution)[2L]
   p_kept <- distionary::prob_right(
     distribution, of = of, inclusive = !include
   )
@@ -78,20 +84,23 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
   if (p_kept == 0) {
     return(distionary::dst_null())
   }
-  v <- distionary::vtype(distribution)
-  if (v == "mixed") {
-    v <- "unknown" # For now.
+  support_in <- distionary::support(distribution)
+  if (is.null(support_in)) {
+    stop(
+      "Trimming requires the distribution's support. ",
+      "Specify `.support` when building the distribution."
+    )
   }
-  ## If `of` is on a flat part of the CDF, this will inaccurately
-  ## specify the left endpoint of the distribution (and the 0-quantile).
-  ## If this is the case, do not specify range, and adjust quantile function
-  ## to calculate 0-quantile using the quantile algorithm.
-  dens_at_break <- distionary::eval_density(distribution, at = of)
-  if (dens_at_break == 0) {
-    ## Trim occurs on flat part
-    stop("Trim occurs on flat part. This is not supported.")
+  # `include = TRUE` means `of` is removed, so the kept support excludes it.
+  # If `of` falls on a flat region (a gap in the support), the restriction
+  # shifts the lower endpoint to where the support resumes.
+  support_out <- distionary::support_restrict(
+    support_in, from = of, to = Inf, include_from = !include
+  )
+  if (distionary::is_empty_support(support_out)) {
+    return(distionary::dst_null())
   }
-
+  lower_endpoint <- range(support_out)[[1L]]
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- 1 - distionary::eval_survival(distribution, at = x) / p_kept
@@ -120,10 +129,16 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
       pmf
     },
     quantile = function(p) {
-      distionary::eval_quantile(distribution, at = (1 - p_kept) + p * p_kept)
+      res <- distionary::eval_quantile(
+        distribution, at = (1 - p_kept) + p * p_kept
+      )
+      # On a flat region the base left-inverse lands at the left side of the
+      # gap; the trimmed distribution starts where its support does.
+      low <- !is.na(res) & res < lower_endpoint
+      res[low] <- lower_endpoint
+      res
     },
-    range = c(of, right),
-    .vtype = v,
+    .support = support_out,
     .name = "Left-Trimmed",
     .parameters = list(
       distribution = distribution,
@@ -140,7 +155,12 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
+  # A Null distribution has no probability to keep or discard; trimming it
+  # leaves it Null, as every other verb does.
+  if (is.na(distribution)) {
+    return(distribution)
+  }
   if (distionary::pretty_name(distribution) == "Mixture") {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]
@@ -153,13 +173,19 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
       FUN.VALUE = numeric(1L)
     )
     new_mix_weights <- probs_kept * mix_probs
-    trimmed_components <- lapply(components, function(d) {
-      suppressWarnings(trim_right(d, of = of, include = include))
-    })
     if (all(new_mix_weights == 0)) {
       return(distionary::dst_null())
     }
-    return(do.call(mix, c(trimmed_components, list(weights = new_mix_weights))))
+    # A component entirely trimmed away becomes a Null distribution, which
+    # would null the whole mixture; drop dead components instead.
+    keep <- new_mix_weights > 0
+    trimmed_components <- lapply(components[keep], function(d) {
+      suppressWarnings(trim_right(d, of = of, include = include))
+    })
+    return(do.call(
+      mix,
+      c(trimmed_components, list(weights = new_mix_weights[keep]))
+    ))
   }
   if (distionary::pretty_name(distribution) == "Finite") {
     parms <- distionary::parameters(distribution)
@@ -177,7 +203,6 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  left <- range(distribution)[1L]
   p_kept <- distionary::prob_left(
     distribution, of = of, inclusive = !include
   )
@@ -187,20 +212,23 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
   if (p_kept == 0) {
     return(distionary::dst_null())
   }
-  v <- distionary::vtype(distribution)
-  if (v == "mixed") {
-    v <- "unknown" # For now.
+  support_in <- distionary::support(distribution)
+  if (is.null(support_in)) {
+    stop(
+      "Trimming requires the distribution's support. ",
+      "Specify `.support` when building the distribution."
+    )
   }
-  ## If `of` is on a flat part of the CDF, this will inaccurately
-  ## specify the left endpoint of the distribution (and the 0-quantile).
-  ## If this is the case, do not specify range, and adjust quantile function
-  ## to calculate 0-quantile using the quantile algorithm.
-  dens_at_break <- distionary::eval_density(distribution, at = of)
-  if (dens_at_break == 0) {
-    ## Trim occurs on flat part
-    stop("Trim occurs on flat part. This is not supported.")
+  # `include = TRUE` means `of` is removed, so the kept support excludes it.
+  # If `of` falls on a flat region (a gap in the support), the restriction
+  # shifts the upper endpoint to where the support leaves off.
+  support_out <- distionary::support_restrict(
+    support_in, from = -Inf, to = of, include_to = !include
+  )
+  if (distionary::is_empty_support(support_out)) {
+    return(distionary::dst_null())
   }
-  
+  upper_endpoint <- range(support_out)[[2L]]
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- distionary::eval_cdf(distribution, at = x) / p_kept
@@ -225,10 +253,13 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
       pmf
     },
     quantile = function(p) {
-      distionary::eval_quantile(distribution, at = p * p_kept)
+      res <- distionary::eval_quantile(distribution, at = p * p_kept)
+      # Mirror of the trim_left clamp, for safety at the upper endpoint.
+      high <- !is.na(res) & res > upper_endpoint
+      res[high] <- upper_endpoint
+      res
     },
-    range = c(left, of),
-    .vtype = v,
+    .support = support_out,
     .name = "Right-Trimmed",
     .parameters = list(
       distribution = distribution,

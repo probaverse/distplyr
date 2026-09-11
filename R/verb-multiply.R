@@ -16,7 +16,7 @@ multiply <- function(distribution, constant) {
     stop("Cannot multiply a distribution by infinity.")
   }
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------
@@ -64,6 +64,8 @@ multiply <- function(distribution, constant) {
     return(multiply(p[["distribution"]], constant * p[["constant"]]))
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_scale(support_in, constant)
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x / constant)
@@ -83,7 +85,7 @@ multiply <- function(distribution, constant) {
     realize = function(n) {
       distionary::realise(distribution, n = n) * constant
     },
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Scaled",
     .parameters = list(
       distribution = distribution,
@@ -110,9 +112,6 @@ multiply <- function(distribution, constant) {
   }
   if (distionary:::is_intrinsic(distribution, "kurtosis_exc")) {
     d[["kurtosis"]] <- distionary::kurtosis(distribution)
-  }
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- range(distribution) * constant
   }
   distionary:::new_distribution(d, class = "scaled")
 }

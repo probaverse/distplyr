@@ -16,6 +16,8 @@ graft_left(distribution, graft, of, ..., include = FALSE)
 
 \item{of}{Value on the real line where the graft is attached.}
 
+\item{...}{Currently unused; must be empty.}
+
 \item{include}{Logical; include \code{of} in the base distribution?}
 }
 \value{

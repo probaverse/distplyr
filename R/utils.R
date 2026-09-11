@@ -22,7 +22,7 @@ pair_dots_num <- function(...,
   ## NA handling
   na_dsts <- vapply(
     dsts,
-    function(d) distionary::pretty_name(d) == "Null",
+    function(d) is.na(d),
     FUN.VALUE = logical(1L)
   )
   na_num <- is.na(num)
