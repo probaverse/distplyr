@@ -1,21 +1,26 @@
 # Support inference -----------------------------------------------------------
 #
-# What remains here after the support algebra moved to distionary: the parts
-# that need the *distributions*, not just their supports. Whether the boundary
-# of a maximum carries mass depends on the distributions themselves, so it is
-# verb semantics rather than set theory, and belongs with the verbs.
+# Working out the support of a verb's result splits in two.
 #
-# The algebra itself --- union, restriction, transformation, atom edits --- is
-# `distionary::support_*()`. Note that those operations are closed: one that
-# removes everything returns `distionary::empty_support()`, not `NULL`. `NULL`
-# here means only "this distribution has no structured support".
+# The set operations --- union, restriction, transformation, atom edits ---
+# depend on nothing but the supports being combined, and are
+# `distionary::support_*()`. What needs the *distributions* themselves is
+# here. Whether the boundary of a maximum carries mass is the example: it
+# cannot be read off the supports, because it turns on how the distributions
+# place their probability at that point. That is verb semantics rather than
+# set theory, so it sits with the verbs.
 #
-# There is no longer a fallback to leave a support out of. distionary requires
-# every distribution to declare one, so a verb never meets an input without a
-# support (the Null distribution aside, which every verb short-circuits on
-# before it gets here) and never has a `NULL` to hand back to `distribution()`.
-# The guards below say so rather than returning a `NULL` that would surface
-# further down as a puzzling error from `distribution()`.
+# distionary's support operations are closed: one that removes everything
+# returns `distionary::empty_support()`, not `NULL`. A `NULL` support means
+# only "this distribution has no structured support", which in practice is
+# the Null distribution.
+#
+# Every distribution declares a support, and every verb short-circuits on the
+# Null distribution before reaching this file. So neither helper below can
+# legitimately meet an input without a support, and neither has a `NULL` to
+# hand back to `distribution()`, which rejects one. They fail where that
+# invariant breaks instead, rather than passing on a `NULL` that would
+# surface further down as a puzzling error.
 
 #' The structured supports of a list of distributions.
 #'
