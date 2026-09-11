@@ -5,13 +5,28 @@
 #' to the left of some value; `graft_right()` grafts a distribution
 #' to the right. The distribution being grafted is trimmed at `of`
 #' and fit to the base distribution also at that value.
-#' @param distribution Base distribution
+#' @details
+#' `include` settles which side of the join owns `of` itself:
+#' `include = TRUE` leaves `of` with the base distribution, and
+#' `include = FALSE`, the default, hands it to the grafted one. It makes a
+#' difference only where `of` carries probability of its own, as an atom
+#' does; where there is no mass exactly at `of`, both settings agree.
+#'
+#' Beware that `trim_left()` and `trim_right()` read their `include` the
+#' other way about: theirs names the side being discarded, so there `TRUE`
+#' drops `of`.
+#'
+#' @param distribution Base distribution.
 #' @param graft The distribution being grafted.
 #' @param of Value on the real line where the graft is attached.
 #' @param ... Currently unused; must be empty.
-#' @param include Logical; include `of` in the base distribution?
+#' @param include Logical; should `of` stay with the base distribution
+#' rather than passing to the grafted one? Defaults to `FALSE`. Makes a
+#' difference only where `of` carries probability. See Details.
 #' @return Graft distribution object, which is a special type of mixture
 #' distribution.
+#' @seealso [trim_left()] and [trim_right()], which discard a tail rather
+#' than replacing it.
 #' @examples
 #' base <- distionary::dst_norm(0, 1)
 #' q <- distionary::eval_quantile(base, at = 0.9)

@@ -14,28 +14,62 @@ trim_right(distribution, of, ..., include = TRUE)
 
 \item{of}{Value on the real line defining where to trim (single numeric).}
 
-\item{...}{Currently unused.}
+\item{...}{Currently unused; must be empty.}
 
-\item{include}{Logical; should \code{of} be removed from the support as well?
-This is only realistically relevant if \code{of} has a non-zero probability
-of occurrence.}
+\item{include}{Logical; should \code{of} be discarded along with the side
+being trimmed away? Defaults to \code{TRUE}. Makes a difference only where
+\code{of} carries probability. See Details.}
 }
 \value{
-A conditional distribution.
+The conditional distribution, renormalised to total probability
+1; or the Null distribution, if the trim leaves nothing behind.
 }
 \description{
-\code{trim_left()} removes probability to the left of some value,
-conditioning the random variable to be bigger than that value.
-\code{trim_right()} does the opposite: removes probability to the right,
-conditioning to be smaller than that value.
+Discard the probability lying to one side of a value, and scale up what
+remains so that it sums to 1 again. \code{trim_left()} discards the
+probability below \code{of}, giving the distribution of the variable
+conditioned on landing above it; \code{trim_right()} discards the probability
+above \code{of}, conditioning on landing below.
 }
+\section{What \code{include} does}{
+\code{include} settles what happens \emph{at} \code{of} itself, and it is named for the
+side being trimmed away: \code{include = TRUE}, the default, counts \code{of} as
+part of what is discarded, so \code{trim_left(d, of)} keeps only outcomes
+strictly greater than \code{of}. With \code{include = FALSE}, \code{of} is kept, and
+\code{trim_left(d, of)} keeps outcomes greater than \emph{or equal to} \code{of}.
+
+The choice only shows when \code{of} carries probability of its own, as an
+atom does. Where there is no mass exactly at \code{of} --- anywhere in a
+continuous distribution --- both settings give the same answer.
+
+Beware that \code{graft_left()} and \code{graft_right()} read their \code{include}
+the other way about: theirs says whether \code{of} stays with the base
+distribution, so there \code{TRUE} keeps it.
+}
+
+\section{Values of \code{of} with nothing beside them}{
+If \code{of} falls in a gap in the support, the trim takes effect where the
+support resumes. Trimming a distribution living on \verb{[1, 2]} and \verb{[4, 5]}
+to the left of 3 gives one living on \verb{[4, 5]}.
+
+If the trim leaves no probability at all --- trimming a Uniform(0, 1) to
+the left of 2, say --- the result is the Null distribution,
+\code{distionary::dst_null()}.
+}
+
 \examples{
 d <- distionary::dst_norm(0, 1)
 d <- trim_left(d, -2)
 d <- trim_right(d, 2)
 distionary::enframe_cdf(d, at = -3:3)
 
+# A Poisson has an atom at 5, so `include` is visible there.
+# The default discards that atom; `include = FALSE` keeps it.
 d <- distionary::dst_pois(3)
 distionary::eval_pmf(trim_left(d, 5), at = 5)
 distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
+}
+\seealso{
+\code{\link[=graft_left]{graft_left()}} and \code{\link[=graft_right]{graft_right()}}, which replace a tail
+rather than discarding it.
 }

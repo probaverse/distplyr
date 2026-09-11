@@ -10,7 +10,7 @@ graft_right(distribution, graft, of, ..., include = FALSE)
 graft_left(distribution, graft, of, ..., include = FALSE)
 }
 \arguments{
-\item{distribution}{Base distribution}
+\item{distribution}{Base distribution.}
 
 \item{graft}{The distribution being grafted.}
 
@@ -18,7 +18,9 @@ graft_left(distribution, graft, of, ..., include = FALSE)
 
 \item{...}{Currently unused; must be empty.}
 
-\item{include}{Logical; include \code{of} in the base distribution?}
+\item{include}{Logical; should \code{of} stay with the base distribution
+rather than passing to the grafted one? Defaults to \code{FALSE}. Makes a
+difference only where \code{of} carries probability. See Details.}
 }
 \value{
 Graft distribution object, which is a special type of mixture
@@ -31,6 +33,17 @@ to the left of some value; \code{graft_right()} grafts a distribution
 to the right. The distribution being grafted is trimmed at \code{of}
 and fit to the base distribution also at that value.
 }
+\details{
+\code{include} settles which side of the join owns \code{of} itself:
+\code{include = TRUE} leaves \code{of} with the base distribution, and
+\code{include = FALSE}, the default, hands it to the grafted one. It makes a
+difference only where \code{of} carries probability of its own, as an atom
+does; where there is no mass exactly at \code{of}, both settings agree.
+
+Beware that \code{trim_left()} and \code{trim_right()} read their \code{include} the
+other way about: theirs names the side being discarded, so there \code{TRUE}
+drops \code{of}.
+}
 \examples{
 base <- distionary::dst_norm(0, 1)
 q <- distionary::eval_quantile(base, at = 0.9)
@@ -38,4 +51,8 @@ right <- q + distionary::dst_gp(1, 0.3)
 g <- graft_right(base, right, of = q)
 # plot(g, "cdf", n = 1001)
 # plot(base, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)
+}
+\seealso{
+\code{\link[=trim_left]{trim_left()}} and \code{\link[=trim_right]{trim_right()}}, which discard a tail rather
+than replacing it.
 }
