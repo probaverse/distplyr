@@ -5,9 +5,9 @@
 \alias{trim_right}
 \title{Trim (condition) a distribution}
 \usage{
-trim_left(distribution, of, ..., include = TRUE)
+trim_left(distribution, of, ..., knot_action = c("discard", "keep", "split"))
 
-trim_right(distribution, of, ..., include = TRUE)
+trim_right(distribution, of, ..., knot_action = c("discard", "keep", "split"))
 }
 \arguments{
 \item{distribution}{Distribution to trim.}
@@ -16,8 +16,9 @@ trim_right(distribution, of, ..., include = TRUE)
 
 \item{...}{Currently unused; must be empty.}
 
-\item{include}{Logical; should \code{of} be discarded along with the side
-being trimmed away? Defaults to \code{TRUE}. Makes a difference only where
+\item{knot_action}{What to do with the probability sitting exactly on
+\code{of}: \code{"discard"} it with the trimmed side (the default), \code{"keep"} it,
+or \code{"split"} it evenly between the two sides. Only has an effect where
 \code{of} carries probability. See Details.}
 }
 \value{
@@ -31,20 +32,25 @@ probability below \code{of}, giving the distribution of the variable
 conditioned on landing above it; \code{trim_right()} discards the probability
 above \code{of}, conditioning on landing below.
 }
-\section{What \code{include} does}{
-\code{include} settles what happens \emph{at} \code{of} itself, and it is named for the
-side being trimmed away: \code{include = TRUE}, the default, counts \code{of} as
-part of what is discarded, so \code{trim_left(d, of)} keeps only outcomes
-strictly greater than \code{of}. With \code{include = FALSE}, \code{of} is kept, and
-\code{trim_left(d, of)} keeps outcomes greater than \emph{or equal to} \code{of}.
+\section{What \code{knot_action} does}{
+\code{of} is the knot: the point the trim cuts at. \code{knot_action} says what
+becomes of the probability sitting exactly on it, and matters only when
+the knot carries mass of its own, as an atom does. Where there is no
+mass exactly at \code{of} --- anywhere in a continuous distribution --- all
+three actions give the same answer.
+\itemize{
+\item \code{"discard"} (default) throws the knot away with the side being
+trimmed, so \code{trim_left(d, of)} keeps outcomes strictly greater than
+\code{of}.
+\item \code{"keep"} retains it, so \code{trim_left(d, of)} keeps outcomes greater
+than \emph{or equal to} \code{of}.
+\item \code{"split"} retains half of it. This is the mid-p convention used in
+discrete inference, where a boundary atom is shared evenly between
+the two sides rather than assigned wholly to one.
+}
 
-The choice only shows when \code{of} carries probability of its own, as an
-atom does. Where there is no mass exactly at \code{of} --- anywhere in a
-continuous distribution --- both settings give the same answer.
-
-Beware that \code{graft_left()} and \code{graft_right()} read their \code{include}
-the other way about: theirs says whether \code{of} stays with the base
-distribution, so there \code{TRUE} keeps it.
+Whatever is retained is renormalised along with the rest, so the result
+is always a distribution in its own right.
 }
 
 \section{Values of \code{of} with nothing beside them}{
@@ -63,11 +69,11 @@ d <- trim_left(d, -2)
 d <- trim_right(d, 2)
 distionary::enframe_cdf(d, at = -3:3)
 
-# A Poisson has an atom at 5, so `include` is visible there.
-# The default discards that atom; `include = FALSE` keeps it.
+# A Poisson has an atom at 5, so the knot is visible there.
 d <- distionary::dst_pois(3)
 distionary::eval_pmf(trim_left(d, 5), at = 5)
-distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
+distionary::eval_pmf(trim_left(d, 5, knot_action = "keep"), at = 5)
+distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
 }
 \seealso{
 \code{\link[=graft_left]{graft_left()}} and \code{\link[=graft_right]{graft_right()}}, which replace a tail

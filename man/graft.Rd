@@ -40,9 +40,9 @@ and fit to the base distribution also at that value.
 difference only where \code{of} carries probability of its own, as an atom
 does; where there is no mass exactly at \code{of}, both settings agree.
 
-Beware that \code{trim_left()} and \code{trim_right()} read their \code{include} the
-other way about: theirs names the side being discarded, so there \code{TRUE}
-drops \code{of}.
+\code{trim_left()} and \code{trim_right()} settle the same question with
+\code{knot_action}, which names the knot's fate directly rather than through
+a logical.
 }
 \examples{
 base <- distionary::dst_norm(0, 1)

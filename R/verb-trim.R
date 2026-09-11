@@ -1,3 +1,23 @@
+#' Probability the distribution places exactly at the knot.
+#'
+#' Zero wherever there is no atom there, including everywhere in a
+#' continuous distribution.
+#' @noRd
+knot_mass <- function(distribution, of) {
+  m <- distionary::eval_pmf(distribution, at = of)
+  if (length(m) != 1L || is.na(m)) 0 else m
+}
+
+#' The share of the knot's mass a trim retains.
+#'
+#' The three actions differ only in this number, which is why they share a
+#' code path: "keep" retains all of it, "discard" none, "split" half.
+#' @noRd
+knot_retained <- function(distribution, of, knot_action) {
+  m <- knot_mass(distribution, of)
+  switch(knot_action, keep = m, discard = 0, split = m / 2)
+}
+
 #' Trim (condition) a distribution
 #'
 #' Discard the probability lying to one side of a value, and scale up what
@@ -7,21 +27,25 @@
 #' above `of`, conditioning on landing below.
 #'
 #' @details
-#' # What `include` does
+#' # What `knot_action` does
 #'
-#' `include` settles what happens *at* `of` itself, and it is named for the
-#' side being trimmed away: `include = TRUE`, the default, counts `of` as
-#' part of what is discarded, so `trim_left(d, of)` keeps only outcomes
-#' strictly greater than `of`. With `include = FALSE`, `of` is kept, and
-#' `trim_left(d, of)` keeps outcomes greater than *or equal to* `of`.
+#' `of` is the knot: the point the trim cuts at. `knot_action` says what
+#' becomes of the probability sitting exactly on it, and matters only when
+#' the knot carries mass of its own, as an atom does. Where there is no
+#' mass exactly at `of` --- anywhere in a continuous distribution --- all
+#' three actions give the same answer.
 #'
-#' The choice only shows when `of` carries probability of its own, as an
-#' atom does. Where there is no mass exactly at `of` --- anywhere in a
-#' continuous distribution --- both settings give the same answer.
+#' - `"discard"` (default) throws the knot away with the side being
+#'   trimmed, so `trim_left(d, of)` keeps outcomes strictly greater than
+#'   `of`.
+#' - `"keep"` retains it, so `trim_left(d, of)` keeps outcomes greater
+#'   than *or equal to* `of`.
+#' - `"split"` retains half of it. This is the mid-p convention used in
+#'   discrete inference, where a boundary atom is shared evenly between
+#'   the two sides rather than assigned wholly to one.
 #'
-#' Beware that `graft_left()` and `graft_right()` read their `include`
-#' the other way about: theirs says whether `of` stays with the base
-#' distribution, so there `TRUE` keeps it.
+#' Whatever is retained is renormalised along with the rest, so the result
+#' is always a distribution in its own right.
 #'
 #' # Values of `of` with nothing beside them
 #'
@@ -35,8 +59,9 @@
 #'
 #' @param distribution Distribution to trim.
 #' @param of Value on the real line defining where to trim (single numeric).
-#' @param include Logical; should `of` be discarded along with the side
-#' being trimmed away? Defaults to `TRUE`. Makes a difference only where
+#' @param knot_action What to do with the probability sitting exactly on
+#' `of`: `"discard"` it with the trimmed side (the default), `"keep"` it,
+#' or `"split"` it evenly between the two sides. Only has an effect where
 #' `of` carries probability. See Details.
 #' @param ... Currently unused; must be empty.
 #' @return The conditional distribution, renormalised to total probability
@@ -49,18 +74,21 @@
 #' d <- trim_right(d, 2)
 #' distionary::enframe_cdf(d, at = -3:3)
 #'
-#' # A Poisson has an atom at 5, so `include` is visible there.
-#' # The default discards that atom; `include = FALSE` keeps it.
+#' # A Poisson has an atom at 5, so the knot is visible there.
 #' d <- distionary::dst_pois(3)
 #' distionary::eval_pmf(trim_left(d, 5), at = 5)
-#' distionary::eval_pmf(trim_left(d, 5, include = FALSE), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, knot_action = "keep"), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
 #' @rdname trim
 #' @export
-trim_left <- function(distribution, of, ..., include = TRUE) {
+trim_left <- function(distribution, of, ...,
+                      knot_action = c("discard", "keep", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
-  checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
   rlang::check_dots_empty()
+  knot_action <- rlang::arg_match0(
+    knot_action, c("discard", "keep", "split"), "knot_action"
+  )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
   if (is.na(distribution)) {
@@ -73,7 +101,8 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     probs_kept <- vapply(
       components,
       function(d) {
-        distionary::prob_right(d, of = of, inclusive = !include)
+        distionary::prob_right(d, of = of, inclusive = FALSE) +
+          knot_retained(d, of, knot_action)
       },
       FUN.VALUE = numeric(1L)
     )
@@ -85,7 +114,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     # would null the whole mixture; drop dead components instead.
     keep <- new_mix_weights > 0
     trimmed_components <- lapply(components[keep], function(d) {
-      suppressWarnings(trim_left(d, of = of, include = include))
+      suppressWarnings(trim_left(d, of = of, knot_action = knot_action))
     })
     return(do.call(
       mix,
@@ -96,21 +125,19 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
-    if (include) {
-      rm <- outs <= of
-    } else {
-      rm <- outs < of
-    }
-    probs <- probs[!rm]
-    outs <- outs[!rm]
+    share <- switch(knot_action, keep = 1, discard = 0, split = 0.5)
+    probs[outs == of] <- probs[outs == of] * share
+    keep <- outs >= of & probs > 0
+    probs <- probs[keep]
+    outs <- outs[keep]
     if (length(outs) == 0) {
       return(distionary::dst_null())
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  p_kept <- distionary::prob_right(
-    distribution, of = of, inclusive = !include
-  )
+  retained <- knot_retained(distribution, of, knot_action)
+  p_kept <- distionary::prob_right(distribution, of = of, inclusive = FALSE) +
+    retained
   if (p_kept == 1) {
     return(distribution)
   }
@@ -124,47 +151,60 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
       "Specify `.support` when building the distribution."
     )
   }
-  # `include = TRUE` means `of` is removed, so the kept support excludes it.
+  # The knot stays in the support whenever any of its mass is retained.
   # If `of` falls on a flat region (a gap in the support), the restriction
   # shifts the lower endpoint to where the support resumes.
   support_out <- distionary::support_restrict(
-    support_in, from = of, to = Inf, include_from = !include
+    support_in,
+    from = of,
+    to = Inf,
+    include_from = retained > 0 || knot_action == "keep"
   )
   if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
   }
   lower_endpoint <- range(support_out)[[1L]]
+  cdf_of <- distionary::eval_cdf(distribution, at = of)
+  # Mass at or below the knot that the trim keeps, as a probability of the
+  # trimmed distribution. Zero unless some of the knot's mass is retained.
+  p_at_knot <- retained / p_kept
   d <- distionary::distribution(
     cdf = function(x) {
-      cdf <- 1 - distionary::eval_survival(distribution, at = x) / p_kept
-      pmax(cdf, 0)
+      res <- (retained + distionary::eval_cdf(distribution, at = x) -
+        cdf_of) / p_kept
+      res[x < of] <- 0
+      pmin(pmax(res, 0), 1)
     },
     survival = function(x) {
-      s <- distionary::eval_survival(distribution, at = x) / p_kept
-      pmin(s, 1)
+      res <- 1 - (retained + distionary::eval_cdf(distribution, at = x) -
+        cdf_of) / p_kept
+      res[x < of] <- 1
+      pmin(pmax(res, 0), 1)
     },
     density = function(x) {
       pdf <- distionary::eval_density(distribution, at = x) / p_kept
-      if (include) {
-        pdf[x <= of] <- 0
-      } else {
-        pdf[x < of] <- 0
+      pdf[x < of] <- 0
+      if (knot_action == "discard") {
+        pdf[x == of] <- 0
       }
       pdf
     },
     pmf = function(x) {
       pmf <- distionary::eval_pmf(distribution, at = x) / p_kept
-      if (include) {
-        pmf[x <= of] <- 0
-      } else {
-        pmf[x < of] <- 0
-      }
+      pmf[x < of] <- 0
+      pmf[x == of] <- retained / p_kept
       pmf
     },
     quantile = function(p) {
-      res <- distionary::eval_quantile(
-        distribution, at = (1 - p_kept) + p * p_kept
-      )
+      res <- rep(NA_real_, length(p))
+      at_knot <- !is.na(p) & p <= p_at_knot
+      beyond <- !is.na(p) & p > p_at_knot
+      res[at_knot] <- of
+      if (any(beyond)) {
+        res[beyond] <- distionary::eval_quantile(
+          distribution, at = cdf_of + (p[beyond] - p_at_knot) * p_kept
+        )
+      }
       # On a flat region the base left-inverse lands at the left side of the
       # gap; the trimmed distribution starts where its support does.
       low <- !is.na(res) & res < lower_endpoint
@@ -176,7 +216,7 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
     .parameters = list(
       distribution = distribution,
       of = of,
-      include = include
+      knot_action = knot_action
     )
   )
   distionary:::new_distribution(d, class = "trim_left")
@@ -184,11 +224,14 @@ trim_left <- function(distribution, of, ..., include = TRUE) {
 
 #' @rdname trim
 #' @export
-trim_right <- function(distribution, of, ..., include = TRUE) {
+trim_right <- function(distribution, of, ...,
+                       knot_action = c("discard", "keep", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
-  checkmate::assert_logical(include, len = 1L, any.missing = FALSE)
   rlang::check_dots_empty()
+  knot_action <- rlang::arg_match0(
+    knot_action, c("discard", "keep", "split"), "knot_action"
+  )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
   if (is.na(distribution)) {
@@ -201,7 +244,8 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     probs_kept <- vapply(
       components,
       function(d) {
-        distionary::prob_left(d, of = of, inclusive = !include)
+        distionary::prob_left(d, of = of, inclusive = FALSE) +
+          knot_retained(d, of, knot_action)
       },
       FUN.VALUE = numeric(1L)
     )
@@ -213,7 +257,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     # would null the whole mixture; drop dead components instead.
     keep <- new_mix_weights > 0
     trimmed_components <- lapply(components[keep], function(d) {
-      suppressWarnings(trim_right(d, of = of, include = include))
+      suppressWarnings(trim_right(d, of = of, knot_action = knot_action))
     })
     return(do.call(
       mix,
@@ -224,21 +268,19 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
-    if (include) {
-      rm <- outs >= of
-    } else {
-      rm <- outs > of
-    }
-    probs <- probs[!rm]
-    outs <- outs[!rm]
+    share <- switch(knot_action, keep = 1, discard = 0, split = 0.5)
+    probs[outs == of] <- probs[outs == of] * share
+    keep <- outs <= of & probs > 0
+    probs <- probs[keep]
+    outs <- outs[keep]
     if (length(outs) == 0) {
       return(distionary::dst_null())
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  p_kept <- distionary::prob_left(
-    distribution, of = of, inclusive = !include
-  )
+  retained <- knot_retained(distribution, of, knot_action)
+  p_kept <- distionary::prob_left(distribution, of = of, inclusive = FALSE) +
+    retained
   if (p_kept == 1) {
     return(distribution)
   }
@@ -252,11 +294,14 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
       "Specify `.support` when building the distribution."
     )
   }
-  # `include = TRUE` means `of` is removed, so the kept support excludes it.
+  # The knot stays in the support whenever any of its mass is retained.
   # If `of` falls on a flat region (a gap in the support), the restriction
   # shifts the upper endpoint to where the support leaves off.
   support_out <- distionary::support_restrict(
-    support_in, from = -Inf, to = of, include_to = !include
+    support_in,
+    from = -Inf,
+    to = of,
+    include_to = retained > 0 || knot_action == "keep"
   )
   if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
@@ -269,20 +314,16 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     },
     density = function(x) {
       pdf <- distionary::eval_density(distribution, at = x) / p_kept
-      if (include) {
-        pdf[x >= of] <- 0
-      } else {
-        pdf[x > of] <- 0
+      pdf[x > of] <- 0
+      if (knot_action == "discard") {
+        pdf[x == of] <- 0
       }
       pdf
     },
     pmf = function(x) {
       pmf <- distionary::eval_pmf(distribution, at = x) / p_kept
-      if (include) {
-        pmf[x >= of] <- 0
-      } else {
-        pmf[x > of] <- 0
-      }
+      pmf[x > of] <- 0
+      pmf[x == of] <- retained / p_kept
       pmf
     },
     quantile = function(p) {
@@ -297,7 +338,7 @@ trim_right <- function(distribution, of, ..., include = TRUE) {
     .parameters = list(
       distribution = distribution,
       of = of,
-      include = include
+      knot_action = knot_action
     )
   )
   distionary:::new_distribution(d, class = "trim_right")

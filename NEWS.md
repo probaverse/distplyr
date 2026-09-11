@@ -2,6 +2,14 @@
 
 Major updates:
 
+- `trim_left()` and `trim_right()` take `knot_action` in place of
+  `include`, saying what becomes of the probability sitting exactly on the
+  trim point: `"discard"` it with the trimmed side (the default, and what
+  `include = TRUE` did), `"keep"` it, or `"split"` it evenly between the
+  two sides. `"split"` is new, and is the mid-p convention of discrete
+  inference. The action has no effect where the trim point carries no
+  mass, as in any continuous distribution.
+
 - Requires distionary 0.2.0 or later, the release that introduces support
   objects. Every verb below is built on them, so an older distionary
   cannot satisfy this package.

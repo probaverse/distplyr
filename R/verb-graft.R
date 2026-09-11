@@ -12,9 +12,9 @@
 #' difference only where `of` carries probability of its own, as an atom
 #' does; where there is no mass exactly at `of`, both settings agree.
 #'
-#' Beware that `trim_left()` and `trim_right()` read their `include` the
-#' other way about: theirs names the side being discarded, so there `TRUE`
-#' drops `of`.
+#' `trim_left()` and `trim_right()` settle the same question with
+#' `knot_action`, which names the knot's fate directly rather than through
+#' a logical.
 #'
 #' @param distribution Base distribution.
 #' @param graft The distribution being grafted.
@@ -52,7 +52,7 @@ graft_right <- function(distribution, graft, of, ..., include = FALSE) {
   graft_trimmed <- trim_left(
     graft,
     of = of,
-    include = include
+    knot_action = if (include) "discard" else "keep"
   )
   if (p_connect == 1) {
     return(graft_trimmed)
@@ -60,7 +60,7 @@ graft_right <- function(distribution, graft, of, ..., include = FALSE) {
   base_trimmed <- trim_right(
     distribution,
     of = of,
-    include = !include
+    knot_action = if (include) "keep" else "discard"
   )
   attach_graft_ends(
     base_trimmed,
@@ -88,7 +88,7 @@ graft_left <- function(distribution, graft, of, ..., include = FALSE) {
   graft_trimmed <- trim_right(
     graft,
     of = of,
-    include = include
+    knot_action = if (include) "discard" else "keep"
   )
   if (p_connect == 1) {
     return(graft_trimmed)
@@ -96,7 +96,7 @@ graft_left <- function(distribution, graft, of, ..., include = FALSE) {
   base_trimmed <- trim_left(
     distribution,
     of = of,
-    include = !include
+    knot_action = if (include) "keep" else "discard"
   )
   attach_graft_ends(
     graft_trimmed,
