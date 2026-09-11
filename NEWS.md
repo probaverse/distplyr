@@ -2,6 +2,18 @@
 
 Major updates:
 
+- `graft_left()` and `graft_right()` name their pieces: the first argument
+  is the `body`, the second the `tail`, and "graft" is reserved for what
+  comes out --- which now reports `pretty_name()` of `"Graft"` rather than
+  `"Mixture"`.
+
+- The grafts take `knot_body_action` and `knot_tail_action` in place of
+  `include`. The body and the tail decide separately what to do with
+  probability sitting exactly on the knot --- `"keep"`, `"discard"` or
+  `"split"` it --- where the single logical could only hand the knot to
+  one side or the other. Mass the body declines passes into the tail's
+  share, so every pairing of the two still gives a distribution.
+
 - `trim_left()` and `trim_right()` take `knot_action` in place of
   `include`, saying what becomes of the probability sitting exactly on the
   trim point: `"discard"` it with the trimmed side (the default, and what

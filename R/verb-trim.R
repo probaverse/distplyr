@@ -94,7 +94,8 @@ trim_left <- function(distribution, of, ...,
   if (is.na(distribution)) {
     return(distribution)
   }
-  if (distionary::pretty_name(distribution) == "Mixture") {
+  # A graft is a mixture in all but name, and trims the same way.
+  if (distionary::pretty_name(distribution) %in% c("Mixture", "Graft")) {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]
     mix_probs <- params[["probs"]]
@@ -237,7 +238,8 @@ trim_right <- function(distribution, of, ...,
   if (is.na(distribution)) {
     return(distribution)
   }
-  if (distionary::pretty_name(distribution) == "Mixture") {
+  # A graft is a mixture in all but name, and trims the same way.
+  if (distionary::pretty_name(distribution) %in% c("Mixture", "Graft")) {
     params <- distionary::parameters(distribution)
     components <- params[["distributions"]]
     mix_probs <- params[["probs"]]

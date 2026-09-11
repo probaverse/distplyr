@@ -3,56 +3,86 @@
 \name{graft_right}
 \alias{graft_right}
 \alias{graft_left}
-\title{Graft Distribution}
+\title{Graft a tail onto a distribution}
 \usage{
-graft_right(distribution, graft, of, ..., include = FALSE)
+graft_right(
+  body,
+  tail,
+  of,
+  ...,
+  knot_body_action = c("discard", "keep", "split"),
+  knot_tail_action = c("keep", "discard", "split")
+)
 
-graft_left(distribution, graft, of, ..., include = FALSE)
+graft_left(
+  body,
+  tail,
+  of,
+  ...,
+  knot_body_action = c("discard", "keep", "split"),
+  knot_tail_action = c("keep", "discard", "split")
+)
 }
 \arguments{
-\item{distribution}{Base distribution.}
+\item{body}{Distribution supplying the part of the range that is kept.}
 
-\item{graft}{The distribution being grafted.}
+\item{tail}{Distribution supplying the replacement end.}
 
-\item{of}{Value on the real line where the graft is attached.}
+\item{of}{Value on the real line where the tail is attached: the knot.}
 
 \item{...}{Currently unused; must be empty.}
 
-\item{include}{Logical; should \code{of} stay with the base distribution
-rather than passing to the grafted one? Defaults to \code{FALSE}. Makes a
-difference only where \code{of} carries probability. See Details.}
+\item{knot_body_action}{What the body does with its probability at the
+knot: \code{"discard"}, \code{"keep"}, or \code{"split"}. See Details.}
+
+\item{knot_tail_action}{What the tail does with its probability at the
+knot: \code{"keep"}, \code{"discard"}, or \code{"split"}. See Details.}
 }
 \value{
-Graft distribution object, which is a special type of mixture
-distribution.
+A graft: a distribution made of the body below the knot and the
+tail above it (or the other way round, for \code{graft_left()}), which is a
+special type of mixture distribution.
 }
 \description{
-Replace a distribution's tail.
-\code{graft_left()} takes a base distribution and grafts a distribution
-to the left of some value; \code{graft_right()} grafts a distribution
-to the right. The distribution being grafted is trimmed at \code{of}
-and fit to the base distribution also at that value.
+Replace one end of a distribution with a different model of that end.
+\code{graft_right()} keeps the body of \code{body} below \code{of} and hands everything
+above it to \code{tail}; \code{graft_left()} does the same at the lower end. The
+result is a \emph{graft}: the tail is trimmed at \code{of}, and both pieces are
+weighted so that the body's own probability of reaching past \code{of} is the
+share the tail receives.
 }
-\details{
-\code{include} settles which side of the join owns \code{of} itself:
-\code{include = TRUE} leaves \code{of} with the base distribution, and
-\code{include = FALSE}, the default, hands it to the grafted one. It makes a
-difference only where \code{of} carries probability of its own, as an atom
-does; where there is no mass exactly at \code{of}, both settings agree.
+\section{Where the knot goes}{
+\code{of} is the knot, and the body and the tail each decide separately what
+to do with the probability sitting exactly on it. That is two questions,
+not one, so there are two arguments:
+\itemize{
+\item \code{knot_body_action} --- what the body does with its own mass at the
+knot: \code{"discard"} it (the default, stopping the body just below the
+knot), \code{"keep"} it, or \code{"split"} it in half.
+\item \code{knot_tail_action} --- the same question for the tail: \code{"keep"} its
+mass at the knot (the default, starting the tail at the knot rather
+than above it), \code{"discard"} it, or \code{"split"} it.
+}
 
-\code{trim_left()} and \code{trim_right()} settle the same question with
-\code{knot_action}, which names the knot's fate directly rather than through
-a logical.
+Mass the body does not retain is not destroyed; it passes into the
+tail's share of the total, which is why every combination of the two
+still gives a distribution. Both arguments matter only where the
+distribution in question carries mass exactly at \code{of}, so for a pair of
+continuous distributions they make no difference at all.
+
+\code{trim_left()} and \code{trim_right()} settle the same question with a single
+\code{knot_action}, having only one distribution to ask about.
 }
+
 \examples{
-base <- distionary::dst_norm(0, 1)
-q <- distionary::eval_quantile(base, at = 0.9)
-right <- q + distionary::dst_gp(1, 0.3)
-g <- graft_right(base, right, of = q)
+body <- distionary::dst_norm(0, 1)
+q <- distionary::eval_quantile(body, at = 0.9)
+upper <- q + distionary::dst_gp(1, 0.3)
+g <- graft_right(body, upper, of = q)
 # plot(g, "cdf", n = 1001)
-# plot(base, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)
+# plot(body, "cdf", n = 1001, lty = 2, col = "green", add = TRUE)
 }
 \seealso{
-\code{\link[=trim_left]{trim_left()}} and \code{\link[=trim_right]{trim_right()}}, which discard a tail rather
+\code{\link[=trim_left]{trim_left()}} and \code{\link[=trim_right]{trim_right()}}, which discard an end rather
 than replacing it.
 }
