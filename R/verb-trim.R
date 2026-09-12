@@ -176,9 +176,14 @@ trim_left <- function(distribution, of, ...,
       res[x < of] <- 0
       pmin(pmax(res, 0), 1)
     },
+    # Scaling the base survival, rather than taking one minus the CDF above.
+    # The two agree on paper, but the far tail is where they part: there the
+    # base CDF is one to the last bit it can hold, and subtracting it from
+    # one leaves nothing of the probability that is still out there. The
+    # knot's retained mass sits at `of`, never above `x`, so it plays no
+    # part here.
     survival = function(x) {
-      res <- 1 - (retained + distionary::eval_cdf(distribution, at = x) -
-        cdf_of) / p_kept
+      res <- distionary::eval_survival(distribution, at = x) / p_kept
       res[x < of] <- 1
       pmin(pmax(res, 0), 1)
     },

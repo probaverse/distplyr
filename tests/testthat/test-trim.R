@@ -50,6 +50,21 @@ test_that("The trimmed distribution is internally consistent.", {
   }
 })
 
+test_that("The left trim's survival keeps its precision in the far tail.", {
+  # The survival scales the base survival instead of taking one minus the
+  # CDF. Only the first of those survives out here: the base CDF is 1 to
+  # the last bit a double holds, so one minus it is 0, while the
+  # probability beyond is still real.
+  d <- distionary::dst_norm(0, 1)
+  trimmed <- trim_left(d, 0)
+  at <- c(8, 10, 20, 30)
+  expect_equal(
+    distionary::eval_survival(trimmed, at = at),
+    stats::pnorm(at, lower.tail = FALSE) / 0.5
+  )
+  expect_true(all(distionary::eval_survival(trimmed, at = at) > 0))
+})
+
 test_that("The knot stays in the support when any of its mass is kept.", {
   d <- distionary::dst_pois(3)
   lower <- function(action) {
