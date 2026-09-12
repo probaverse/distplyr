@@ -1,69 +1,41 @@
 # distplyr 0.3.0
 
-Major updates:
+Every verb is now built on distionary's support objects, so a transformed
+distribution says where its probability lives: `support()`, its atoms, and
+discrete or mixed moments all work on the result. Requires distionary 0.2.0.
 
-- `graft_left()` and `graft_right()` name their pieces: the first argument
-  is the `body`, the second the `tail`, and "graft" is reserved for what
-  comes out --- which now reports `pretty_name()` of `"Graft"` rather than
-  `"Mixture"`.
+## Breaking changes
 
-- The grafts take `knot_body_action` and `knot_tail_action` in place of
-  `include`. The body and the tail decide separately what to do with
-  probability sitting exactly on the knot --- `"keep"`, `"discard"` or
-  `"split"` it --- where the single logical could only hand the knot to
-  one side or the other. Mass the body declines passes into the tail's
-  share, so every pairing of the two still gives a distribution.
+- `trim_left()` and `trim_right()` take `knot_action` in place of `include`,
+  which can also `"split"` the mass sitting on the trim point. The old
+  `include = TRUE` is `"discard"`, and `FALSE` is `"keep"`. See `?trim`.
 
-- `trim_left()` and `trim_right()` take `knot_action` in place of
-  `include`, saying what becomes of the probability sitting exactly on the
-  trim point: `"discard"` it with the trimmed side (the default, and what
-  `include = TRUE` did), `"keep"` it, or `"split"` it evenly between the
-  two sides. `"split"` is new, and is the mid-p convention of discrete
-  inference. The action has no effect where the trim point carries no
-  mass, as in any continuous distribution.
+- `graft_left()` and `graft_right()` call their arguments `body` and `tail`,
+  take `knot_body_action` and `knot_tail_action` in place of `include`, and
+  report a `pretty_name()` of `"Graft"` rather than `"Mixture"`. See `?graft`.
 
-- Requires distionary 0.2.0 or later, the release that introduces support
-  objects. Every verb below is built on them, so an older distionary
-  cannot satisfy this package.
+- Verbs no longer state a `range` or `.vtype`. Both are read from the support.
 
-- Verbs now propagate a structured support (the `.support` feature from
-  distionary) following the new distionary implementation, so `support()`, 
-  the atoms, and discrete/mixed moments work on transformed distributions.
+## Supports
 
-- Verbs no longer specify `range` or `.vtype`; the range and variable type
-  are derived from the support. `.vtype` is defunct in distionary, and a
-  distribution can no longer be built without a support, so a verb never
-  meets an input lacking one --- the fallbacks that guessed at a variable
-  type are gone.
+- A trim point landing in a gap in the support moves to where the support
+  resumes, rather than erroring.
 
-- `trim_left()` and `trim_right()` now shift a trim point that lands on a
-  flat region (a gap in the support) to where the support resumes, instead
-  of erroring. For example, trimming a distribution supported on
-  [1, 2] U [4, 5] to the left of 3 yields a distribution on [4, 5]. The
-  general trimming method now requires the distribution to carry a
-  structured support.
+- `invert()` derives the support of `1 / X` for a distribution spanning zero,
+  mapping its negative and positive parts separately.
 
-- `invert()` now derives the support of `1 / X` for distributions spanning
-  zero, by mapping the negative and positive parts separately.
+## Bug fixes
 
-Bug fixes:
+- `mix()`, `maximize()` and `minimize()` no longer treat different components
+  as the same one. Results may change for transformed distributions.
 
-- Fix `mix()`, `maximize()`, and `minimize()` sometimes treating different
-  distributions as the same component. You may see different results if you
-  combine transformed distributions (for example after `flip()`).
+- Trimming a mixture no longer returns the Null distribution when it removes a
+  whole component; dead components are dropped instead.
 
-- Fix `trim_left()` and `trim_right()` on a mixture returning the Null
-  distribution whenever the trim removed an entire component; dead
-  components are now dropped from the mixture instead.
+- Verbs no longer discard a distribution that merely carries the name
+  `"Null"`. Null-ness is read with `is.na()`.
 
-- Fix every verb discarding a distribution that merely carries the name
-  `"Null"`. Null-ness is now read from the distribution's class, via
-  `is.na()`, rather than by comparing its pretty name, so a distribution
-  built with `.name = "Null"` is transformed like any other.
-
-- Fix `trim_left()` and `trim_right()` on the Null distribution raising
-  "missing value where TRUE/FALSE needed" instead of returning Null. Both
-  now short-circuit on a Null input, as the other verbs already did.
+- Trimming the Null distribution returns Null instead of erroring.
 
 # distplyr 0.2.0
 
