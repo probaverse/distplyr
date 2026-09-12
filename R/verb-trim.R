@@ -314,10 +314,25 @@ trim_right <- function(distribution, of, ...,
     return(distionary::dst_null())
   }
   upper_endpoint <- range(support_out)[[2L]]
+  # Probability lying above the knot that the trim throws away: everything
+  # strictly beyond it, plus whatever share of the knot's own mass is not
+  # retained.
+  discarded_above <- distionary::eval_survival(distribution, at = of) +
+    knot_mass(distribution, of) - retained
   d <- distionary::distribution(
     cdf = function(x) {
       cdf <- distionary::eval_cdf(distribution, at = x) / p_kept
       pmin(cdf, 1)
+    },
+    # The mirror of the left trim's survival: taken from the base survival
+    # rather than from one minus the CDF. `F(of) - F(x)` is a difference of
+    # two numbers a double holds as 1 once the knot sits far out in the right
+    # tail, while `S(x) - S(of)` keeps the sliver between them.
+    survival = function(x) {
+      res <- (distionary::eval_survival(distribution, at = x) -
+        discarded_above) / p_kept
+      res[x >= of] <- 0
+      pmin(pmax(res, 0), 1)
     },
     density = function(x) {
       pdf <- distionary::eval_density(distribution, at = x) / p_kept

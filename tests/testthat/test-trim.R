@@ -65,6 +65,26 @@ test_that("The left trim's survival keeps its precision in the far tail.", {
   expect_true(all(distionary::eval_survival(trimmed, at = at) > 0))
 })
 
+test_that("The right trim's survival comes from the base survival too.", {
+  # The mirror of the left trim: `S(x) - S(of)` holds the sliver between two
+  # numbers that `F(of) - F(x)` has already rounded away. The knot cannot go
+  # much further out than this before `p_kept` rounds to 1 and the trim
+  # returns the distribution untouched, which caps how wrong the derived
+  # form gets --- but it is wrong here, and this form is exact.
+  d <- distionary::dst_norm(0, 1)
+  of <- 8
+  trimmed <- trim_right(d, of)
+  at <- c(0, 4, 6, 7, 7.5, 7.9)
+  p_kept <- stats::pnorm(of)
+  expect_equal(
+    distionary::eval_survival(trimmed, at = at),
+    (stats::pnorm(at, lower.tail = FALSE) -
+      stats::pnorm(of, lower.tail = FALSE)) / p_kept
+  )
+  # Nothing is kept above the knot.
+  expect_equal(distionary::eval_survival(trimmed, at = c(of, of + 1)), c(0, 0))
+})
+
 test_that("The knot stays in the support when any of its mass is kept.", {
   d <- distionary::dst_pois(3)
   lower <- function(action) {
