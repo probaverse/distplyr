@@ -75,7 +75,7 @@ shift <- function(distribution, constant) {
     return(distribution)
   }
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------
@@ -118,6 +118,8 @@ shift <- function(distribution, constant) {
     return(shift(base_dist, constant + prev_const))
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_shift(support_in, constant)
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = x - constant)
@@ -137,7 +139,7 @@ shift <- function(distribution, constant) {
     realize = function(n) {
       distionary::realize(distribution, n = n) + constant
     },
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Shifted",
     .parameters = list(
       distribution = distribution,
@@ -152,9 +154,6 @@ shift <- function(distribution, constant) {
   }
   if (distionary:::is_intrinsic(distribution, "stdev")) {
     d[["stdev"]] <- distionary::stdev(distribution)
-  }
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- range(distribution) + constant
   }
   if (distionary:::is_intrinsic(distribution, "variance")) {
     d[["variance"]] <- distionary::variance(distribution)

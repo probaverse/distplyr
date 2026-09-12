@@ -1,4 +1,33 @@
+# distplyr 0.3.0
+
+Every verb is now built on distionary's support objects, so a transformed
+distribution says where its probability lives: `support()`, its atoms, and
+discrete or mixed moments all work on the result. Verbs no longer state a
+`range` or `.vtype`; both are read from the support. `invert()`, for one,
+derives the support of `1 / X` for a distribution spanning zero by mapping
+each side of it separately. Requires distionary 0.2.0.
+
+## New verbs
+
+- `trim_left()` and `trim_right()` condition a distribution on one side of a
+  point, with `knot_action` saying what becomes of the mass sitting exactly
+  on it: `"discard"`, `"keep"` or `"split"` it. See `?trim`.
+
+- `graft_left()` and `graft_right()` join a `body` to a `tail` at a point,
+  each side deciding with `knot_body_action` and `knot_tail_action` what to do
+  with the mass sitting on it. See `?graft`.
+
+## Bug fixes
+
+- `mix()`, `maximize()` and `minimize()` no longer treat different components
+  as the same one. Results may change for transformed distributions.
+
+- Verbs no longer discard a distribution that merely carries the name
+  `"Null"`. Null-ness is read with `is.na()`.
+
 # distplyr 0.2.0
+
+- Initial CRAN release.
 
 # distplyr 0.1.5
 

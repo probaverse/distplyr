@@ -106,30 +106,27 @@ maximize <- function(...,
   }
   dsts <- simplification$dsts
   draws <- simplification$draws
-  ## Variable type determination
-  vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (length(vars) == 1) {
-    v <- vars
-  } else if (identical(sort(vars), c("continuous", "discrete"))) {
-    v <- "mixed"
-  } else {
-    # Would need to dig more to know for sure.
-    v <- "unknown"
-  }
-  r <- lapply(dsts, range)
-  r <- Reduce(pmax, r)
   cdf <- function(x) {
     prob_lefts <- lapply(dsts, distionary::eval_cdf, at = x)
     contributions <- Map(`^`, prob_lefts, draws)
     Reduce(`*`, contributions)
   }
+  support_list <- input_supports(dsts)
+  support_out <- extreme_support(dsts, support_list, "max")
   d <- distionary::distribution(
     cdf = cdf,
     density = function(x) {
       # formula: cdf * (sum draws_j f_j / F_j)
       full_cdf <- cdf(x)
       cdfs <- lapply(dsts, distionary::eval_cdf, at = x)
-      pdfs <- lapply(dsts, distionary::eval_density, at = x)
+      # A discrete component contributes no absolutely-continuous density.
+      pdfs <- lapply(dsts, function(d) {
+        if (distionary::vtype(d) == "discrete") {
+          rep(0, length(x))
+        } else {
+          distionary::eval_density(d, at = x)
+        }
+      })
       divide_if_nonzero <- function(draws, pdf, cdf) {
         res <- draws * pdf / cdf
         res[pdf == 0] <- 0
@@ -139,8 +136,16 @@ maximize <- function(...,
       ratios_sum <- Reduce(`+`, ratios)
       ratios_sum * full_cdf
     },
-    range = r,
-    .vtype = v,
+    pmf = function(x) {
+      # Mass at an atom is the CDF jump: prod F_i^d_i - prod (F_i - p_i)^d_i.
+      cdfs <- lapply(dsts, distionary::eval_cdf, at = x)
+      pmfs <- lapply(dsts, distionary::eval_pmf, at = x)
+      upper <- Reduce(`*`, Map(`^`, cdfs, draws))
+      lefts <- Map(function(f, p) f - p, cdfs, pmfs)
+      lower <- Reduce(`*`, Map(`^`, lefts, draws))
+      upper - lower
+    },
+    .support = support_out,
     .name = "Maximum",
     .parameters = list(
       distributions = dsts,

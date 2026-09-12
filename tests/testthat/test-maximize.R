@@ -306,9 +306,14 @@ test_that("Maximize - Edge cases", {
     d2 <- tc$expected
     expect_equal(d1, d2)
 
-    # Test bypassing simplification with range hack
+    # Bypass the simplifications, which cull components on their range, by
+    # widening each support to the whole line. The atoms are kept, since the
+    # simplifications also ask where the mass is; only the reach changes.
     components_modified <- lapply(tc$components, function(d) {
-      d$range <- c(-Inf, Inf)
+      attr(d, "support") <- distionary::support_union(
+        distionary::support(d),
+        distionary::continuous(c(-Inf, Inf))
+      )
       d
     })
     d3 <- maximize(components_modified, draws = tc$draws)
@@ -335,9 +340,9 @@ test_that("Maximize - vtype", {
   expect_equal(vtype(maximize(dst_gamma(2, 3), dst_exp(3))), "continuous")
   expect_equal(vtype(maximize(dst_pois(3), dst_nbinom(3, 0.4))), "discrete")
   expect_equal(vtype(maximize(-dst_pois(3), dst_exp(1))), "continuous")
-  # Here's one that should be continuous but don't have the capability
-  # currently to know this.
+  # Structured supports make this knowable: the extreme is bounded on one
+  # side, trimming away the binomial atoms and leaving a continuous result.
   m <- mix(dst_binom(5, 0.5), dst_gp(10, 1))
   d <- maximize(m, dst_exp(1) + 6)
-  expect_equal(vtype(d), "unknown")
+  expect_equal(vtype(d), "continuous")
 })

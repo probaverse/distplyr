@@ -11,7 +11,7 @@
 exp_distribution <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------
@@ -24,7 +24,8 @@ exp_distribution <- function(distribution) {
   if (nm == "Finite") {
     p <- distionary::parameters(distribution)
     return(distionary::dst_empirical(
-      exp(p[["outcomes"]]), weights = p[["probs"]]
+      exp(p[["outcomes"]]),
+      weights = p[["probs"]]
     ))
   }
   if (nm == "Degenerate") {
@@ -37,6 +38,14 @@ exp_distribution <- function(distribution) {
     return(inner_dist)
   }
   ## END special simplifications -----------------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_transform(
+    support_in,
+    exp,
+    log,
+    domain = c(-Inf, Inf),
+    range = c(0, Inf)
+  )
   d <- distionary::distribution(
     cdf = function(x) {
       res <- rep(0, length(x))
@@ -46,8 +55,10 @@ exp_distribution <- function(distribution) {
     density = function(x) {
       res <- rep(0, length(x))
       res[x > 0] <- distionary::eval_density(
-        distribution, at = log(x[x > 0])
-      ) / x[x > 0]
+        distribution,
+        at = log(x[x > 0])
+      ) /
+        x[x > 0]
       res
     },
     pmf = function(x) {
@@ -61,8 +72,7 @@ exp_distribution <- function(distribution) {
     realize = function(n) {
       exp(distionary::realize(distribution, n = n))
     },
-    range = exp(range(distribution)),
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Exponentiated",
     .parameters = list(
       distribution = distribution
