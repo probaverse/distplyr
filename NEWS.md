@@ -13,9 +13,11 @@ each side of it separately. Requires distionary 0.2.0.
   point, with `knot_action` saying what becomes of the mass sitting exactly
   on it: `"discard"`, `"keep"` or `"split"` it. See `?trim`.
 
-- `graft_left()` and `graft_right()` join a `body` to a `tail` at a point,
-  each side deciding with `knot_body_action` and `knot_tail_action` what to do
-  with the mass sitting on it. See `?graft`.
+- `graft_left()` and `graft_right()` replace one end of a `body` with another
+  model of that end. Name the tail either as `tail_excess`, measured from the
+  knot and moved there, or as `tail_absolute`, on the body's own scale and
+  conditioned there; `knot_action` says what the body does with mass sitting
+  on the knot. See `?graft`.
 
 ## Bug fixes
 
