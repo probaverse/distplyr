@@ -20,3 +20,5 @@
 ^\.vscode$
 ^CODE_STANDARDS\.md$
 ^figure$
+^\.claude$
+^CRAN-SUBMISSION$
