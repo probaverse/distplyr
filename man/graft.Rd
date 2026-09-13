@@ -30,93 +30,80 @@ graft_left(
 
 \item{...}{Currently unused; must be empty.}
 
-\item{tail_excess}{Distribution of the tail measured from the knot, which
-is moved there. Name either this or \code{tail_absolute}, not both.}
+\item{tail_excess}{Distribution of the tail measured from the knot, moved
+from zero to \code{of}. Name either this or \code{tail_absolute}, not both.}
 
 \item{tail_absolute}{Distribution of the tail on the body's own scale,
-which stays where it is and is conditioned on falling beyond the knot.
-Name either this or \code{tail_excess}, not both.}
+left where it is and conditioned beyond the knot. Name either this or
+\code{tail_excess}, not both.}
 
-\item{knot}{Which side the probability sitting exactly on the knot
-belongs to: the \code{"body"} (the default), the \code{"tail"}, or \code{"split"}
-between them. See Details.}
+\item{knot}{Which side probability sitting exactly on the knot belongs
+to: the \code{"body"} (the default), the \code{"tail"}, or \code{"split"} between them.}
 }
 \value{
-A graft: a distribution made of the body below the knot and the
-tail above it (or the other way round, for \code{graft_left()}), which is a
-special type of mixture distribution.
+A graft: the body on one side of the knot and the tail on the
+other, which is a special type of mixture distribution.
 }
 \description{
 Replace one end of a distribution with a different model of that end.
-\code{graft_right()} keeps \code{body} below \code{of} and hands everything above it to
-the tail; \code{graft_left()} does the same at the lower end. The result is a
-\emph{graft}: both pieces are weighted so that the body's own probability of
-reaching past \code{of} is the share the tail receives.
+\code{graft_right()} keeps \code{body} below \code{of} --- the knot --- and hands
+everything above it to the tail; \code{graft_left()} does the same at the
+lower end. The tail's share of the total is the body's own probability of
+reaching past the knot.
 }
-\section{The scale the tail is on}{
-A tail model arrives on one of two scales, and nothing in the
-distribution itself says which, so exactly one of two arguments has to be
-named. Neither has a default: a graft has enough going on that the scale
-of the tail is worth saying out loud at every call site.
+\section{Two ways to hand over the tail}{
+Name exactly one of \code{tail_excess} and \code{tail_absolute}. Neither has a
+default, because nothing in a distribution says which scale it is on.
 \itemize{
-\item \code{tail_excess} is measured from the knot. A generalised Pareto fitted to
-the excesses over a threshold is the usual case: its zero \emph{is} the
-knot, and the tail is moved there. It may place no probability on the
-far side of zero --- none below it for \code{graft_right()}, none above it
-for \code{graft_left()}.
-\item \code{tail_absolute} is on the same scale as the body and stays where it is.
-It is conditioned on falling beyond the knot.
+\item \code{tail_excess} is measured from the knot: the distribution of \code{X - of},
+whose zero is the knot. It is \strong{moved from zero to the knot}, by
+adding \code{of} to it, so a generalised Pareto living on \verb{[0, Inf)} becomes
+a tail living on \verb{[of, Inf)}. All of its probability must lie on one
+side of zero: at or above for \code{graft_right()}, at or below for
+\code{graft_left()}.
+\item \code{tail_absolute} is on the body's scale already and stays where it is,
+conditioned on falling beyond the knot. Anything placed by hand goes
+here --- \code{multiply(ratio, of)}, for a model of \code{X / of}, say.
 }
 
-A tail the caller has already placed goes in \code{tail_absolute}, whatever
-put it there. A multiplicative model of the tail, say of \code{X / of}, is
-placed by \code{multiply(ratio, of)}, which lands it at the knot; conditioning
-it there then does nothing.
+The two meet in the middle: \code{tail_excess = e} gives the same graft as
+\code{tail_absolute = shift(e, of)}.
 
-\code{tail_excess} cannot catch every instance of the opposite mistake, a tail
-already on the body's scale that places no probability below zero --- a
-lognormal, or a generalised Pareto whose location is the threshold rather
-than zero. The second of those starts exactly at \code{of}, and is warned
-about; the rest cannot be told apart from a model of excesses that
-happens to start above zero, as an empirical one does.
+A tail that is already in place but happens to sit above zero cannot be
+told apart from a model of excesses, so \code{tail_excess} accepts it. If it
+starts exactly at \code{of}, the likeliest case, you get a warning.
 }
 
 \section{Where the knot goes}{
-The knot is one point, and \code{knot} names the side it belongs to:
-\code{"body"} (the default), \code{"tail"}, or \code{"split"} to give each side half of
-it, the mid-p convention. Naming one side is naming the other, so the
-knot's mass is counted once however it is set. Mass a side does not take
-is not destroyed; it passes into the other's share. Any of this matters
-only where there is mass exactly at \code{of}, which is nowhere in a
-continuous distribution.
+\code{knot} names the side that probability sitting exactly on the knot
+belongs to: \code{"body"} (the default), \code{"tail"}, or \code{"split"} for half each,
+the mid-p convention. Naming one side names the other, so the knot is
+counted once; what a side does not take passes into the other's share.
+None of this has any effect unless there is mass exactly at \code{of}, as
+there never is in a continuous distribution.
 
-Under the default the graft leaves the body alone up to and including the
-knot --- every probability there is the body's own, unscaled --- and the
-tail's share is exactly \code{prob_right(body, of, inclusive = FALSE)}, the
-probability of exceeding the knot. That is the exceedance probability
-peaks-over-threshold is written in terms of, where the excess \code{X - of} is
-conditioned on \code{X > of} strictly; the tail giving up the knot is the same
-convention, under which an excess of exactly zero does not arise. The two
-pieces are a partition: \verb{(-Inf, of]} and \verb{(of, Inf)}.
-
-\code{knot = "tail"} hands it over the other way. A \code{tail_excess} with an atom
-at zero then keeps that atom, an excess of zero being the event
-\code{X = of}.
+The default leaves the body alone up to and including the knot, and gives
+the tail \code{prob_right(body, of, inclusive = FALSE)}, the probability of
+exceeding it. That is the convention peaks-over-threshold is written in,
+where the excess \code{X - of} is conditioned on \code{X > of} strictly and an
+excess of exactly zero does not arise.
 }
 
 \examples{
 body <- distionary::dst_norm(0, 1)
 u <- distionary::eval_quantile(body, at = 0.9)
 
-# A model of the excesses over `u`, moved to the knot.
-excess <- distionary::dst_gp(1, 0.3)
-graft_right(body, of = u, tail_excess = excess)
+# Excesses over `u`, living on [0, Inf): moved to start at `u`.
+graft_right(body, of = u, tail_excess = distionary::dst_gp(1, 0.3))
 
-# A model on the body's own scale, conditioned above `u`.
+# The same graft, placed by hand instead.
+moved <- shift(distionary::dst_gp(1, 0.3), u)
+graft_right(body, of = u, tail_absolute = moved)
+
+# A model on the body's scale, conditioned above `u`.
 graft_right(body, of = u, tail_absolute = distionary::dst_norm(1, 3))
 }
 \seealso{
 \code{\link[=trim_left]{trim_left()}} and \code{\link[=trim_right]{trim_right()}}, which discard an end rather
-than replacing it, and whose own \code{knot} says whether the point being cut
-at is kept or discarded.
+than replacing it.
 }

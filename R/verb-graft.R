@@ -1,88 +1,75 @@
 #' Graft a tail onto a distribution
 #'
 #' Replace one end of a distribution with a different model of that end.
-#' `graft_right()` keeps `body` below `of` and hands everything above it to
-#' the tail; `graft_left()` does the same at the lower end. The result is a
-#' *graft*: both pieces are weighted so that the body's own probability of
-#' reaching past `of` is the share the tail receives.
+#' `graft_right()` keeps `body` below `of` --- the knot --- and hands
+#' everything above it to the tail; `graft_left()` does the same at the
+#' lower end. The tail's share of the total is the body's own probability of
+#' reaching past the knot.
 #'
 #' @details
-#' # The scale the tail is on
+#' # Two ways to hand over the tail
 #'
-#' A tail model arrives on one of two scales, and nothing in the
-#' distribution itself says which, so exactly one of two arguments has to be
-#' named. Neither has a default: a graft has enough going on that the scale
-#' of the tail is worth saying out loud at every call site.
+#' Name exactly one of `tail_excess` and `tail_absolute`. Neither has a
+#' default, because nothing in a distribution says which scale it is on.
 #'
-#' - `tail_excess` is measured from the knot. A generalised Pareto fitted to
-#'   the excesses over a threshold is the usual case: its zero *is* the
-#'   knot, and the tail is moved there. It may place no probability on the
-#'   far side of zero --- none below it for `graft_right()`, none above it
-#'   for `graft_left()`.
-#' - `tail_absolute` is on the same scale as the body and stays where it is.
-#'   It is conditioned on falling beyond the knot.
+#' - `tail_excess` is measured from the knot: the distribution of `X - of`,
+#'   whose zero is the knot. It is **moved from zero to the knot**, by
+#'   adding `of` to it, so a generalised Pareto living on `[0, Inf)` becomes
+#'   a tail living on `[of, Inf)`. All of its probability must lie on one
+#'   side of zero: at or above for `graft_right()`, at or below for
+#'   `graft_left()`.
+#' - `tail_absolute` is on the body's scale already and stays where it is,
+#'   conditioned on falling beyond the knot. Anything placed by hand goes
+#'   here --- `multiply(ratio, of)`, for a model of `X / of`, say.
 #'
-#' A tail the caller has already placed goes in `tail_absolute`, whatever
-#' put it there. A multiplicative model of the tail, say of `X / of`, is
-#' placed by `multiply(ratio, of)`, which lands it at the knot; conditioning
-#' it there then does nothing.
+#' The two meet in the middle: `tail_excess = e` gives the same graft as
+#' `tail_absolute = shift(e, of)`.
 #'
-#' `tail_excess` cannot catch every instance of the opposite mistake, a tail
-#' already on the body's scale that places no probability below zero --- a
-#' lognormal, or a generalised Pareto whose location is the threshold rather
-#' than zero. The second of those starts exactly at `of`, and is warned
-#' about; the rest cannot be told apart from a model of excesses that
-#' happens to start above zero, as an empirical one does.
+#' A tail that is already in place but happens to sit above zero cannot be
+#' told apart from a model of excesses, so `tail_excess` accepts it. If it
+#' starts exactly at `of`, the likeliest case, you get a warning.
 #'
 #' # Where the knot goes
 #'
-#' The knot is one point, and `knot` names the side it belongs to:
-#' `"body"` (the default), `"tail"`, or `"split"` to give each side half of
-#' it, the mid-p convention. Naming one side is naming the other, so the
-#' knot's mass is counted once however it is set. Mass a side does not take
-#' is not destroyed; it passes into the other's share. Any of this matters
-#' only where there is mass exactly at `of`, which is nowhere in a
-#' continuous distribution.
+#' `knot` names the side that probability sitting exactly on the knot
+#' belongs to: `"body"` (the default), `"tail"`, or `"split"` for half each,
+#' the mid-p convention. Naming one side names the other, so the knot is
+#' counted once; what a side does not take passes into the other's share.
+#' None of this has any effect unless there is mass exactly at `of`, as
+#' there never is in a continuous distribution.
 #'
-#' Under the default the graft leaves the body alone up to and including the
-#' knot --- every probability there is the body's own, unscaled --- and the
-#' tail's share is exactly `prob_right(body, of, inclusive = FALSE)`, the
-#' probability of exceeding the knot. That is the exceedance probability
-#' peaks-over-threshold is written in terms of, where the excess `X - of` is
-#' conditioned on `X > of` strictly; the tail giving up the knot is the same
-#' convention, under which an excess of exactly zero does not arise. The two
-#' pieces are a partition: `(-Inf, of]` and `(of, Inf)`.
-#'
-#' `knot = "tail"` hands it over the other way. A `tail_excess` with an atom
-#' at zero then keeps that atom, an excess of zero being the event
-#' `X = of`.
+#' The default leaves the body alone up to and including the knot, and gives
+#' the tail `prob_right(body, of, inclusive = FALSE)`, the probability of
+#' exceeding it. That is the convention peaks-over-threshold is written in,
+#' where the excess `X - of` is conditioned on `X > of` strictly and an
+#' excess of exactly zero does not arise.
 #'
 #' @param body Distribution supplying the part of the range that is kept.
 #' @param of Value on the real line where the tail is attached: the knot.
 #' @param ... Currently unused; must be empty.
-#' @param tail_excess Distribution of the tail measured from the knot, which
-#' is moved there. Name either this or `tail_absolute`, not both.
+#' @param tail_excess Distribution of the tail measured from the knot, moved
+#' from zero to `of`. Name either this or `tail_absolute`, not both.
 #' @param tail_absolute Distribution of the tail on the body's own scale,
-#' which stays where it is and is conditioned on falling beyond the knot.
-#' Name either this or `tail_excess`, not both.
-#' @param knot Which side the probability sitting exactly on the knot
-#' belongs to: the `"body"` (the default), the `"tail"`, or `"split"`
-#' between them. See Details.
-#' @return A graft: a distribution made of the body below the knot and the
-#' tail above it (or the other way round, for `graft_left()`), which is a
-#' special type of mixture distribution.
+#' left where it is and conditioned beyond the knot. Name either this or
+#' `tail_excess`, not both.
+#' @param knot Which side probability sitting exactly on the knot belongs
+#' to: the `"body"` (the default), the `"tail"`, or `"split"` between them.
+#' @return A graft: the body on one side of the knot and the tail on the
+#' other, which is a special type of mixture distribution.
 #' @seealso [trim_left()] and [trim_right()], which discard an end rather
-#' than replacing it, and whose own `knot` says whether the point being cut
-#' at is kept or discarded.
+#' than replacing it.
 #' @examples
 #' body <- distionary::dst_norm(0, 1)
 #' u <- distionary::eval_quantile(body, at = 0.9)
 #'
-#' # A model of the excesses over `u`, moved to the knot.
-#' excess <- distionary::dst_gp(1, 0.3)
-#' graft_right(body, of = u, tail_excess = excess)
+#' # Excesses over `u`, living on [0, Inf): moved to start at `u`.
+#' graft_right(body, of = u, tail_excess = distionary::dst_gp(1, 0.3))
 #'
-#' # A model on the body's own scale, conditioned above `u`.
+#' # The same graft, placed by hand instead.
+#' moved <- shift(distionary::dst_gp(1, 0.3), u)
+#' graft_right(body, of = u, tail_absolute = moved)
+#'
+#' # A model on the body's scale, conditioned above `u`.
 #' graft_right(body, of = u, tail_absolute = distionary::dst_norm(1, 3))
 #' @rdname graft
 #' @export
@@ -157,13 +144,12 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
   )
 }
 
-#' Put the tail on the body's scale, whichever way it was handed over.
+#' Put the tail on the body's scale.
 #'
-#' Exactly one of `excess` and `absolute` carries a distribution; the other
-#' is `NULL`, standing for the argument the caller left out. An excess model
-#' is moved so that its zero lands on the knot; one already on the body's
-#' scale is left where it is. Either way the caller gets a tail on the
-#' body's scale, which the verb then trims at the knot.
+#' One of `excess` and `absolute` carries a distribution and the other is
+#' `NULL`, standing for the argument the caller left out. An excess is moved
+#' from zero to the knot; a tail already on the body's scale is left alone.
+#' The verb trims whichever comes back.
 #' @noRd
 graft_tail <- function(excess, absolute, of, side) {
   if (!xor(is.null(excess), is.null(absolute))) {
@@ -183,13 +169,10 @@ graft_tail <- function(excess, absolute, of, side) {
   shift(excess, of)
 }
 
-#' The trim a side of the graft receives, given where the knot goes.
+#' The trim one side of the graft receives, given where the knot goes.
 #'
-#' `knot` names the side the knot's mass belongs to, which settles both
-#' trims at once: the side named keeps it and the other gives it up. Naming
-#' one side is naming the other, so there is no way to count the knot twice
-#' or lose it. `"split"` is the exception that proves it --- each side keeps
-#' half, the mid-p convention on each.
+#' The side `knot` names keeps it, the other gives it up, and `"split"`
+#' halves it on both. So the knot cannot be counted twice or lost.
 #' @noRd
 knot_trim <- function(knot, side) {
   if (knot == "split") {
@@ -200,11 +183,10 @@ knot_trim <- function(knot, side) {
 
 #' Refuse an excess model sitting on the wrong side of zero.
 #'
-#' An excess is a distance from the knot, so for `graft_right()` it is
-#' non-negative and for `graft_left()` non-positive. A model that starts
-#' exactly at `of` is the fingerprint of a fit whose location is the
-#' threshold rather than zero: moving it to the knot would start the tail at
-#' twice `of`, which is worth a word even though it could be a coincidence.
+#' An excess is a distance from the knot: non-negative for `graft_right()`,
+#' non-positive for `graft_left()`. One starting exactly at `of` is likely a
+#' fit whose location is the threshold rather than zero, which moving would
+#' start at twice `of` --- worth a word, though it could be coincidence.
 #' @noRd
 check_excess_side <- function(excess, of, side) {
   ends <- range(excess)
