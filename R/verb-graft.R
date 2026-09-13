@@ -36,25 +36,29 @@
 #'
 #' # Where the knot goes
 #'
-#' `knot_action` settles what the *body* does with probability sitting
-#' exactly on the knot: `"discard"` it (the default, stopping the body just
-#' short of the knot), `"keep"` it, or `"split"` it in half. Mass the body
-#' declines is not destroyed; it passes into the tail's share, which is why
-#' every setting still gives a distribution. It matters only where the body
-#' carries mass exactly at `of`, so for a continuous body it makes no
-#' difference at all.
+#' The knot belongs to the body. A tail is a model of what lies *beyond* the
+#' knot --- the exceedances, `X > of` --- while the body is a model of
+#' `X <= x` up to it, so probability sitting exactly on the knot is the
+#' body's to keep. Two things follow, and they matter only where there is
+#' mass exactly at `of`, which is nowhere in a continuous distribution.
 #'
-#' The tail keeps whatever mass it has at the knot, an atom being easier to
-#' remove than to put back. To drop it instead, trim the tail first and hand
-#' the result over as `tail_absolute`, asking for the knot to go with the
-#' trimmed side: `trim_left(tail, of = of, knot_action = "discard")`.
+#' - `knot_action` says what the body does with its own mass at the knot:
+#'   `"keep"` it (the default), `"discard"` it, or `"split"` it in half.
+#'   Mass the body declines is not destroyed; it passes into the tail's
+#'   share, to be spread over the values beyond the knot.
+#' - A `tail_absolute` is conditioned on falling *strictly* beyond the knot,
+#'   so whatever mass it has exactly there is dropped.
 #'
-#' Between them, the two defaults make the pieces a partition. The body
-#' stops just short of the knot and the tail starts on it, so the knot
-#' carries mass from one side only. Setting `knot_action = "keep"` for a
-#' discrete body and a discrete tail leaves both placing mass there, which
-#' is still a distribution --- the knot is simply the one point the two
-#' models share.
+#' Under the defaults the graft leaves the body alone up to and including
+#' the knot --- every probability there is the body's own, unscaled --- and
+#' the tail's share is exactly `prob_right(body, of, inclusive = FALSE)`,
+#' the probability of exceeding the knot. The two pieces are a partition:
+#' the body holds `(-Inf, of]` and the tail `(of, Inf)`.
+#'
+#' To put mass exactly on the knot from the tail's side, give the tail as a
+#' `tail_excess` carrying an atom at zero, an excess of zero being precisely
+#' the event `X = of`. A `tail_excess` is placed, not conditioned, so that
+#' atom lands on the knot and stays.
 #'
 #' @param body Distribution supplying the part of the range that is kept.
 #' @param of Value on the real line where the tail is attached: the knot.
@@ -62,10 +66,11 @@
 #' @param tail_excess Distribution of the tail measured from the knot, which
 #' is moved there. Name either this or `tail_absolute`, not both.
 #' @param tail_absolute Distribution of the tail on the body's own scale,
-#' which stays where it is and is conditioned beyond the knot. Name either
-#' this or `tail_excess`, not both.
-#' @param knot_action What the body does with its probability at the knot:
-#' `"discard"`, `"keep"`, or `"split"`. See Details.
+#' which stays where it is and is conditioned on falling strictly beyond the
+#' knot. Name either this or `tail_excess`, not both.
+#' @param knot_action What the body does with its own probability at the
+#' knot: `"keep"` it (the default), `"discard"` it, or `"split"` it. See
+#' Details.
 #' @return A graft: a distribution made of the body below the knot and the
 #' tail above it (or the other way round, for `graft_left()`), which is a
 #' special type of mixture distribution.
@@ -84,12 +89,12 @@
 #' @rdname graft
 #' @export
 graft_right <- function(body, of, ..., tail_excess, tail_absolute,
-                        knot_action = c("discard", "keep", "split")) {
+                        knot_action = c("keep", "discard", "split")) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
   knot_action <- rlang::arg_match0(
-    knot_action, c("discard", "keep", "split"), "knot_action"
+    knot_action, c("keep", "discard", "split"), "knot_action"
   )
   tail <- graft_tail(
     excess = if (missing(tail_excess)) NULL else tail_excess,
@@ -120,12 +125,12 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
 #' @rdname graft
 #' @export
 graft_left <- function(body, of, ..., tail_excess, tail_absolute,
-                       knot_action = c("discard", "keep", "split")) {
+                       knot_action = c("keep", "discard", "split")) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
   knot_action <- rlang::arg_match0(
-    knot_action, c("discard", "keep", "split"), "knot_action"
+    knot_action, c("keep", "discard", "split"), "knot_action"
   )
   tail <- graft_tail(
     excess = if (missing(tail_excess)) NULL else tail_excess,
@@ -156,7 +161,8 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
 #' is `NULL`, standing for the argument the caller left out. An excess model
 #' is moved so that its zero lands on the knot, which leaves nothing of it
 #' on the body's side of the knot; one already on the body's scale is
-#' conditioned on falling beyond the knot, keeping any mass it has there.
+#' conditioned on falling strictly beyond the knot, which drops any mass it
+#' has exactly there --- the knot is the body's.
 #' @noRd
 graft_tail <- function(excess, absolute, of, side) {
   if (!xor(is.null(excess), is.null(absolute))) {
@@ -170,8 +176,8 @@ graft_tail <- function(excess, absolute, of, side) {
   if (is.null(excess)) {
     checkmate::assert_class(absolute, "dst")
     return(switch(side,
-      right = trim_left(absolute, of = of, knot_action = "keep"),
-      left = trim_right(absolute, of = of, knot_action = "keep")
+      right = trim_left(absolute, of = of, knot_action = "discard"),
+      left = trim_right(absolute, of = of, knot_action = "discard")
     ))
   }
   checkmate::assert_class(excess, "dst")

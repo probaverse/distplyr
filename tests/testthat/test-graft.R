@@ -2,10 +2,10 @@ test_that("A graft is its two pieces, weighted by the body.", {
   body <- distionary::dst_pois(3)
   tail <- distionary::dst_pois(8)
   graft <- graft_right(body, of = 5, tail_absolute = tail)
-  # The body's own probability of reaching the knot is the tail's share.
-  share <- 1 - stats::ppois(4, 3)
-  body_piece <- trim_right(body, 5, knot_action = "discard")
-  tail_piece <- trim_left(tail, 5, knot_action = "keep")
+  # The body's own probability of exceeding the knot is the tail's share.
+  share <- 1 - stats::ppois(5, 3)
+  body_piece <- trim_right(body, 5, knot_action = "keep")
+  tail_piece <- trim_left(tail, 5, knot_action = "discard")
   at <- 0:30
   expect_equal(
     distionary::eval_cdf(graft, at = at),
@@ -58,7 +58,22 @@ test_that("Each `knot_action` gives a distribution.", {
   }
 })
 
-test_that("The body's action moves the knot's mass; the tail keeps its own.", {
+test_that("The graft leaves the body alone up to and including the knot.", {
+  # The knot belongs to the body: the tail models what exceeds it. So under
+  # the defaults every probability at or below the knot is the body's own,
+  # unscaled, and the tail's share is the probability of exceeding it.
+  body <- distionary::dst_pois(3)
+  tail <- distionary::dst_pois(8)
+  graft <- graft_right(body, of = 5, tail_absolute = tail)
+  expect_equal(distionary::eval_pmf(graft, at = 0:5), stats::dpois(0:5, 3))
+  expect_equal(distionary::eval_cdf(graft, at = 5), stats::ppois(5, 3))
+  expect_equal(
+    distionary::eval_survival(graft, at = 5),
+    stats::ppois(5, 3, lower.tail = FALSE)
+  )
+})
+
+test_that("A `tail_absolute` gives up its mass at the knot.", {
   body <- distionary::dst_pois(3)
   tail <- distionary::dst_pois(8)
   knot_of <- function(action) {
@@ -67,19 +82,24 @@ test_that("The body's action moves the knot's mass; the tail keeps its own.", {
       at = 5
     )
   }
-  # The tail keeps its atom at the knot whatever the body does, so there is
-  # always mass there, and the body's share of it only adds.
-  expect_true(knot_of("discard") > 0)
-  expect_true(knot_of("keep") > knot_of("split"))
-  expect_true(knot_of("split") > knot_of("discard"))
-  # Trimming the tail first is how its atom is dropped instead.
-  bare <- graft_right(
-    body,
-    of = 5,
-    tail_absolute = trim_left(tail, of = 5, knot_action = "discard"),
-    knot_action = "discard"
+  # Nothing of the tail's own atom at 5 survives, so the knot carries the
+  # body's share of its own mass and nothing else.
+  expect_equal(knot_of("keep"), stats::dpois(5, 3))
+  expect_equal(knot_of("split"), stats::dpois(5, 3) / 2)
+  expect_equal(knot_of("discard"), 0)
+})
+
+test_that("An excess atom at zero puts mass on the knot.", {
+  # An excess of zero is the event `X = of`, so this is how the tail's side
+  # places mass exactly there: as an excess, which is placed, not trimmed.
+  body <- distionary::dst_pois(3)
+  excess <- distionary::dst_finite(c(0, 1, 2), c(0.5, 0.3, 0.2))
+  graft <- graft_right(body, of = 5, tail_excess = excess)
+  share <- stats::ppois(5, 3, lower.tail = FALSE)
+  expect_equal(
+    distionary::eval_pmf(graft, at = 5),
+    stats::dpois(5, 3) + share * 0.5
   )
-  expect_equal(distionary::eval_pmf(bare, at = 5), 0)
 })
 
 test_that("`knot_action` does nothing for a continuous body.", {
@@ -128,11 +148,11 @@ test_that("`graft_left()` mirrors `graft_right()`.", {
   tail <- distionary::dst_pois(3)
   graft <- graft_left(body, of = 5, tail_absolute = tail)
   expect_equal(sum(distionary::eval_pmf(graft, at = 0:150)), 1)
-  # The body discards its atom at the knot by default, so that mass
-  # goes to the tail's share: P(body <= 5), not P(body < 5).
-  share <- stats::ppois(5, 8)
-  body_piece <- trim_left(body, 5, knot_action = "discard")
-  tail_piece <- trim_right(tail, 5, knot_action = "keep")
+  # The body keeps its atom at the knot by default, so the tail's share is
+  # the probability of falling short of it: P(body < 5), not P(body <= 5).
+  share <- stats::ppois(4, 8)
+  body_piece <- trim_left(body, 5, knot_action = "keep")
+  tail_piece <- trim_right(tail, 5, knot_action = "discard")
   at <- 0:30
   expect_equal(
     distionary::eval_cdf(graft, at = at),
