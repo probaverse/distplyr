@@ -5,9 +5,9 @@
 \alias{trim_right}
 \title{Trim (condition) a distribution}
 \usage{
-trim_left(distribution, of, ..., knot_action = c("keep", "discard", "split"))
+trim_left(distribution, of, ..., knot = c("keep", "discard", "split"))
 
-trim_right(distribution, of, ..., knot_action = c("keep", "discard", "split"))
+trim_right(distribution, of, ..., knot = c("keep", "discard", "split"))
 }
 \arguments{
 \item{distribution}{Distribution to trim.}
@@ -16,7 +16,7 @@ trim_right(distribution, of, ..., knot_action = c("keep", "discard", "split"))
 
 \item{...}{Currently unused; must be empty.}
 
-\item{knot_action}{What to do with the probability sitting exactly on
+\item{knot}{What to do with the probability sitting exactly on
 \code{of}: \code{"keep"} it (the default), \code{"discard"} it with the trimmed side,
 or \code{"split"} it evenly between the two sides. Only has an effect where
 \code{of} carries probability. See Details.}
@@ -32,8 +32,8 @@ probability below \code{of}, giving the distribution of the variable
 conditioned on landing at or above it; \code{trim_right()} discards the
 probability above \code{of}, conditioning on landing at or below.
 }
-\section{What \code{knot_action} does}{
-\code{of} is the knot: the point the trim cuts at. \code{knot_action} says what
+\section{What \code{knot} does}{
+\code{of} is the knot: the point the trim cuts at. \code{knot} says what
 becomes of the probability sitting exactly on it, and matters only when
 the knot carries mass of its own, as an atom does. Where there is no
 mass exactly at \code{of} --- anywhere in a continuous distribution --- all
@@ -76,8 +76,8 @@ distionary::enframe_cdf(d, at = -3:3)
 # the trim keeps it.
 d <- distionary::dst_pois(3)
 distionary::eval_pmf(trim_left(d, 5), at = 5)
-distionary::eval_pmf(trim_left(d, 5, knot_action = "discard"), at = 5)
-distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
+distionary::eval_pmf(trim_left(d, 5, knot = "discard"), at = 5)
+distionary::eval_pmf(trim_left(d, 5, knot = "split"), at = 5)
 }
 \seealso{
 \code{\link[=graft_left]{graft_left()}} and \code{\link[=graft_right]{graft_right()}}, which replace a tail

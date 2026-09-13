@@ -4,8 +4,8 @@ test_that("A graft is its two pieces, weighted by the body.", {
   graft <- graft_right(body, of = 5, tail_absolute = tail)
   # The body's own probability of exceeding the knot is the tail's share.
   share <- 1 - stats::ppois(5, 3)
-  body_piece <- trim_right(body, 5, knot_action = "keep")
-  tail_piece <- trim_left(tail, 5, knot_action = "discard")
+  body_piece <- trim_right(body, 5, knot = "keep")
+  tail_piece <- trim_left(tail, 5, knot = "discard")
   at <- 0:30
   expect_equal(
     distionary::eval_cdf(graft, at = at),
@@ -42,15 +42,15 @@ test_that("An excess tail keeps its distance from the knot.", {
   expect_true(distionary::eval_pmf(graft, at = 2.3) > 0)
 })
 
-test_that("Each `knot_action` gives a distribution.", {
+test_that("Each `knot` gives a distribution.", {
   body <- distionary::dst_pois(3)
   tail <- distionary::dst_pois(8)
-  for (action in c("discard", "keep", "split")) {
+  for (action in c("body", "tail", "split")) {
     graft <- graft_right(
       body,
       of = 5,
       tail_absolute = tail,
-      knot_action = action
+      knot = action
     )
     # Mass the body declines passes to the tail's share rather than
     # vanishing, so the total is 1 however the action is set.
@@ -73,42 +73,41 @@ test_that("The graft leaves the body alone up to and including the knot.", {
   )
 })
 
-test_that("The tail takes the opposite knot action to the body's.", {
+test_that("`knot` names the side the knot's mass belongs to.", {
   body <- distionary::dst_pois(3)
   tail <- distionary::dst_pois(8)
   knot_of <- function(action) {
     distionary::eval_pmf(
-      graft_right(body, of = 5, tail_absolute = tail, knot_action = action),
+      graft_right(body, of = 5, tail_absolute = tail, knot = action),
       at = 5
     )
   }
-  # Keeping, the knot is the body's own mass and none of the tail's.
-  expect_equal(knot_of("keep"), stats::dpois(5, 3))
-  # Discarding, the body gives the knot up and the tail keeps it: the
-  # knot is the tail's atom, scaled into the tail's share.
+  # To the body, the knot is its own mass and none of the tail's.
+  expect_equal(knot_of("body"), stats::dpois(5, 3))
+  # To the tail, the body gives it up: the knot is the tail's own atom,
+  # scaled into the tail's share.
   share <- stats::ppois(4, 3, lower.tail = FALSE)
   kept_by_tail <- stats::ppois(4, 8, lower.tail = FALSE)
-  expect_equal(knot_of("discard"), share * stats::dpois(5, 8) / kept_by_tail)
-  # Splitting, each side keeps half of its own, so the knot lands between
-  # the two --- counted once either way, never twice and never lost.
-  expect_true(knot_of("discard") < knot_of("split"))
-  expect_true(knot_of("split") < knot_of("keep"))
-  for (action in c("keep", "discard", "split")) {
+  expect_equal(knot_of("tail"), share * stats::dpois(5, 8) / kept_by_tail)
+  # Split, each side keeps half of its own, so the knot lands between the
+  # two --- counted once either way, never twice and never lost.
+  expect_true(knot_of("tail") < knot_of("split"))
+  expect_true(knot_of("split") < knot_of("body"))
+  for (action in c("body", "tail", "split")) {
     graft <- graft_right(
       body,
       of = 5,
       tail_absolute = tail,
-      knot_action = action
+      knot = action
     )
     expect_equal(sum(distionary::eval_pmf(graft, at = 0:250)), 1)
   }
 })
 
 test_that("An excess atom at zero follows the same rule.", {
-  # An excess of zero is the event `X = of`. The body keeps the knot by
+  # An excess of zero is the event `X = of`. The knot goes to the body by
   # default, so that atom is conditioned away --- the convention under which
-  # excesses are strictly positive. Asked to discard, the body hands the
-  # knot over and the atom stays.
+  # excesses are strictly positive. Sent to the tail, the atom stays.
   body <- distionary::dst_pois(3)
   excess <- distionary::dst_finite(c(0, 1, 2), c(0.5, 0.3, 0.2))
   kept <- graft_right(body, of = 5, tail_excess = excess)
@@ -117,24 +116,24 @@ test_that("An excess atom at zero follows the same rule.", {
     body,
     of = 5,
     tail_excess = excess,
-    knot_action = "discard"
+    knot = "tail"
   )
   share <- stats::ppois(4, 3, lower.tail = FALSE)
   expect_equal(distionary::eval_pmf(handed_over, at = 5), share * 0.5)
 })
 
-test_that("`knot_action` does nothing for a continuous body.", {
+test_that("`knot` does nothing for a continuous body.", {
   body <- distionary::dst_norm(0, 1)
   u <- distionary::eval_quantile(body, at = 0.9)
   answers <- vapply(
-    c("discard", "keep", "split"),
+    c("body", "tail", "split"),
     function(action) {
       distionary::eval_cdf(
         graft_right(
           body,
           of = u,
           tail_excess = distionary::dst_gp(1, 0.3),
-          knot_action = action
+          knot = action
         ),
         at = u + 1
       )
@@ -169,11 +168,11 @@ test_that("`graft_left()` mirrors `graft_right()`.", {
   tail <- distionary::dst_pois(3)
   graft <- graft_left(body, of = 5, tail_absolute = tail)
   expect_equal(sum(distionary::eval_pmf(graft, at = 0:150)), 1)
-  # The body keeps its atom at the knot by default, so the tail's share is
-  # the probability of falling short of it: P(body < 5), not P(body <= 5).
+  # The knot goes to the body by default, so the tail's share is the
+  # probability of falling short of it: P(body < 5), not P(body <= 5).
   share <- stats::ppois(4, 8)
-  body_piece <- trim_left(body, 5, knot_action = "keep")
-  tail_piece <- trim_right(tail, 5, knot_action = "discard")
+  body_piece <- trim_left(body, 5, knot = "keep")
+  tail_piece <- trim_right(tail, 5, knot = "discard")
   at <- 0:30
   expect_equal(
     distionary::eval_cdf(graft, at = at),
@@ -229,13 +228,13 @@ test_that("An excess tail already sitting at the knot is warned about.", {
   )
 })
 
-test_that("An unknown knot action is refused.", {
+test_that("An unknown `knot` is refused.", {
   body <- distionary::dst_norm(0, 1)
   excess <- distionary::dst_gp(1, 0.3)
   expect_error(
-    graft_right(body, of = 2, tail_excess = excess, knot_action = "halve")
+    graft_right(body, of = 2, tail_excess = excess, knot = "halve")
   )
   expect_error(
-    graft_right(body, of = 2, tail_excess = excess, knot_action = TRUE)
+    graft_right(body, of = 2, tail_excess = excess, knot = TRUE)
   )
 })

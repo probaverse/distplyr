@@ -176,14 +176,14 @@ test_that("Trimming everything away gives a Null distribution.", {
   # the default, would leave the atom at 0 behind and so a distribution.
   expect_equal(
     distionary::pretty_name(
-      trim_right(distionary::dst_pois(3), 0, knot_action = "discard")
+      trim_right(distionary::dst_pois(3), 0, knot = "discard")
     ),
     "Null"
   )
   # Contrast: a trim that leaves something behind is not Null.
   expect_equal(
     distionary::pretty_name(
-      trim_left(distionary::dst_pois(3), 0, knot_action = "discard")
+      trim_left(distionary::dst_pois(3), 0, knot = "discard")
     ),
     "Left-Trimmed"
   )

@@ -13,9 +13,9 @@ knot_mass <- function(distribution, of) {
 #' The three actions differ only in this number, which is why they share a
 #' code path: "keep" retains all of it, "discard" none, "split" half.
 #' @noRd
-knot_retained <- function(distribution, of, knot_action) {
+knot_retained <- function(distribution, of, knot) {
   m <- knot_mass(distribution, of)
-  switch(knot_action, keep = m, discard = 0, split = m / 2)
+  switch(knot, keep = m, discard = 0, split = m / 2)
 }
 
 #' Trim (condition) a distribution
@@ -27,9 +27,9 @@ knot_retained <- function(distribution, of, knot_action) {
 #' probability above `of`, conditioning on landing at or below.
 #'
 #' @details
-#' # What `knot_action` does
+#' # What `knot` does
 #'
-#' `of` is the knot: the point the trim cuts at. `knot_action` says what
+#' `of` is the knot: the point the trim cuts at. `knot` says what
 #' becomes of the probability sitting exactly on it, and matters only when
 #' the knot carries mass of its own, as an atom does. Where there is no
 #' mass exactly at `of` --- anywhere in a continuous distribution --- all
@@ -62,7 +62,7 @@ knot_retained <- function(distribution, of, knot_action) {
 #'
 #' @param distribution Distribution to trim.
 #' @param of Value on the real line defining where to trim (single numeric).
-#' @param knot_action What to do with the probability sitting exactly on
+#' @param knot What to do with the probability sitting exactly on
 #' `of`: `"keep"` it (the default), `"discard"` it with the trimmed side,
 #' or `"split"` it evenly between the two sides. Only has an effect where
 #' `of` carries probability. See Details.
@@ -81,17 +81,17 @@ knot_retained <- function(distribution, of, knot_action) {
 #' # the trim keeps it.
 #' d <- distionary::dst_pois(3)
 #' distionary::eval_pmf(trim_left(d, 5), at = 5)
-#' distionary::eval_pmf(trim_left(d, 5, knot_action = "discard"), at = 5)
-#' distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, knot = "discard"), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, knot = "split"), at = 5)
 #' @rdname trim
 #' @export
 trim_left <- function(distribution, of, ...,
-                      knot_action = c("keep", "discard", "split")) {
+                      knot = c("keep", "discard", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
-  knot_action <- rlang::arg_match0(
-    knot_action, c("keep", "discard", "split"), "knot_action"
+  knot <- rlang::arg_match0(
+    knot, c("keep", "discard", "split"), "knot"
   )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
@@ -107,7 +107,7 @@ trim_left <- function(distribution, of, ...,
       components,
       function(d) {
         distionary::prob_right(d, of = of, inclusive = FALSE) +
-          knot_retained(d, of, knot_action)
+          knot_retained(d, of, knot)
       },
       FUN.VALUE = numeric(1L)
     )
@@ -119,7 +119,7 @@ trim_left <- function(distribution, of, ...,
     # would null the whole mixture; drop dead components instead.
     keep <- new_mix_weights > 0
     trimmed_components <- lapply(components[keep], function(d) {
-      suppressWarnings(trim_left(d, of = of, knot_action = knot_action))
+      suppressWarnings(trim_left(d, of = of, knot = knot))
     })
     return(do.call(
       mix,
@@ -130,7 +130,7 @@ trim_left <- function(distribution, of, ...,
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
-    share <- switch(knot_action, keep = 1, discard = 0, split = 0.5)
+    share <- switch(knot, keep = 1, discard = 0, split = 0.5)
     probs[outs == of] <- probs[outs == of] * share
     keep <- outs >= of & probs > 0
     probs <- probs[keep]
@@ -140,7 +140,7 @@ trim_left <- function(distribution, of, ...,
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  retained <- knot_retained(distribution, of, knot_action)
+  retained <- knot_retained(distribution, of, knot)
   p_kept <- distionary::prob_right(distribution, of = of, inclusive = FALSE) +
     retained
   if (p_kept == 1) {
@@ -163,7 +163,7 @@ trim_left <- function(distribution, of, ...,
     support_in,
     from = of,
     to = Inf,
-    include_from = retained > 0 || knot_action == "keep"
+    include_from = retained > 0 || knot == "keep"
   )
   if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
@@ -194,7 +194,7 @@ trim_left <- function(distribution, of, ...,
     density = function(x) {
       pdf <- distionary::eval_density(distribution, at = x) / p_kept
       pdf[x < of] <- 0
-      if (knot_action == "discard") {
+      if (knot == "discard") {
         pdf[x == of] <- 0
       }
       pdf
@@ -226,7 +226,7 @@ trim_left <- function(distribution, of, ...,
     .parameters = list(
       distribution = distribution,
       of = of,
-      knot_action = knot_action
+      knot = knot
     )
   )
   distionary:::new_distribution(d, class = "trim_left")
@@ -235,12 +235,12 @@ trim_left <- function(distribution, of, ...,
 #' @rdname trim
 #' @export
 trim_right <- function(distribution, of, ...,
-                       knot_action = c("keep", "discard", "split")) {
+                       knot = c("keep", "discard", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
-  knot_action <- rlang::arg_match0(
-    knot_action, c("keep", "discard", "split"), "knot_action"
+  knot <- rlang::arg_match0(
+    knot, c("keep", "discard", "split"), "knot"
   )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
@@ -256,7 +256,7 @@ trim_right <- function(distribution, of, ...,
       components,
       function(d) {
         distionary::prob_left(d, of = of, inclusive = FALSE) +
-          knot_retained(d, of, knot_action)
+          knot_retained(d, of, knot)
       },
       FUN.VALUE = numeric(1L)
     )
@@ -268,7 +268,7 @@ trim_right <- function(distribution, of, ...,
     # would null the whole mixture; drop dead components instead.
     keep <- new_mix_weights > 0
     trimmed_components <- lapply(components[keep], function(d) {
-      suppressWarnings(trim_right(d, of = of, knot_action = knot_action))
+      suppressWarnings(trim_right(d, of = of, knot = knot))
     })
     return(do.call(
       mix,
@@ -279,7 +279,7 @@ trim_right <- function(distribution, of, ...,
     parms <- distionary::parameters(distribution)
     outs <- parms[["outcomes"]]
     probs <- parms[["probs"]]
-    share <- switch(knot_action, keep = 1, discard = 0, split = 0.5)
+    share <- switch(knot, keep = 1, discard = 0, split = 0.5)
     probs[outs == of] <- probs[outs == of] * share
     keep <- outs <= of & probs > 0
     probs <- probs[keep]
@@ -289,7 +289,7 @@ trim_right <- function(distribution, of, ...,
     }
     return(distionary::dst_empirical(outs, weights = probs))
   }
-  retained <- knot_retained(distribution, of, knot_action)
+  retained <- knot_retained(distribution, of, knot)
   p_kept <- distionary::prob_left(distribution, of = of, inclusive = FALSE) +
     retained
   if (p_kept == 1) {
@@ -312,7 +312,7 @@ trim_right <- function(distribution, of, ...,
     support_in,
     from = -Inf,
     to = of,
-    include_to = retained > 0 || knot_action == "keep"
+    include_to = retained > 0 || knot == "keep"
   )
   if (distionary::is_empty_support(support_out)) {
     return(distionary::dst_null())
@@ -341,7 +341,7 @@ trim_right <- function(distribution, of, ...,
     density = function(x) {
       pdf <- distionary::eval_density(distribution, at = x) / p_kept
       pdf[x > of] <- 0
-      if (knot_action == "discard") {
+      if (knot == "discard") {
         pdf[x == of] <- 0
       }
       pdf
@@ -364,7 +364,7 @@ trim_right <- function(distribution, of, ...,
     .parameters = list(
       distribution = distribution,
       of = of,
-      knot_action = knot_action
+      knot = knot
     )
   )
   distionary:::new_distribution(d, class = "trim_right")

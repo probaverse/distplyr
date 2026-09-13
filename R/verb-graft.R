@@ -36,34 +36,26 @@
 #'
 #' # Where the knot goes
 #'
-#' The knot is one point, and it belongs to one side. `knot_action` says
-#' what the *body* does with its probability sitting exactly there ---
-#' `"keep"` it (the default), `"discard"` it, or `"split"` it in half ---
-#' and the tail takes the opposite action, so that the knot is neither
-#' counted twice nor lost:
-#'
-#' | `knot_action` | the body | the tail |
-#' | --- | --- | --- |
-#' | `"keep"` | keeps the knot | gives it up |
-#' | `"discard"` | gives it up | keeps the knot |
-#' | `"split"` | keeps half | keeps half |
-#'
-#' Splitting is its own opposite: both sides take half, the mid-p convention
-#' on each. Any of this matters only where there is mass exactly at `of`,
-#' which is nowhere in a continuous distribution.
+#' The knot is one point, and `knot` names the side it belongs to:
+#' `"body"` (the default), `"tail"`, or `"split"` to give each side half of
+#' it, the mid-p convention. Naming one side is naming the other, so the
+#' knot's mass is counted once however it is set. Mass a side does not take
+#' is not destroyed; it passes into the other's share. Any of this matters
+#' only where there is mass exactly at `of`, which is nowhere in a
+#' continuous distribution.
 #'
 #' Under the default the graft leaves the body alone up to and including the
 #' knot --- every probability there is the body's own, unscaled --- and the
 #' tail's share is exactly `prob_right(body, of, inclusive = FALSE)`, the
 #' probability of exceeding the knot. That is the exceedance probability
 #' peaks-over-threshold is written in terms of, where the excess `X - of` is
-#' conditioned on `X > of` strictly; the tail being trimmed of the knot is
-#' the same convention, under which an excess of exactly zero does not
-#' arise. The two pieces are a partition: `(-Inf, of]` and `(of, Inf)`.
+#' conditioned on `X > of` strictly; the tail giving up the knot is the same
+#' convention, under which an excess of exactly zero does not arise. The two
+#' pieces are a partition: `(-Inf, of]` and `(of, Inf)`.
 #'
-#' To hand the knot to the tail instead, ask the body to `"discard"` it.
-#' A `tail_excess` with an atom at zero then keeps that atom, an excess of
-#' zero being the event `X = of`.
+#' `knot = "tail"` hands it over the other way. A `tail_excess` with an atom
+#' at zero then keeps that atom, an excess of zero being the event
+#' `X = of`.
 #'
 #' @param body Distribution supplying the part of the range that is kept.
 #' @param of Value on the real line where the tail is attached: the knot.
@@ -73,14 +65,15 @@
 #' @param tail_absolute Distribution of the tail on the body's own scale,
 #' which stays where it is and is conditioned on falling beyond the knot.
 #' Name either this or `tail_excess`, not both.
-#' @param knot_action What the body does with its own probability at the
-#' knot: `"keep"` it (the default), `"discard"` it, or `"split"` it. The
-#' tail takes the opposite action, so the knot is counted once. See Details.
+#' @param knot Which side the probability sitting exactly on the knot
+#' belongs to: the `"body"` (the default), the `"tail"`, or `"split"`
+#' between them. See Details.
 #' @return A graft: a distribution made of the body below the knot and the
 #' tail above it (or the other way round, for `graft_left()`), which is a
 #' special type of mixture distribution.
 #' @seealso [trim_left()] and [trim_right()], which discard an end rather
-#' than replacing it.
+#' than replacing it, and whose own `knot` says whether the point being cut
+#' at is kept or discarded.
 #' @examples
 #' body <- distionary::dst_norm(0, 1)
 #' u <- distionary::eval_quantile(body, at = 0.9)
@@ -94,13 +87,11 @@
 #' @rdname graft
 #' @export
 graft_right <- function(body, of, ..., tail_excess, tail_absolute,
-                        knot_action = c("keep", "discard", "split")) {
+                        knot = c("body", "tail", "split")) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
-  knot_action <- rlang::arg_match0(
-    knot_action, c("keep", "discard", "split"), "knot_action"
-  )
+  knot <- rlang::arg_match0(knot, c("body", "tail", "split"), "knot")
   tail <- trim_left(
     graft_tail(
       excess = if (missing(tail_excess)) NULL else tail_excess,
@@ -109,20 +100,20 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
       side = "right"
     ),
     of = of,
-    knot_action = knot_opposite(knot_action)
+    knot = knot_trim(knot, "tail")
   )
   # Whatever of the knot the body does not retain belongs to the tail's
-  # share, which is what keeps the two weights summing to 1 however
-  # `knot_action` is set.
+  # share, which is what keeps the two weights summing to 1 wherever the
+  # knot is sent.
   p_connect <- distionary::prob_right(body, of = of, inclusive = FALSE) +
-    knot_mass(body, of) - knot_retained(body, of, knot_action)
+    knot_mass(body, of) - knot_retained(body, of, knot_trim(knot, "body"))
   if (p_connect == 0) {
     return(body)
   }
   if (p_connect == 1) {
     return(tail)
   }
-  body_trimmed <- trim_right(body, of = of, knot_action = knot_action)
+  body_trimmed <- trim_right(body, of = of, knot = knot_trim(knot, "body"))
   attach_graft_ends(
     body_trimmed,
     tail,
@@ -134,13 +125,11 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
 #' @rdname graft
 #' @export
 graft_left <- function(body, of, ..., tail_excess, tail_absolute,
-                       knot_action = c("keep", "discard", "split")) {
+                       knot = c("body", "tail", "split")) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
-  knot_action <- rlang::arg_match0(
-    knot_action, c("keep", "discard", "split"), "knot_action"
-  )
+  knot <- rlang::arg_match0(knot, c("body", "tail", "split"), "knot")
   tail <- trim_right(
     graft_tail(
       excess = if (missing(tail_excess)) NULL else tail_excess,
@@ -149,17 +138,17 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
       side = "left"
     ),
     of = of,
-    knot_action = knot_opposite(knot_action)
+    knot = knot_trim(knot, "tail")
   )
   p_connect <- distionary::prob_left(body, of = of, inclusive = FALSE) +
-    knot_mass(body, of) - knot_retained(body, of, knot_action)
+    knot_mass(body, of) - knot_retained(body, of, knot_trim(knot, "body"))
   if (p_connect == 0) {
     return(body)
   }
   if (p_connect == 1) {
     return(tail)
   }
-  body_trimmed <- trim_left(body, of = of, knot_action = knot_action)
+  body_trimmed <- trim_left(body, of = of, knot = knot_trim(knot, "body"))
   attach_graft_ends(
     tail,
     body_trimmed,
@@ -194,15 +183,19 @@ graft_tail <- function(excess, absolute, of, side) {
   shift(excess, of)
 }
 
-#' The knot action the tail takes, given the body's.
+#' The trim a side of the graft receives, given where the knot goes.
 #'
-#' The knot is one point and belongs to one side of the graft, so the two
-#' sides take opposite actions: what the body keeps the tail gives up, and
-#' what the body gives up the tail keeps. Splitting is its own opposite ---
-#' both sides take half, the mid-p convention on each.
+#' `knot` names the side the knot's mass belongs to, which settles both
+#' trims at once: the side named keeps it and the other gives it up. Naming
+#' one side is naming the other, so there is no way to count the knot twice
+#' or lose it. `"split"` is the exception that proves it --- each side keeps
+#' half, the mid-p convention on each.
 #' @noRd
-knot_opposite <- function(knot_action) {
-  switch(knot_action, keep = "discard", discard = "keep", split = "split")
+knot_trim <- function(knot, side) {
+  if (knot == "split") {
+    return("split")
+  }
+  if (knot == side) "keep" else "discard"
 }
 
 #' Refuse an excess model sitting on the wrong side of zero.

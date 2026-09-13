@@ -11,7 +11,7 @@ graft_right(
   ...,
   tail_excess,
   tail_absolute,
-  knot_action = c("keep", "discard", "split")
+  knot = c("body", "tail", "split")
 )
 
 graft_left(
@@ -20,7 +20,7 @@ graft_left(
   ...,
   tail_excess,
   tail_absolute,
-  knot_action = c("keep", "discard", "split")
+  knot = c("body", "tail", "split")
 )
 }
 \arguments{
@@ -37,9 +37,9 @@ is moved there. Name either this or \code{tail_absolute}, not both.}
 which stays where it is and is conditioned on falling beyond the knot.
 Name either this or \code{tail_excess}, not both.}
 
-\item{knot_action}{What the body does with its own probability at the
-knot: \code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it. The
-tail takes the opposite action, so the knot is counted once. See Details.}
+\item{knot}{Which side the probability sitting exactly on the knot
+belongs to: the \code{"body"} (the default), the \code{"tail"}, or \code{"split"}
+between them. See Details.}
 }
 \value{
 A graft: a distribution made of the body below the knot and the
@@ -82,34 +82,26 @@ happens to start above zero, as an empirical one does.
 }
 
 \section{Where the knot goes}{
-The knot is one point, and it belongs to one side. \code{knot_action} says
-what the \emph{body} does with its probability sitting exactly there ---
-\code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it in half ---
-and the tail takes the opposite action, so that the knot is neither
-counted twice nor lost:\tabular{lll}{
-   \code{knot_action} \tab the body \tab the tail \cr
-   \code{"keep"} \tab keeps the knot \tab gives it up \cr
-   \code{"discard"} \tab gives it up \tab keeps the knot \cr
-   \code{"split"} \tab keeps half \tab keeps half \cr
-}
-
-
-Splitting is its own opposite: both sides take half, the mid-p convention
-on each. Any of this matters only where there is mass exactly at \code{of},
-which is nowhere in a continuous distribution.
+The knot is one point, and \code{knot} names the side it belongs to:
+\code{"body"} (the default), \code{"tail"}, or \code{"split"} to give each side half of
+it, the mid-p convention. Naming one side is naming the other, so the
+knot's mass is counted once however it is set. Mass a side does not take
+is not destroyed; it passes into the other's share. Any of this matters
+only where there is mass exactly at \code{of}, which is nowhere in a
+continuous distribution.
 
 Under the default the graft leaves the body alone up to and including the
 knot --- every probability there is the body's own, unscaled --- and the
 tail's share is exactly \code{prob_right(body, of, inclusive = FALSE)}, the
 probability of exceeding the knot. That is the exceedance probability
 peaks-over-threshold is written in terms of, where the excess \code{X - of} is
-conditioned on \code{X > of} strictly; the tail being trimmed of the knot is
-the same convention, under which an excess of exactly zero does not
-arise. The two pieces are a partition: \verb{(-Inf, of]} and \verb{(of, Inf)}.
+conditioned on \code{X > of} strictly; the tail giving up the knot is the same
+convention, under which an excess of exactly zero does not arise. The two
+pieces are a partition: \verb{(-Inf, of]} and \verb{(of, Inf)}.
 
-To hand the knot to the tail instead, ask the body to \code{"discard"} it.
-A \code{tail_excess} with an atom at zero then keeps that atom, an excess of
-zero being the event \code{X = of}.
+\code{knot = "tail"} hands it over the other way. A \code{tail_excess} with an atom
+at zero then keeps that atom, an excess of zero being the event
+\code{X = of}.
 }
 
 \examples{
@@ -125,5 +117,6 @@ graft_right(body, of = u, tail_absolute = distionary::dst_norm(1, 3))
 }
 \seealso{
 \code{\link[=trim_left]{trim_left()}} and \code{\link[=trim_right]{trim_right()}}, which discard an end rather
-than replacing it.
+than replacing it, and whose own \code{knot} says whether the point being cut
+at is kept or discarded.
 }

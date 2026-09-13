@@ -10,17 +10,16 @@ each side of it separately. Requires distionary 0.2.0.
 ## New verbs
 
 - `trim_left()` and `trim_right()` condition a distribution on one side of a
-  point, with `knot_action` saying what becomes of the mass sitting exactly
-  on it: `"keep"` it (the default, since a point is not to one side of
-  itself), `"discard"` it with the trimmed side, or `"split"` it. See
-  `?trim`.
+  point, with `knot` saying what becomes of the mass sitting exactly on it:
+  `"keep"` it (the default, since a point is not to one side of itself),
+  `"discard"` it with the trimmed side, or `"split"` it. See `?trim`.
 
 - `graft_left()` and `graft_right()` replace one end of a `body` with another
   model of that end. Name the tail either as `tail_excess`, measured from the
   knot and moved there, or as `tail_absolute`, on the body's own scale and
-  conditioned beyond the knot. `knot_action` says what the body does with
-  mass sitting exactly on the knot, and the tail takes the opposite action,
-  so the knot is counted once. See `?graft`.
+  conditioned beyond the knot. `knot` names the side that mass sitting
+  exactly on the knot belongs to --- the `"body"` (the default), the
+  `"tail"`, or `"split"` between them. See `?graft`.
 
 ## Bug fixes
 
