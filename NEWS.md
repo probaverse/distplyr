@@ -18,8 +18,9 @@ each side of it separately. Requires distionary 0.2.0.
 - `graft_left()` and `graft_right()` replace one end of a `body` with another
   model of that end. Name the tail either as `tail_excess`, measured from the
   knot and moved there, or as `tail_absolute`, on the body's own scale and
-  conditioned beyond the knot. The knot itself belongs to the body, whose
-  `knot_action` says what becomes of its mass there. See `?graft`.
+  conditioned beyond the knot. `knot_action` says what the body does with
+  mass sitting exactly on the knot, and the tail takes the opposite action,
+  so the knot is counted once. See `?graft`.
 
 ## Bug fixes
 

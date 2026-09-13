@@ -73,7 +73,7 @@ test_that("The graft leaves the body alone up to and including the knot.", {
   )
 })
 
-test_that("A `tail_absolute` gives up its mass at the knot.", {
+test_that("The tail takes the opposite knot action to the body's.", {
   body <- distionary::dst_pois(3)
   tail <- distionary::dst_pois(8)
   knot_of <- function(action) {
@@ -82,24 +82,45 @@ test_that("A `tail_absolute` gives up its mass at the knot.", {
       at = 5
     )
   }
-  # Nothing of the tail's own atom at 5 survives, so the knot carries the
-  # body's share of its own mass and nothing else.
+  # Keeping, the knot is the body's own mass and none of the tail's.
   expect_equal(knot_of("keep"), stats::dpois(5, 3))
-  expect_equal(knot_of("split"), stats::dpois(5, 3) / 2)
-  expect_equal(knot_of("discard"), 0)
+  # Discarding, the body gives the knot up and the tail keeps it: the
+  # knot is the tail's atom, scaled into the tail's share.
+  share <- stats::ppois(4, 3, lower.tail = FALSE)
+  kept_by_tail <- stats::ppois(4, 8, lower.tail = FALSE)
+  expect_equal(knot_of("discard"), share * stats::dpois(5, 8) / kept_by_tail)
+  # Splitting, each side keeps half of its own, so the knot lands between
+  # the two --- counted once either way, never twice and never lost.
+  expect_true(knot_of("discard") < knot_of("split"))
+  expect_true(knot_of("split") < knot_of("keep"))
+  for (action in c("keep", "discard", "split")) {
+    graft <- graft_right(
+      body,
+      of = 5,
+      tail_absolute = tail,
+      knot_action = action
+    )
+    expect_equal(sum(distionary::eval_pmf(graft, at = 0:250)), 1)
+  }
 })
 
-test_that("An excess atom at zero puts mass on the knot.", {
-  # An excess of zero is the event `X = of`, so this is how the tail's side
-  # places mass exactly there: as an excess, which is placed, not trimmed.
+test_that("An excess atom at zero follows the same rule.", {
+  # An excess of zero is the event `X = of`. The body keeps the knot by
+  # default, so that atom is conditioned away --- the convention under which
+  # excesses are strictly positive. Asked to discard, the body hands the
+  # knot over and the atom stays.
   body <- distionary::dst_pois(3)
   excess <- distionary::dst_finite(c(0, 1, 2), c(0.5, 0.3, 0.2))
-  graft <- graft_right(body, of = 5, tail_excess = excess)
-  share <- stats::ppois(5, 3, lower.tail = FALSE)
-  expect_equal(
-    distionary::eval_pmf(graft, at = 5),
-    stats::dpois(5, 3) + share * 0.5
+  kept <- graft_right(body, of = 5, tail_excess = excess)
+  expect_equal(distionary::eval_pmf(kept, at = 5), stats::dpois(5, 3))
+  handed_over <- graft_right(
+    body,
+    of = 5,
+    tail_excess = excess,
+    knot_action = "discard"
   )
+  share <- stats::ppois(4, 3, lower.tail = FALSE)
+  expect_equal(distionary::eval_pmf(handed_over, at = 5), share * 0.5)
 })
 
 test_that("`knot_action` does nothing for a continuous body.", {

@@ -36,29 +36,34 @@
 #'
 #' # Where the knot goes
 #'
-#' The knot belongs to the body. A tail is a model of what lies *beyond* the
-#' knot --- the exceedances, `X > of` --- while the body is a model of
-#' `X <= x` up to it, so probability sitting exactly on the knot is the
-#' body's to keep. Two things follow, and they matter only where there is
-#' mass exactly at `of`, which is nowhere in a continuous distribution.
+#' The knot is one point, and it belongs to one side. `knot_action` says
+#' what the *body* does with its probability sitting exactly there ---
+#' `"keep"` it (the default), `"discard"` it, or `"split"` it in half ---
+#' and the tail takes the opposite action, so that the knot is neither
+#' counted twice nor lost:
 #'
-#' - `knot_action` says what the body does with its own mass at the knot:
-#'   `"keep"` it (the default), `"discard"` it, or `"split"` it in half.
-#'   Mass the body declines is not destroyed; it passes into the tail's
-#'   share, to be spread over the values beyond the knot.
-#' - A `tail_absolute` is conditioned on falling *strictly* beyond the knot,
-#'   so whatever mass it has exactly there is dropped.
+#' | `knot_action` | the body | the tail |
+#' | --- | --- | --- |
+#' | `"keep"` | keeps the knot | gives it up |
+#' | `"discard"` | gives it up | keeps the knot |
+#' | `"split"` | keeps half | keeps half |
 #'
-#' Under the defaults the graft leaves the body alone up to and including
-#' the knot --- every probability there is the body's own, unscaled --- and
-#' the tail's share is exactly `prob_right(body, of, inclusive = FALSE)`,
-#' the probability of exceeding the knot. The two pieces are a partition:
-#' the body holds `(-Inf, of]` and the tail `(of, Inf)`.
+#' Splitting is its own opposite: both sides take half, the mid-p convention
+#' on each. Any of this matters only where there is mass exactly at `of`,
+#' which is nowhere in a continuous distribution.
 #'
-#' To put mass exactly on the knot from the tail's side, give the tail as a
-#' `tail_excess` carrying an atom at zero, an excess of zero being precisely
-#' the event `X = of`. A `tail_excess` is placed, not conditioned, so that
-#' atom lands on the knot and stays.
+#' Under the default the graft leaves the body alone up to and including the
+#' knot --- every probability there is the body's own, unscaled --- and the
+#' tail's share is exactly `prob_right(body, of, inclusive = FALSE)`, the
+#' probability of exceeding the knot. That is the exceedance probability
+#' peaks-over-threshold is written in terms of, where the excess `X - of` is
+#' conditioned on `X > of` strictly; the tail being trimmed of the knot is
+#' the same convention, under which an excess of exactly zero does not
+#' arise. The two pieces are a partition: `(-Inf, of]` and `(of, Inf)`.
+#'
+#' To hand the knot to the tail instead, ask the body to `"discard"` it.
+#' A `tail_excess` with an atom at zero then keeps that atom, an excess of
+#' zero being the event `X = of`.
 #'
 #' @param body Distribution supplying the part of the range that is kept.
 #' @param of Value on the real line where the tail is attached: the knot.
@@ -66,11 +71,11 @@
 #' @param tail_excess Distribution of the tail measured from the knot, which
 #' is moved there. Name either this or `tail_absolute`, not both.
 #' @param tail_absolute Distribution of the tail on the body's own scale,
-#' which stays where it is and is conditioned on falling strictly beyond the
-#' knot. Name either this or `tail_excess`, not both.
+#' which stays where it is and is conditioned on falling beyond the knot.
+#' Name either this or `tail_excess`, not both.
 #' @param knot_action What the body does with its own probability at the
-#' knot: `"keep"` it (the default), `"discard"` it, or `"split"` it. See
-#' Details.
+#' knot: `"keep"` it (the default), `"discard"` it, or `"split"` it. The
+#' tail takes the opposite action, so the knot is counted once. See Details.
 #' @return A graft: a distribution made of the body below the knot and the
 #' tail above it (or the other way round, for `graft_left()`), which is a
 #' special type of mixture distribution.
@@ -96,11 +101,15 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
   knot_action <- rlang::arg_match0(
     knot_action, c("keep", "discard", "split"), "knot_action"
   )
-  tail <- graft_tail(
-    excess = if (missing(tail_excess)) NULL else tail_excess,
-    absolute = if (missing(tail_absolute)) NULL else tail_absolute,
+  tail <- trim_left(
+    graft_tail(
+      excess = if (missing(tail_excess)) NULL else tail_excess,
+      absolute = if (missing(tail_absolute)) NULL else tail_absolute,
+      of = of,
+      side = "right"
+    ),
     of = of,
-    side = "right"
+    knot_action = knot_opposite(knot_action)
   )
   # Whatever of the knot the body does not retain belongs to the tail's
   # share, which is what keeps the two weights summing to 1 however
@@ -132,11 +141,15 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
   knot_action <- rlang::arg_match0(
     knot_action, c("keep", "discard", "split"), "knot_action"
   )
-  tail <- graft_tail(
-    excess = if (missing(tail_excess)) NULL else tail_excess,
-    absolute = if (missing(tail_absolute)) NULL else tail_absolute,
+  tail <- trim_right(
+    graft_tail(
+      excess = if (missing(tail_excess)) NULL else tail_excess,
+      absolute = if (missing(tail_absolute)) NULL else tail_absolute,
+      of = of,
+      side = "left"
+    ),
     of = of,
-    side = "left"
+    knot_action = knot_opposite(knot_action)
   )
   p_connect <- distionary::prob_left(body, of = of, inclusive = FALSE) +
     knot_mass(body, of) - knot_retained(body, of, knot_action)
@@ -159,10 +172,9 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
 #'
 #' Exactly one of `excess` and `absolute` carries a distribution; the other
 #' is `NULL`, standing for the argument the caller left out. An excess model
-#' is moved so that its zero lands on the knot, which leaves nothing of it
-#' on the body's side of the knot; one already on the body's scale is
-#' conditioned on falling strictly beyond the knot, which drops any mass it
-#' has exactly there --- the knot is the body's.
+#' is moved so that its zero lands on the knot; one already on the body's
+#' scale is left where it is. Either way the caller gets a tail on the
+#' body's scale, which the verb then trims at the knot.
 #' @noRd
 graft_tail <- function(excess, absolute, of, side) {
   if (!xor(is.null(excess), is.null(absolute))) {
@@ -175,14 +187,22 @@ graft_tail <- function(excess, absolute, of, side) {
   }
   if (is.null(excess)) {
     checkmate::assert_class(absolute, "dst")
-    return(switch(side,
-      right = trim_left(absolute, of = of, knot_action = "discard"),
-      left = trim_right(absolute, of = of, knot_action = "discard")
-    ))
+    return(absolute)
   }
   checkmate::assert_class(excess, "dst")
   check_excess_side(excess, of = of, side = side)
   shift(excess, of)
+}
+
+#' The knot action the tail takes, given the body's.
+#'
+#' The knot is one point and belongs to one side of the graft, so the two
+#' sides take opposite actions: what the body keeps the tail gives up, and
+#' what the body gives up the tail keeps. Splitting is its own opposite ---
+#' both sides take half, the mid-p convention on each.
+#' @noRd
+knot_opposite <- function(knot_action) {
+  switch(knot_action, keep = "discard", discard = "keep", split = "split")
 }
 
 #' Refuse an excess model sitting on the wrong side of zero.

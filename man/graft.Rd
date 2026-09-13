@@ -34,12 +34,12 @@ graft_left(
 is moved there. Name either this or \code{tail_absolute}, not both.}
 
 \item{tail_absolute}{Distribution of the tail on the body's own scale,
-which stays where it is and is conditioned on falling strictly beyond the
-knot. Name either this or \code{tail_excess}, not both.}
+which stays where it is and is conditioned on falling beyond the knot.
+Name either this or \code{tail_excess}, not both.}
 
 \item{knot_action}{What the body does with its own probability at the
-knot: \code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it. See
-Details.}
+knot: \code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it. The
+tail takes the opposite action, so the knot is counted once. See Details.}
 }
 \value{
 A graft: a distribution made of the body below the knot and the
@@ -82,30 +82,34 @@ happens to start above zero, as an empirical one does.
 }
 
 \section{Where the knot goes}{
-The knot belongs to the body. A tail is a model of what lies \emph{beyond} the
-knot --- the exceedances, \code{X > of} --- while the body is a model of
-\code{X <= x} up to it, so probability sitting exactly on the knot is the
-body's to keep. Two things follow, and they matter only where there is
-mass exactly at \code{of}, which is nowhere in a continuous distribution.
-\itemize{
-\item \code{knot_action} says what the body does with its own mass at the knot:
-\code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it in half.
-Mass the body declines is not destroyed; it passes into the tail's
-share, to be spread over the values beyond the knot.
-\item A \code{tail_absolute} is conditioned on falling \emph{strictly} beyond the knot,
-so whatever mass it has exactly there is dropped.
+The knot is one point, and it belongs to one side. \code{knot_action} says
+what the \emph{body} does with its probability sitting exactly there ---
+\code{"keep"} it (the default), \code{"discard"} it, or \code{"split"} it in half ---
+and the tail takes the opposite action, so that the knot is neither
+counted twice nor lost:\tabular{lll}{
+   \code{knot_action} \tab the body \tab the tail \cr
+   \code{"keep"} \tab keeps the knot \tab gives it up \cr
+   \code{"discard"} \tab gives it up \tab keeps the knot \cr
+   \code{"split"} \tab keeps half \tab keeps half \cr
 }
 
-Under the defaults the graft leaves the body alone up to and including
-the knot --- every probability there is the body's own, unscaled --- and
-the tail's share is exactly \code{prob_right(body, of, inclusive = FALSE)},
-the probability of exceeding the knot. The two pieces are a partition:
-the body holds \verb{(-Inf, of]} and the tail \verb{(of, Inf)}.
 
-To put mass exactly on the knot from the tail's side, give the tail as a
-\code{tail_excess} carrying an atom at zero, an excess of zero being precisely
-the event \code{X = of}. A \code{tail_excess} is placed, not conditioned, so that
-atom lands on the knot and stays.
+Splitting is its own opposite: both sides take half, the mid-p convention
+on each. Any of this matters only where there is mass exactly at \code{of},
+which is nowhere in a continuous distribution.
+
+Under the default the graft leaves the body alone up to and including the
+knot --- every probability there is the body's own, unscaled --- and the
+tail's share is exactly \code{prob_right(body, of, inclusive = FALSE)}, the
+probability of exceeding the knot. That is the exceedance probability
+peaks-over-threshold is written in terms of, where the excess \code{X - of} is
+conditioned on \code{X > of} strictly; the tail being trimmed of the knot is
+the same convention, under which an excess of exactly zero does not
+arise. The two pieces are a partition: \verb{(-Inf, of]} and \verb{(of, Inf)}.
+
+To hand the knot to the tail instead, ask the body to \code{"discard"} it.
+A \code{tail_excess} with an atom at zero then keeps that atom, an excess of
+zero being the event \code{X = of}.
 }
 
 \examples{
