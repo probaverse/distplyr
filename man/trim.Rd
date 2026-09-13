@@ -5,9 +5,9 @@
 \alias{trim_right}
 \title{Trim (condition) a distribution}
 \usage{
-trim_left(distribution, of, ..., knot_action = c("discard", "keep", "split"))
+trim_left(distribution, of, ..., knot_action = c("keep", "discard", "split"))
 
-trim_right(distribution, of, ..., knot_action = c("discard", "keep", "split"))
+trim_right(distribution, of, ..., knot_action = c("keep", "discard", "split"))
 }
 \arguments{
 \item{distribution}{Distribution to trim.}
@@ -17,7 +17,7 @@ trim_right(distribution, of, ..., knot_action = c("discard", "keep", "split"))
 \item{...}{Currently unused; must be empty.}
 
 \item{knot_action}{What to do with the probability sitting exactly on
-\code{of}: \code{"discard"} it with the trimmed side (the default), \code{"keep"} it,
+\code{of}: \code{"keep"} it (the default), \code{"discard"} it with the trimmed side,
 or \code{"split"} it evenly between the two sides. Only has an effect where
 \code{of} carries probability. See Details.}
 }
@@ -29,8 +29,8 @@ The conditional distribution, renormalised to total probability
 Discard the probability lying to one side of a value, and scale up what
 remains so that it sums to 1 again. \code{trim_left()} discards the
 probability below \code{of}, giving the distribution of the variable
-conditioned on landing above it; \code{trim_right()} discards the probability
-above \code{of}, conditioning on landing below.
+conditioned on landing at or above it; \code{trim_right()} discards the
+probability above \code{of}, conditioning on landing at or below.
 }
 \section{What \code{knot_action} does}{
 \code{of} is the knot: the point the trim cuts at. \code{knot_action} says what
@@ -39,11 +39,14 @@ the knot carries mass of its own, as an atom does. Where there is no
 mass exactly at \code{of} --- anywhere in a continuous distribution --- all
 three actions give the same answer.
 \itemize{
-\item \code{"discard"} (default) throws the knot away with the side being
-trimmed, so \code{trim_left(d, of)} keeps outcomes strictly greater than
-\code{of}.
-\item \code{"keep"} retains it, so \code{trim_left(d, of)} keeps outcomes greater
-than \emph{or equal to} \code{of}.
+\item \code{"keep"} (default) retains it, so \code{trim_left(d, of)} keeps outcomes
+greater than \emph{or equal to} \code{of}. The knot is not on the side being
+trimmed away: \code{of} is not to the left of itself.
+\item \code{"discard"} throws the knot away with that side, so \code{trim_left(d, of)}
+keeps outcomes strictly greater than \code{of}. Under this setting the
+probability kept is exactly
+\code{distionary::prob_right(d, of, inclusive = FALSE)}, and a left and a
+right trim at the same knot share nothing.
 \item \code{"split"} retains half of it. This is the mid-p convention used in
 discrete inference, where a boundary atom is shared evenly between
 the two sides rather than assigned wholly to one.
@@ -69,10 +72,11 @@ d <- trim_left(d, -2)
 d <- trim_right(d, 2)
 distionary::enframe_cdf(d, at = -3:3)
 
-# A Poisson has an atom at 5, so the knot is visible there.
+# A Poisson has an atom at 5, so the knot is visible there. By default
+# the trim keeps it.
 d <- distionary::dst_pois(3)
 distionary::eval_pmf(trim_left(d, 5), at = 5)
-distionary::eval_pmf(trim_left(d, 5, knot_action = "keep"), at = 5)
+distionary::eval_pmf(trim_left(d, 5, knot_action = "discard"), at = 5)
 distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
 }
 \seealso{

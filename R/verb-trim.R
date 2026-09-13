@@ -23,8 +23,8 @@ knot_retained <- function(distribution, of, knot_action) {
 #' Discard the probability lying to one side of a value, and scale up what
 #' remains so that it sums to 1 again. `trim_left()` discards the
 #' probability below `of`, giving the distribution of the variable
-#' conditioned on landing above it; `trim_right()` discards the probability
-#' above `of`, conditioning on landing below.
+#' conditioned on landing at or above it; `trim_right()` discards the
+#' probability above `of`, conditioning on landing at or below.
 #'
 #' @details
 #' # What `knot_action` does
@@ -35,11 +35,14 @@ knot_retained <- function(distribution, of, knot_action) {
 #' mass exactly at `of` --- anywhere in a continuous distribution --- all
 #' three actions give the same answer.
 #'
-#' - `"discard"` (default) throws the knot away with the side being
-#'   trimmed, so `trim_left(d, of)` keeps outcomes strictly greater than
-#'   `of`.
-#' - `"keep"` retains it, so `trim_left(d, of)` keeps outcomes greater
-#'   than *or equal to* `of`.
+#' - `"keep"` (default) retains it, so `trim_left(d, of)` keeps outcomes
+#'   greater than *or equal to* `of`. The knot is not on the side being
+#'   trimmed away: `of` is not to the left of itself.
+#' - `"discard"` throws the knot away with that side, so `trim_left(d, of)`
+#'   keeps outcomes strictly greater than `of`. Under this setting the
+#'   probability kept is exactly
+#'   `distionary::prob_right(d, of, inclusive = FALSE)`, and a left and a
+#'   right trim at the same knot share nothing.
 #' - `"split"` retains half of it. This is the mid-p convention used in
 #'   discrete inference, where a boundary atom is shared evenly between
 #'   the two sides rather than assigned wholly to one.
@@ -60,7 +63,7 @@ knot_retained <- function(distribution, of, knot_action) {
 #' @param distribution Distribution to trim.
 #' @param of Value on the real line defining where to trim (single numeric).
 #' @param knot_action What to do with the probability sitting exactly on
-#' `of`: `"discard"` it with the trimmed side (the default), `"keep"` it,
+#' `of`: `"keep"` it (the default), `"discard"` it with the trimmed side,
 #' or `"split"` it evenly between the two sides. Only has an effect where
 #' `of` carries probability. See Details.
 #' @param ... Currently unused; must be empty.
@@ -74,20 +77,21 @@ knot_retained <- function(distribution, of, knot_action) {
 #' d <- trim_right(d, 2)
 #' distionary::enframe_cdf(d, at = -3:3)
 #'
-#' # A Poisson has an atom at 5, so the knot is visible there.
+#' # A Poisson has an atom at 5, so the knot is visible there. By default
+#' # the trim keeps it.
 #' d <- distionary::dst_pois(3)
 #' distionary::eval_pmf(trim_left(d, 5), at = 5)
-#' distionary::eval_pmf(trim_left(d, 5, knot_action = "keep"), at = 5)
+#' distionary::eval_pmf(trim_left(d, 5, knot_action = "discard"), at = 5)
 #' distionary::eval_pmf(trim_left(d, 5, knot_action = "split"), at = 5)
 #' @rdname trim
 #' @export
 trim_left <- function(distribution, of, ...,
-                      knot_action = c("discard", "keep", "split")) {
+                      knot_action = c("keep", "discard", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
   knot_action <- rlang::arg_match0(
-    knot_action, c("discard", "keep", "split"), "knot_action"
+    knot_action, c("keep", "discard", "split"), "knot_action"
   )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.
@@ -231,12 +235,12 @@ trim_left <- function(distribution, of, ...,
 #' @rdname trim
 #' @export
 trim_right <- function(distribution, of, ...,
-                       knot_action = c("discard", "keep", "split")) {
+                       knot_action = c("keep", "discard", "split")) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
   knot_action <- rlang::arg_match0(
-    knot_action, c("discard", "keep", "split"), "knot_action"
+    knot_action, c("keep", "discard", "split"), "knot_action"
   )
   # A Null distribution has no probability to keep or discard; trimming it
   # leaves it Null, as every other verb does.

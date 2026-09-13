@@ -76,7 +76,7 @@ test_that("The body's action moves the knot's mass; the tail keeps its own.", {
   bare <- graft_right(
     body,
     of = 5,
-    tail_absolute = trim_left(tail, of = 5),
+    tail_absolute = trim_left(tail, of = 5, knot_action = "discard"),
     knot_action = "discard"
   )
   expect_equal(distionary::eval_pmf(bare, at = 5), 0)

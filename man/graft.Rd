@@ -91,8 +91,15 @@ difference at all.
 
 The tail keeps whatever mass it has at the knot, an atom being easier to
 remove than to put back. To drop it instead, trim the tail first and hand
-the result over as \code{tail_absolute}: \code{trim_left()} and \code{trim_right()}
-discard the knot by default.
+the result over as \code{tail_absolute}, asking for the knot to go with the
+trimmed side: \code{trim_left(tail, of = of, knot_action = "discard")}.
+
+Between them, the two defaults make the pieces a partition. The body
+stops just short of the knot and the tail starts on it, so the knot
+carries mass from one side only. Setting \code{knot_action = "keep"} for a
+discrete body and a discrete tail leaves both placing mass there, which
+is still a distribution --- the knot is simply the one point the two
+models share.
 }
 
 \examples{
