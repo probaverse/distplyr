@@ -21,6 +21,12 @@ each side of it separately. Requires distionary 0.2.0.
   exactly on the knot belongs to --- the `"body"` (the default), the
   `"tail"`, or `"split"` between them. See `?graft`.
 
+## Other changes
+
+- Distributions built by a verb print as a summary rather than unfolding
+  every distribution they were built from: each is named with
+  `pretty_name()`, and a mixture's components are listed with their weights.
+
 ## Bug fixes
 
 - `mix()`, `maximize()` and `minimize()` no longer treat different components

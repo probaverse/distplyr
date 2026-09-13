@@ -126,21 +126,3 @@ mix <- function(...,
 }
 
 
-#' @export
-print.mixture <- function(x, ...) {
-  cat("Mixture Distribution\n")
-  cat("\nComponents: ")
-  cat("\n")
-  params <- distionary::parameters(x)
-  params[["distributions"]] <- vapply(
-    params[["distributions"]],
-    distionary::pretty_name,
-    FUN.VALUE = character(1L)
-  )
-  if (requireNamespace("tibble", quietly = TRUE)) {
-    df <- tibble::as_tibble(params)
-  } else {
-    df <- as.data.frame(params)
-  }
-  print(df, ...)
-}
