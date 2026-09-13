@@ -66,9 +66,6 @@ conditioned on falling beyond the knot. Anything placed by hand goes
 here --- \code{multiply(ratio, of)}, for a model of \code{X / of}, say.
 }
 
-The two meet in the middle: \code{tail_excess = e} gives the same graft as
-\code{tail_absolute = shift(e, of)}.
-
 A tail that is already in place but happens to sit above zero cannot be
 told apart from a model of excesses, so \code{tail_excess} accepts it. If it
 starts exactly at \code{of}, the likeliest case, you get a warning.

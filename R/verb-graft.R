@@ -22,9 +22,6 @@
 #'   conditioned on falling beyond the knot. Anything placed by hand goes
 #'   here --- `multiply(ratio, of)`, for a model of `X / of`, say.
 #'
-#' The two meet in the middle: `tail_excess = e` gives the same graft as
-#' `tail_absolute = shift(e, of)`.
-#'
 #' A tail that is already in place but happens to sit above zero cannot be
 #' told apart from a model of excesses, so `tail_excess` accepts it. If it
 #' starts exactly at `of`, the likeliest case, you get a warning.
@@ -73,8 +70,14 @@
 #' graft_right(body, of = u, tail_absolute = distionary::dst_norm(1, 3))
 #' @rdname graft
 #' @export
-graft_right <- function(body, of, ..., tail_excess, tail_absolute,
-                        knot = c("body", "tail", "split")) {
+graft_right <- function(
+  body,
+  of,
+  ...,
+  tail_excess,
+  tail_absolute,
+  knot = c("body", "tail", "split")
+) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
@@ -93,7 +96,8 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
   # share, which is what keeps the two weights summing to 1 wherever the
   # knot is sent.
   p_connect <- distionary::prob_right(body, of = of, inclusive = FALSE) +
-    knot_mass(body, of) - knot_retained(body, of, knot_trim(knot, "body"))
+    knot_mass(body, of) -
+    knot_retained(body, of, knot_trim(knot, "body"))
   if (p_connect == 0) {
     return(body)
   }
@@ -111,8 +115,14 @@ graft_right <- function(body, of, ..., tail_excess, tail_absolute,
 
 #' @rdname graft
 #' @export
-graft_left <- function(body, of, ..., tail_excess, tail_absolute,
-                       knot = c("body", "tail", "split")) {
+graft_left <- function(
+  body,
+  of,
+  ...,
+  tail_excess,
+  tail_absolute,
+  knot = c("body", "tail", "split")
+) {
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
@@ -128,7 +138,8 @@ graft_left <- function(body, of, ..., tail_excess, tail_absolute,
     knot = knot_trim(knot, "tail")
   )
   p_connect <- distionary::prob_left(body, of = of, inclusive = FALSE) +
-    knot_mass(body, of) - knot_retained(body, of, knot_trim(knot, "body"))
+    knot_mass(body, of) -
+    knot_retained(body, of, knot_trim(knot, "body"))
   if (p_connect == 0) {
     return(body)
   }
@@ -198,7 +209,9 @@ check_excess_side <- function(excess, of, side) {
   if (wrong_side) {
     beyond <- if (side == "right") "below" else "above"
     stop(
-      "`tail_excess` places probability ", beyond, " zero.\n",
+      "`tail_excess` places probability ",
+      beyond,
+      " zero.\n",
       "It is measured from the knot, so it cannot reach past it.\n",
       "A tail on the body's own scale goes in `tail_absolute`.",
       call. = FALSE
