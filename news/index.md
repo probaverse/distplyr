@@ -1,6 +1,60 @@
 # Changelog
 
+## distplyr 0.3.0
+
+Every verb is now built on distionary’s support objects, so a
+transformed distribution says where its probability lives:
+[`support()`](https://distionary.probaverse.com/reference/support.html),
+its atoms, and discrete or mixed moments all work on the result. Verbs
+no longer state a `range` or `.vtype`; both are read from the support.
+[`invert()`](https://distplyr.probaverse.com/reference/linear_transform.md),
+for one, derives the support of `1 / X` for a distribution spanning zero
+by mapping each side of it separately. Requires distionary 0.2.0.
+
+### New verbs
+
+- [`trim_left()`](https://distplyr.probaverse.com/reference/trim.md) and
+  [`trim_right()`](https://distplyr.probaverse.com/reference/trim.md)
+  condition a distribution on one side of a point, with `knot` saying
+  what becomes of the mass sitting exactly on it: `"keep"` it (the
+  default, since a point is not to one side of itself), `"discard"` it
+  with the trimmed side, or `"split"` it. See `?trim`.
+
+- [`graft_left()`](https://distplyr.probaverse.com/reference/graft.md)
+  and
+  [`graft_right()`](https://distplyr.probaverse.com/reference/graft.md)
+  replace one end of a `body` with another model of that end. Name the
+  tail either as `tail_excess`, measured from the knot and moved there,
+  or as `tail_absolute`, on the body’s own scale and conditioned beyond
+  the knot. `knot` names the side that mass sitting exactly on the knot
+  belongs to — the `"body"` (the default), the `"tail"`, or `"split"`
+  between them. See `?graft`.
+
+### Other changes
+
+- Distributions built by a verb print as a summary rather than unfolding
+  every distribution they were built from: each is named with
+  [`pretty_name()`](https://distionary.probaverse.com/reference/pretty_name.html),
+  and a mixture’s components are listed with their weights.
+
+### Bug fixes
+
+- [`mix()`](https://distplyr.probaverse.com/reference/mix.md),
+  [`maximize()`](https://distplyr.probaverse.com/reference/extremum.md)
+  and
+  [`minimize()`](https://distplyr.probaverse.com/reference/extremum.md)
+  no longer treat different components as the same one. Results may
+  change for transformed distributions.
+
+- Verbs no longer discard a distribution that merely carries the name
+  `"Null"`. Null-ness is read with
+  [`is.na()`](https://rdrr.io/r/base/NA.html).
+
 ## distplyr 0.2.0
+
+CRAN release: 2025-12-08
+
+- Initial CRAN release.
 
 ## distplyr 0.1.5
 
@@ -24,8 +78,11 @@
   [`invert()`](https://distplyr.probaverse.com/reference/linear_transform.md),
   and
   [`flip()`](https://distplyr.probaverse.com/reference/linear_transform.md).
-- `graft_left()` and `graft_right()` are fully functional, and
-  `slice_left()` and `slice_right()` are now also available.
+- [`graft_left()`](https://distplyr.probaverse.com/reference/graft.md)
+  and
+  [`graft_right()`](https://distplyr.probaverse.com/reference/graft.md)
+  are fully functional, and `slice_left()` and `slice_right()` are now
+  also available.
 
 ## distplyr 0.1.2
 

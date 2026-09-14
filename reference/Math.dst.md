@@ -80,66 +80,23 @@ logarithmic transformations.
 # Logarithmic transformations
 d <- distionary::dst_unif(1, 10)
 log(d)              # Natural log
-#> Logarithmic distribution (continuous) 
+#> Logarithmic distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1  10 
-#> 
+#> distribution  Uniform(1, 10)
 log(d, base = 10)   # Log base 10
-#> Scaled distribution (continuous) 
+#> Scaled distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1  10 
-#> 
-#> 
-#> $constant
-#> [1] 0.4342945
-#> 
+#> distribution  Logarithmic(Uniform(1, 10))
+#> constant      0.4343
 log10(d)            # Also log base 10
-#> Scaled distribution (continuous) 
+#> Scaled distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1  10 
-#> 
-#> 
-#> $constant
-#> [1] 0.4342945
-#> 
+#> distribution  Logarithmic(Uniform(1, 10))
+#> constant      0.4343
 sqrt(d)             # Square root of uniform
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1  10 
-#> 
-#> 
-#> $constant
-#> [1] 0.5
-#> 
-#> 
+#> distribution  Scaled(Logarithmic(Uniform(1, 10)))
 
 # Exponential transformation
 d2 <- distionary::dst_norm(0, 1)
@@ -150,14 +107,9 @@ exp(d2)             # Log-normal distribution
 #> meanlog   sdlog 
 #>       0       1 
 exp(d3)             # No simplification
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      5      4 
-#> 
+#> distribution  Beta(5, 4)
 
 # These can be combined
 log(exp(d2))        # Returns back to normal distribution

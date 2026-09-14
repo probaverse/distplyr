@@ -84,29 +84,15 @@ d_unif <- distionary::dst_unif(0, 1)
 
 # Shifting
 shift(d_pois, 1)
-#> Shifted distribution (discrete) 
+#> Shifted distribution (discrete)
 #> --Parameters--
-#> $distribution
-#> Poisson distribution (discrete) 
-#> --Parameters--
-#> lambda 
-#>    1.1 
-#> 
-#> $shift
-#> [1] 1
-#> 
+#> distribution  Poisson(1.1)
+#> shift         1
 d_pois + 1           # Equivalent using operator
-#> Shifted distribution (discrete) 
+#> Shifted distribution (discrete)
 #> --Parameters--
-#> $distribution
-#> Poisson distribution (discrete) 
-#> --Parameters--
-#> lambda 
-#>    1.1 
-#> 
-#> $shift
-#> [1] 1
-#> 
+#> distribution  Poisson(1.1)
+#> shift         1
 
 # Scaling
 multiply(d_unif, 2)
@@ -135,65 +121,23 @@ flip(d_norm)
 # Inversion
 d_positive <- distionary::dst_unif(1, 2)
 invert(d_positive)
-#> Inverse distribution (continuous) 
+#> Inverse distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1   2 
-#> 
+#> distribution  Uniform(1, 2)
 1 / d_positive       # Equivalent using operator
-#> Inverse distribution (continuous) 
+#> Inverse distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1   2 
-#> 
+#> distribution  Uniform(1, 2)
 
 # Combine multiple operations
 4 - 2 * d_pois
-#> Shifted distribution (discrete) 
+#> Shifted distribution (discrete)
 #> --Parameters--
-#> $distribution
-#> Negated distribution (discrete) 
-#> --Parameters--
-#> $distribution
-#> Scaled distribution (discrete) 
-#> --Parameters--
-#> $distribution
-#> Poisson distribution (discrete) 
-#> --Parameters--
-#> lambda 
-#>    1.1 
-#> 
-#> $constant
-#> [1] 2
-#> 
-#> 
-#> 
-#> $shift
-#> [1] 4
-#> 
+#> distribution  Negated(Scaled(Poisson(1.1)))
+#> shift         4
 multiply(flip(multiply(d_pois, 2)), -1) + 4  # Equivalent
-#> Shifted distribution (discrete) 
+#> Shifted distribution (discrete)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (discrete) 
-#> --Parameters--
-#> $distribution
-#> Poisson distribution (discrete) 
-#> --Parameters--
-#> lambda 
-#>    1.1 
-#> 
-#> $constant
-#> [1] 2
-#> 
-#> 
-#> $shift
-#> [1] 4
-#> 
+#> distribution  Scaled(Poisson(1.1))
+#> shift         4
 ```

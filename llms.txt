@@ -65,6 +65,7 @@ I transform this,” then `distplyr` is for you.
 To install `distplyr`, run the following code in R:
 
 ``` r
+
 install.packages("distplyr")
 ```
 
@@ -87,13 +88,14 @@ get started.
 ## Example: Basic Usage
 
 In practice, you will most likely just load the whole probaverse with
-[`library(probaverse)`](https://rdrr.io/r/base/library.html); but in
-this minimal example, we’ll only load `distplyr`, and the core
-probaverse package, `distionary`.
+[`library(probaverse)`](https://probaverse.probaverse.com/); but in this
+minimal example, we’ll only load `distplyr`, and the core probaverse
+package, `distionary`.
 
 In addition to loading `distplyr` (but in practice, )
 
 ``` r
+
 library(distionary)
 library(distplyr)
 ```
@@ -101,6 +103,7 @@ library(distplyr)
 Transform distributions using functions or operators:
 
 ``` r
+
 # Create a standard Normal distribution
 a <- dst_norm(0, 1)
 
@@ -128,6 +131,7 @@ These all simplify to other Normal distributions, but that’s not always
 the case.
 
 ``` r
+
 b <- dst_beta(3, 2)
 d <- b * 2
 d
@@ -146,6 +150,7 @@ d
 Visualize this multiplication:
 
 ``` r
+
 plot(b, to = 2)
 plot(d, add = TRUE,  col = "red")
 legend(
@@ -161,6 +166,7 @@ legend(
 Apply mathematical transformations.
 
 ``` r
+
 log(dst_gamma(4, 2))
 #> Logarithmic distribution (continuous) 
 #> --Parameters--
@@ -174,6 +180,7 @@ log(dst_gamma(4, 2))
 Or combine distributions; in this case, by the maximum.
 
 ``` r
+
 # Maximum of three sites
 site1 <- dst_norm(20, 2)
 site2 <- dst_norm(22, 3)
@@ -288,6 +295,9 @@ contributing to this project, you agree to abide by its terms.
 - [`maximize()`](https://distplyr.probaverse.com/reference/extremum.md)
   [`minimize()`](https://distplyr.probaverse.com/reference/extremum.md)
   : Extremum of Several Distributions
+- [`graft_right()`](https://distplyr.probaverse.com/reference/graft.md)
+  [`graft_left()`](https://distplyr.probaverse.com/reference/graft.md) :
+  Graft a tail onto a distribution
 - [`flip()`](https://distplyr.probaverse.com/reference/linear_transform.md)
   [`invert()`](https://distplyr.probaverse.com/reference/linear_transform.md)
   [`multiply()`](https://distplyr.probaverse.com/reference/linear_transform.md)
@@ -295,6 +305,9 @@ contributing to this project, you agree to abide by its terms.
   : Linear and Reciprocal Transformations
 - [`mix()`](https://distplyr.probaverse.com/reference/mix.md) : Mixture
   Distributions
+- [`trim_left()`](https://distplyr.probaverse.com/reference/trim.md)
+  [`trim_right()`](https://distplyr.probaverse.com/reference/trim.md) :
+  Trim (condition) a distribution
 
 # Articles
 

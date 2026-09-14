@@ -109,136 +109,43 @@ d <- distionary::dst_beta(3, 2)
 
 # Shifting and scaling
 d + 10          # Shift right by 10
-#> Shifted distribution (continuous) 
+#> Shifted distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      3      2 
-#> 
-#> $shift
-#> [1] 10
-#> 
+#> distribution  Beta(3, 2)
+#> shift         10
 d * 2           # Scale by 2
-#> Scaled distribution (continuous) 
+#> Scaled distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      3      2 
-#> 
-#> $constant
-#> [1] 2
-#> 
+#> distribution  Beta(3, 2)
+#> constant      2
 3 * d - 5       # Scale then shift
-#> Shifted distribution (continuous) 
+#> Shifted distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      3      2 
-#> 
-#> $constant
-#> [1] 3
-#> 
-#> 
-#> $shift
-#> [1] -5
-#> 
+#> distribution  Scaled(Beta(3, 2))
+#> shift         -5
 
 # Power operations
 exp(d)          # e^X: exponential of Beta
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      3      2 
-#> 
+#> distribution  Beta(3, 2)
 2^d             # 2^X: base 2 raised to Beta
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Beta distribution (continuous) 
-#> --Parameters--
-#> shape1 shape2 
-#>      3      2 
-#> 
-#> $constant
-#> [1] 0.6931472
-#> 
-#> 
+#> distribution  Scaled(Beta(3, 2))
 
 # With positive distributions
 d_pos <- distionary::dst_unif(1, 2)
 d_pos^2         # X^2: uniform squared
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1   2 
-#> 
-#> 
-#> $constant
-#> [1] 2
-#> 
-#> 
+#> distribution  Scaled(Logarithmic(Uniform(1, 2)))
 d_pos^0.5       # sqrt(X): square root
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1   2 
-#> 
-#> 
-#> $constant
-#> [1] 0.5
-#> 
-#> 
+#> distribution  Scaled(Logarithmic(Uniform(1, 2)))
 sqrt(d_pos)     # Equivalent to d_pos^0.5
-#> Exponentiated distribution (continuous) 
+#> Exponentiated distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Scaled distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Logarithmic distribution (continuous) 
-#> --Parameters--
-#> $distribution
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   1   2 
-#> 
-#> 
-#> $constant
-#> [1] 0.5
-#> 
-#> 
+#> distribution  Scaled(Logarithmic(Uniform(1, 2)))
 ```

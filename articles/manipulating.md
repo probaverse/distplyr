@@ -3,6 +3,7 @@
 Load the packages to get started:
 
 ``` r
+
 library(distplyr)
 library(distionary)
 ```
@@ -61,34 +62,24 @@ Some transformations can be achieved using operations like `+`, `-`,
 Here’s the function form:
 
 ``` r
+
 d <- dst_exp(1)
 shift(d, 5)
-#> Shifted distribution (continuous) 
+#> Shifted distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Exponential distribution (continuous) 
-#> --Parameters--
-#> rate 
-#>    1 
-#> 
-#> $shift
-#> [1] 5
+#> distribution  Exponential(1)
+#> shift         5
 ```
 
 And the equivalent operator form:
 
 ``` r
+
 d + 5
-#> Shifted distribution (continuous) 
+#> Shifted distribution (continuous)
 #> --Parameters--
-#> $distribution
-#> Exponential distribution (continuous) 
-#> --Parameters--
-#> rate 
-#>    1 
-#> 
-#> $shift
-#> [1] 5
+#> distribution  Exponential(1)
+#> shift         5
 ```
 
 The verb form is most useful for chaining operations (try
@@ -99,6 +90,7 @@ together with a pipe operator like `|>` or `%>%`). Or more concisely
 with operators:
 
 ``` r
+
 10 - 2 * dst_norm(0, 1)
 #> Normal distribution (continuous) 
 #> --Parameters--
@@ -111,6 +103,7 @@ with operators:
 Some examples of transformations. Start by shifting and scaling:
 
 ``` r
+
 d <- dst_exp(1)
 shifted <- shift(d, 10)
 scaled <- multiply(d, 5)
@@ -119,6 +112,7 @@ scaled <- multiply(d, 5)
 Properties update correctly:
 
 ``` r
+
 range(d)
 #> [1]   0 Inf
 range(shifted)
@@ -136,6 +130,7 @@ come soon.)
 Make the rainfall distribution:
 
 ``` r
+
 dry <- dst_degenerate(0)
 rain <- dst_gamma(5, 0.5)
 rainfall <- mix(dry, rain, weights = c(0.7, 0.3))
@@ -144,6 +139,7 @@ rainfall <- mix(dry, rain, weights = c(0.7, 0.3))
 View a randomly generated rainfall series:
 
 ``` r
+
 set.seed(1)
 x <- realize(rainfall, n = 30)
 plot(x, ylab = "Rainfall (mm)", xlab = "Day")
@@ -169,6 +165,7 @@ Here’s an example where simplification happens. Start with a Log-Normal
 distribution:
 
 ``` r
+
 lognormal <- dst_lnorm(meanlog = 2, sdlog = 0.5)
 lognormal
 #> Log Normal distribution (continuous) 
@@ -180,6 +177,7 @@ lognormal
 Take the logarithm, which simplifies to Normal:
 
 ``` r
+
 result <- log(lognormal)
 result
 #> Normal distribution (continuous) 
@@ -192,6 +190,7 @@ Or, taking the maximum of two distributions where one is strictly
 greater than the other always takes the bigger one.
 
 ``` r
+
 maximize(dst_unif(0, 1), dst_unif(4, 10))
 #> Uniform distribution (continuous) 
 #> --Parameters--
@@ -204,25 +203,13 @@ distribution object, like this output from
 [`maximize()`](https://distplyr.probaverse.com/reference/extremum.md):
 
 ``` r
+
 maximize(dst_unif(0, 7), dst_unif(4, 10))
-#> Maximum distribution (continuous) 
-#> --Parameters--
-#> $distributions
-#> $distributions[[1]]
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   0   7 
-#> 
-#> $distributions[[2]]
-#> Uniform distribution (continuous) 
-#> --Parameters--
-#> min max 
-#>   4  10 
-#> 
-#> 
-#> $draws
-#> [1] 1 1
+#> Maximum distribution (continuous)
+#> --Components--
+#>  distribution  
+#>  Uniform(0, 7) 
+#>  Uniform(4, 10)
 ```
 
 ### Why Simplifications Matter

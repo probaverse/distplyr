@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://distplyr.probaverse.com/404.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://distplyr.probaverse.com/CODE_STANDARDS.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/CONTRIBUTING.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/LICENSE-text.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/LICENSE.html</loc></url>
@@ -14,8 +15,10 @@
 <url><loc>https://distplyr.probaverse.com/reference/Ops.dst.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/reference/distplyr-package.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/reference/extremum.html</loc></url>
+<url><loc>https://distplyr.probaverse.com/reference/graft.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/reference/index.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/reference/linear_transform.html</loc></url>
 <url><loc>https://distplyr.probaverse.com/reference/mix.html</loc></url>
+<url><loc>https://distplyr.probaverse.com/reference/trim.html</loc></url>
 </urlset>
 
