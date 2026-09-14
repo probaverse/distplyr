@@ -12,7 +12,8 @@
   `distionary (>= 0.2.0)` requires.
 
 Checked with `R CMD check --as-cran` locally (macOS, R 4.6.0) against
-distionary 0.2.0.
+distionary 0.2.0, and on GitHub Actions (macOS, Windows and Ubuntu on R
+release; Ubuntu on R devel and oldrel-1).
 
 ## Reverse dependencies
 
