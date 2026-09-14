@@ -13,7 +13,7 @@ log_distribution <- function(distribution, base = exp(1)) {
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   if (is.na(base)) {
@@ -55,8 +55,12 @@ log_distribution <- function(distribution, base = exp(1)) {
     inner_dist <- p[["distribution"]]
     return(p[["distribution"]])
   }
-  ## END special simplifications -----------------------------------------------
-  r <- range(distribution)
+  ## END special simplifications --------------------------------------
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_transform(
+    support_in, log, exp,
+    domain = c(0, Inf), range = c(-Inf, Inf)
+  )
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_cdf(distribution, at = exp(x))
@@ -77,12 +81,9 @@ log_distribution <- function(distribution, base = exp(1)) {
     realize = function(n) {
       log(distionary::realize(distribution, n = n))
     },
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Logarithmic",
     .parameters = list(distribution = distribution)
   )
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    d[["range"]] <- log(r)
-  }
   distionary:::new_distribution(d, class = "logarithmic")
 }

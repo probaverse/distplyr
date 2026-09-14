@@ -23,23 +23,13 @@ minimize <- function(...,
   }
   dsts <- simplification$dsts
   draws <- simplification$draws
-  # Variable type determination
-  vars <- unique(unlist(lapply(dsts, distionary::vtype)))
-  if (length(vars) == 1) {
-    v <- vars
-  } else if (identical(sort(vars), c("continuous", "discrete"))) {
-    v <- "mixed"
-  } else {
-    # Would need to dig more to know for sure.
-    v <- "unknown"
-  }
-  r <- lapply(dsts, range)
-  r <- Reduce(pmin, r)
   survival <- function(x) {
     prob_rights <- lapply(dsts, distionary::eval_survival, at = x)
     contributions <- Map(`^`, prob_rights, draws)
     Reduce(`*`, contributions)
   }
+  support_list <- input_supports(dsts)
+  support_out <- extreme_support(dsts, support_list, "min")
   d <- distionary::distribution(
     cdf = function(x) 1 - survival(x),
     survival = survival,
@@ -47,7 +37,14 @@ minimize <- function(...,
       # formula: survival * (sum draws_j f_j / surv_j)
       full_surv <- survival(x)
       survs <- lapply(dsts, distionary::eval_survival, at = x)
-      pdfs <- lapply(dsts, distionary::eval_density, at = x)
+      # A discrete component contributes no absolutely-continuous density.
+      pdfs <- lapply(dsts, function(d) {
+        if (distionary::vtype(d) == "discrete") {
+          rep(0, length(x))
+        } else {
+          distionary::eval_density(d, at = x)
+        }
+      })
       divide_if_nonzero <- function(draws, pdf, cdf) {
         res <- draws * pdf / cdf
         res[pdf == 0] <- 0
@@ -57,9 +54,18 @@ minimize <- function(...,
       ratios_sum <- Reduce(`+`, ratios)
       ratios_sum * full_surv
     },
-    range = r,
+    pmf = function(x) {
+      # Mass at an atom is the survival jump:
+      # prod (S_i + p_i)^d_i - prod S_i^d_i, where S_i(x) = P(X_i > x).
+      survs <- lapply(dsts, distionary::eval_survival, at = x)
+      pmfs <- lapply(dsts, distionary::eval_pmf, at = x)
+      ge <- Map(function(s, p) s + p, survs, pmfs)
+      upper <- Reduce(`*`, Map(`^`, ge, draws))
+      lower <- Reduce(`*`, Map(`^`, survs, draws))
+      upper - lower
+    },
     .name = "Minumum",
-    .vtype = v,
+    .support = support_out,
     .parameters = list(
       distributions = dsts,
       draws = draws

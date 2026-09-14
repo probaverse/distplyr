@@ -1,4 +1,43 @@
+# distplyr 0.3.0
+
+Every verb is now built on distionary's support objects, so a transformed
+distribution says where its probability lives: `support()`, its atoms, and
+discrete or mixed moments all work on the result. Verbs no longer state a
+`range` or `.vtype`; both are read from the support. `invert()`, for one,
+derives the support of `1 / X` for a distribution spanning zero by mapping
+each side of it separately. Requires distionary 0.2.0.
+
+## New verbs
+
+- `trim_left()` and `trim_right()` condition a distribution on one side of a
+  point, with `knot` saying what becomes of the mass sitting exactly on it:
+  `"keep"` it (the default, since a point is not to one side of itself),
+  `"discard"` it with the trimmed side, or `"split"` it. See `?trim`.
+
+- `graft_left()` and `graft_right()` replace one end of a `body` with another
+  model of that end. Name the tail either as `tail_excess`, measured from the
+  knot and moved there, or as `tail_absolute`, on the body's own scale and
+  conditioned beyond the knot. `knot` names the side that mass sitting
+  exactly on the knot belongs to --- the `"body"` (the default), the
+  `"tail"`, or `"split"` between them. See `?graft`.
+
+## Other changes
+
+- Distributions built by a verb print as a summary rather than unfolding
+  every distribution they were built from: each is named with
+  `pretty_name()`, and a mixture's components are listed with their weights.
+
+## Bug fixes
+
+- `mix()`, `maximize()` and `minimize()` no longer treat different components
+  as the same one. Results may change for transformed distributions.
+
+- Verbs no longer discard a distribution that merely carries the name
+  `"Null"`. Null-ness is read with `is.na()`.
+
 # distplyr 0.2.0
+
+- Initial CRAN release.
 
 # distplyr 0.1.5
 

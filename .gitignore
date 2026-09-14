@@ -11,3 +11,7 @@ texput.log
 /Meta/
 docs
 .DS_Store
+Rplots.pdf
+figure/
+.claude/settings.local.json
+.claude/worktrees/

@@ -3,7 +3,7 @@
 invert <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   p_zero <- distionary::eval_pmf(distribution, at = 0)
@@ -25,6 +25,8 @@ invert <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   r <- range(distribution)
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_reciprocal(support_in)
   qf <- function(p) {
     F0 <- distionary::eval_cdf(distribution, at = 0)
     res <- rep(NA_real_, length(p))
@@ -79,14 +81,11 @@ invert <- function(distribution) {
     realize = function(n) {
       1 / distionary::realize(distribution, n = n)
     },
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Inverse",
     .parameters = list(
       distribution = distribution
     )
   )
-  if (prod(sign(r)) %in% 0:1) { # Distribution is nonnegative or nonpositive
-    d[["range"]] <- rev(1 / r)
-  }
   distionary:::new_distribution(d, class = "inverse")
 }

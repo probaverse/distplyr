@@ -3,7 +3,7 @@
 flip <- function(distribution) {
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
-  if (nm == "Null") {
+  if (is.na(distribution)) {
     return(distribution)
   }
   ## BEGIN special simplifications ---------------------------------------------
@@ -46,6 +46,8 @@ flip <- function(distribution) {
   }
   ## END special simplifications -----------------------------------------------
   ## (Except for quantile function)
+  support_in <- distionary::support(distribution)
+  support_out <- distionary::support_scale(support_in, -1)
   d <- distionary::distribution(
     cdf = function(x) {
       distionary::eval_pmf(distribution, at = -x) +
@@ -64,16 +66,12 @@ flip <- function(distribution) {
     realize = function(n) {
       -distionary::realize(distribution, n = n)
     },
-    .vtype = distionary::vtype(distribution),
+    .support = support_out,
     .name = "Negated",
     .parameters = list(
       distribution = distribution
     ),
   )
-  if (distionary:::is_intrinsic(distribution, "range")) {
-    r <- range(distribution)
-    d[["range"]] <- -rev(r)
-  }
   if (distionary:::is_intrinsic(distribution, "mean")) {
     d[["mean"]] <- -mean(distribution)
   }
