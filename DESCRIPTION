@@ -30,9 +30,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     tibble
-Remotes:
-    probaverse/distionary@main
-VignetteBuilder:
+VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
