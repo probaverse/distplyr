@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/probaverse/distplyr/blob/v0.3.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/probaverse/distplyr/blob/main/DESCRIPTION)
 
 Coia V (2026). *distplyr: Manipulate and Combine Probability
 Distributions*. R package version 0.3.0,

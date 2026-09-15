@@ -3,7 +3,7 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   manipulating: manipulating.html
-last_built: 2026-09-15T07:23Z
+last_built: 2026-09-15T07:28Z
 urls:
   reference: https://distplyr.probaverse.com/reference
   article: https://distplyr.probaverse.com/articles
