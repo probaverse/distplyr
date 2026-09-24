@@ -1,3 +1,9 @@
+# distplyr (development version)
+
+- `conditional()` conditions a multivariate distribution on known values,
+  which also slices one along a line such as a fixed total. See
+  `?conditional`.
+
 # distplyr 0.3.0
 
 Every verb is now built on distionary's support objects, so a transformed
