@@ -100,5 +100,10 @@ conditional <- function(distribution, given) {
   if (anyNA(at)) {
     return(distionary::dst_null())
   }
-  distionary::eval_property(distribution, "conditional", idx, at)
+  out <- distionary::eval_property(distribution, "conditional", idx, at)
+  if (!is.na(out)) {
+    # The remaining variables keep their names, whatever built the result.
+    distionary::variables(out) <- vars[-idx]
+  }
+  out
 }

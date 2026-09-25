@@ -30,6 +30,7 @@ test_that("finite distributions keep the matching points", {
   )
   b <- conditional(e, list(a = 2))
   expect_equal(distionary::eval_pmf(b, 1:2), c(0.5, 0.5))
+  expect_identical(distionary::variables(b), "b")
   expect_true(is.na(conditional(e, c(a = 9))))
 })
 
