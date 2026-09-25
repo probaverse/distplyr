@@ -1,6 +1,7 @@
 #' @rdname linear_transform
 #' @export
 multiply <- function(distribution, constant) {
+  assert_univariate(distribution, "`multiply()`")
   checkmate::assert_number(constant, finite = TRUE, na.ok = TRUE)
   checkmate::assert_class(distribution, "dst")
   if (is.na(constant)) {

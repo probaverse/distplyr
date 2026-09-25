@@ -9,6 +9,7 @@
 #' Specifically, a distribution with subclass "exponential".
 #' @noRd
 exp_distribution <- function(distribution) {
+  assert_univariate(distribution, "`exp()`")
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
   if (is.na(distribution)) {

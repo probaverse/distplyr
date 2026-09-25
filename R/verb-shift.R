@@ -66,6 +66,7 @@
 #' @rdname linear_transform
 #' @export
 shift <- function(distribution, constant) {
+  assert_univariate(distribution, "`shift()`")
   checkmate::assert_number(constant, finite = TRUE, na.ok = TRUE)
   checkmate::assert_class(distribution, "dst")
   if (is.na(constant)) {

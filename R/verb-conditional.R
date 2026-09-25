@@ -8,9 +8,10 @@
 #' numeric vector, such as `c(x = 3)`, or a named list.
 #' @details
 #' The result is a distribution of the variables not in `given`, in their
-#' original order: univariate if only one is left. It is what the `given`
-#' argument of `distionary::eval_mv_cdf()` and the like evaluates, but as a
-#' distribution in its own right, to be evaluated, drawn from, or
+#' original order: univariate if only one is left. `distionary::prob()`
+#' with `given = x == 3`, and `distionary::eval_mv_cdf()` with
+#' `known = "x"`, evaluate this distribution without building it; here it
+#' is a distribution in its own right, to be evaluated, drawn from, or
 #' transformed further.
 #'
 #' This conditions on variables *equalling* values. To condition a single

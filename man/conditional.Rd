@@ -21,9 +21,10 @@ when the others are known to equal given values.
 }
 \details{
 The result is a distribution of the variables not in \code{given}, in their
-original order: univariate if only one is left. It is what the \code{given}
-argument of \code{distionary::eval_mv_cdf()} and the like evaluates, but as a
-distribution in its own right, to be evaluated, drawn from, or
+original order: univariate if only one is left. \code{distionary::prob()}
+with \code{given = x == 3}, and \code{distionary::eval_mv_cdf()} with
+\code{known = "x"}, evaluate this distribution without building it; here it
+is a distribution in its own right, to be evaluated, drawn from, or
 transformed further.
 
 This conditions on variables \emph{equalling} values. To condition a single

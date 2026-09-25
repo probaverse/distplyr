@@ -10,6 +10,7 @@
 #' @returns A distribution transformed by the logarithm function.
 #' @noRd
 log_distribution <- function(distribution, base = exp(1)) {
+  assert_univariate(distribution, "`log()`")
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(base, finite = TRUE, lower = 0, na.ok = TRUE)
   nm <- distionary::pretty_name(distribution)

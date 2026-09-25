@@ -49,6 +49,9 @@ mix <- function(...,
                 weights = 1,
                 na_action_dst = c("null", "drop", "fail"),
                 na_action_w = c("null", "drop", "fail")) {
+  for (d in dots_to_dsts(...)) {
+    assert_univariate(d, "`mix()`")
+  }
   preprocess <- pair_dots_num(
     ...,
     num = weights,

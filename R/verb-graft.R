@@ -78,6 +78,7 @@ graft_right <- function(
   tail_absolute,
   knot = c("body", "tail", "split")
 ) {
+  assert_univariate(body, "`graft_right()`")
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
@@ -123,6 +124,7 @@ graft_left <- function(
   tail_absolute,
   knot = c("body", "tail", "split")
 ) {
+  assert_univariate(body, "`graft_left()`")
   checkmate::assert_class(body, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()

@@ -102,3 +102,27 @@ group_dsts <- function(dsts) {
   }
   as.integer(as.factor(grps))
 }
+
+#' Refuse a distribution of several variables.
+#'
+#' distplyr's verbs work on distributions of one variable. A distribution
+#' of several would otherwise fail somewhere inside, with an error that
+#' says nothing about why.
+#' @param distribution A distribution.
+#' @param what The verb or operator, as it should appear in the message.
+#' @noRd
+assert_univariate <- function(distribution, what) {
+  if (!distionary::is_distribution(distribution)) {
+    return(invisible(distribution))
+  }
+  p <- distionary::dimension(distribution)
+  if (!is.na(p) && p > 1L) {
+    stop(
+      what, " works on distributions of one variable, and this one has ",
+      p, ".\n",
+      "Take one variable with `distionary::marginal()` first.",
+      call. = FALSE
+    )
+  }
+  invisible(distribution)
+}

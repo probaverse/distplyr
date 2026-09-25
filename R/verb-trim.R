@@ -87,6 +87,7 @@ knot_retained <- function(distribution, of, knot) {
 #' @export
 trim_left <- function(distribution, of, ...,
                       knot = c("keep", "discard", "split")) {
+  assert_univariate(distribution, "`trim_left()`")
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()
@@ -236,6 +237,7 @@ trim_left <- function(distribution, of, ...,
 #' @export
 trim_right <- function(distribution, of, ...,
                        knot = c("keep", "discard", "split")) {
+  assert_univariate(distribution, "`trim_right()`")
   checkmate::assert_class(distribution, "dst")
   checkmate::assert_number(of, finite = TRUE, na.ok = FALSE)
   rlang::check_dots_empty()

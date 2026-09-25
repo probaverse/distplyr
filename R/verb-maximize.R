@@ -87,6 +87,9 @@ maximize <- function(...,
                      draws = 1,
                      na_action_dst = c("null", "drop", "fail"),
                      na_action_draws = c("null", "drop", "fail")) {
+  for (d in dots_to_dsts(...)) {
+    assert_univariate(d, "`maximize()`")
+  }
   preprocess <- pair_dots_num(
     ...,
     num = draws,

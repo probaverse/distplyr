@@ -1,6 +1,7 @@
 #' @rdname linear_transform
 #' @export
 invert <- function(distribution) {
+  assert_univariate(distribution, "`invert()`")
   checkmate::assert_class(distribution, "dst")
   nm <- distionary::pretty_name(distribution)
   if (is.na(distribution)) {

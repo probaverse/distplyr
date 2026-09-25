@@ -1,0 +1,18 @@
+test_that("verbs refuse distributions of several variables, saying so", {
+  d <- distionary::dst_bi_norm(mean = c(0, 1), sd = c(1, 2), cor = 0.6)
+  expect_error(shift(d, 1), "`shift\\(\\)` works on distributions of one")
+  expect_error(d + 1, "`\\+` works on distributions of one")
+  expect_error(2 * d, "`\\*` works on distributions of one")
+  expect_error(-d, "one variable")
+  expect_error(exp(d), "`exp\\(\\)` works on distributions of one")
+  expect_error(multiply(d, 2), "one variable")
+  expect_error(flip(d), "one variable")
+  expect_error(invert(d), "one variable")
+  expect_error(trim_left(d, 0), "one variable")
+  expect_error(mix(d, d), "`mix\\(\\)` works on distributions of one")
+  expect_error(maximize(d, d), "one variable")
+  expect_error(minimize(d, d), "one variable")
+  expect_error(graft_right(d, 0, tail_excess = d), "one variable")
+  # The way out: a marginal.
+  expect_s3_class(shift(distionary::marginal(d, "x"), 1), "dst")
+})

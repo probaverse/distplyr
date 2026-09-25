@@ -69,6 +69,10 @@
 #' @method Ops dst
 Ops.dst <- function(e1, e2) {
   op <- .Generic[[1]]
+  assert_univariate(e1, paste0("`", op, "`"))
+  if (!missing(e2)) {
+    assert_univariate(e2, paste0("`", op, "`"))
+  }
   switch(op,
     `+` = {
       if (missing(e2)) {

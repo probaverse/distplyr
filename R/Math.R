@@ -56,6 +56,7 @@
 #' @method Math dst
 Math.dst <- function(x, ...) {
   op <- .Generic[[1]]
+  assert_univariate(x, paste0("`", op, "()`"))
   switch(op,
     `log` = {
       log_distribution(x, ...)
